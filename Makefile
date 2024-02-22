@@ -18,14 +18,14 @@ snapshot 	:; forge snapshot
 format 		:; forge fmt
 
 # Configure Anvil
-anvil 				:; anvil -m 'test test test test test test test test test test test junk' --steps-tracing #--block-time 1
+anvil 		:; anvil -m 'test test test test test test test test test test test junk' --steps-tracing  #--block-time 1
 DEFAULT_ANVIL_KEY 	:= 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
 # Configure Network Variables
 anvil-network:
 	$(eval \
 		NETWORK_ARGS := --broadcast \
-						--rpc-url http://localhost:8545 \
+						--rpc-url $(ANVIL_RPC_URL) \
 						--private-key $(DEFAULT_ANVIL_KEY) \
 	)
 
@@ -57,7 +57,7 @@ install:
 	forge install openzeppelin/openzeppelin-contracts@v5.0.1 --no-commit
 
 deploy:
-	@forge script script/DeployAavePm.s.sol:DeployAavePm $(NETWORK_ARGS) -vvvv
+	@forge script script/DeployAavePM.s.sol:DeployAavePM $(NETWORK_ARGS) -vvvv
 
 deposit-wstEth: 
 	@forge script script/Interactions.s.sol:DepositWstEth $(NETWORK_ARGS) -vvvv

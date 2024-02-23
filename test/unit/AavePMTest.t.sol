@@ -2,7 +2,8 @@
 pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 import {AavePM} from "../../src/AavePM.sol";
 import {InvalidOwner} from "../../src/testHelperContracts/InvalidOwner.sol";
@@ -19,35 +20,59 @@ contract AavePMTestSetup is Test {
     uint256 constant STARTING_BALANCE = 10 ether;
 
     // Create users
-    address owner = makeAddr("owner");
-    address user1 = makeAddr("user1");
-    address attacker = makeAddr("attacker");
+    address owner1 = makeAddr("owner1");
+    address manager1 = makeAddr("manager1");
+    address attacker1 = makeAddr("attacker1");
 
     function setUp() external {
         DeployAavePM deployAavePM = new DeployAavePM();
-        aavePM = deployAavePM.run(owner);
-        vm.deal(owner, STARTING_BALANCE);
-        vm.deal(user1, STARTING_BALANCE);
-        vm.deal(attacker, STARTING_BALANCE);
+        aavePM = deployAavePM.run(owner1);
+        vm.deal(owner1, STARTING_BALANCE);
+        vm.deal(manager1, STARTING_BALANCE);
+        vm.deal(attacker1, STARTING_BALANCE);
     }
 }
 
-contract AavePMConstructorTest is AavePMTestSetup {
+contract AavePMConstructorTests is AavePMTestSetup {
     function test_Constructor() public {
         assertEq(aavePM.getCreator(), msg.sender);
+
+        assert(aavePM.hasRole(aavePM.OWNER_ROLE(), owner1));
+        assert(aavePM.getRoleAdmin(aavePM.OWNER_ROLE()) == aavePM.OWNER_ROLE());
+
+        assert(aavePM.hasRole(aavePM.MANAGER_ROLE(), owner1));
+        assert(aavePM.getRoleAdmin(aavePM.MANAGER_ROLE()) == aavePM.OWNER_ROLE());
+
+        assert(aavePM.hasRole(aavePM.WITHDRAWER_ROLE(), owner1));
+        assert(aavePM.getRoleAdmin(aavePM.WITHDRAWER_ROLE()) == aavePM.OWNER_ROLE());
     }
 }
 
 // ================================================================
-// │                        DEPOSIT TESTS                         │
+// │                         UPDATE TESTS                         │
 // ================================================================
+
+contract AavePMUpdateTests is AavePMTestSetup {
+    function test_UpdateAave() public {
+        address aaveTestAddress = makeAddr("AaveContractAddress");
+
+        assertEq(aavePM.getAave(), address(0));
+        vm.prank(owner1);
+        aavePM.updateAave(aaveTestAddress);
+        assertEq(aavePM.getAave(), aaveTestAddress);
+    }
+}
 
 // ================================================================
 // │                         GETTER TESTS                         │
 // ================================================================
-contract AavePMGetterTest is AavePMTestSetup {
+contract AavePMGetterTests is AavePMTestSetup {
     function test_GetCreator() public {
         assertEq(aavePM.getCreator(), msg.sender);
+    }
+
+    function test_GetAave() public {
+        assertEq(aavePM.getAave(), address(0));
     }
 
     function test_GetRescueETHBalance() public {
@@ -59,64 +84,66 @@ contract AavePMGetterTest is AavePMTestSetup {
 // │                       RESCUE ETH TESTS                       │
 // ================================================================
 contract AavePMRescueEthTest is AavePMTestSetup {
+    bytes encodedRevert;
     uint256 balanceBefore;
-    bytes encodedRevert = abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, user1);
 
     function rescueETH_SetUp() public {
-        vm.prank(user1);
+        encodedRevert = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.WITHDRAWER_ROLE()
+        );
+        vm.prank(manager1);
         (bool callSuccess,) = address(aavePM).call{value: SEND_VALUE}("");
-        assert(callSuccess);
+        require(callSuccess, "Failed to send ETH to AavePM contract");
         balanceBefore = address(aavePM).balance;
-        assert(balanceBefore > 0);
+        require(balanceBefore > 0, "Balance before rescueETH is 0");
     }
 
-    function transferOwnershipToInvalidOwnerContract() public returns (InvalidOwner) {
-        // Deploy invalid owner contract
+    function grantOwnerRoleToInvalidOwnerContract() public returns (InvalidOwner) {
+        // Deploy InvalidOwner contract
         InvalidOwner invalidOwner = new InvalidOwner(address(aavePM));
 
-        // Transfer ownership to invalid owner contract
-        vm.prank(owner);
-        aavePM.transferOwnership(address(invalidOwner));
-
+        // Transfer ownership to invalid owner1 contract
+        aavePM.grantRole(aavePM.WITHDRAWER_ROLE(), address(invalidOwner));
         return invalidOwner;
     }
 
     function test_RescueAllETH() public {
         rescueETH_SetUp();
 
-        // Check only owner can call rescueETH
+        // Check only owner1 can call rescueETH
         vm.expectRevert(encodedRevert);
-        vm.prank(user1);
-        aavePM.rescueETH();
+        vm.prank(attacker1);
+        aavePM.rescueETH(attacker1);
 
         // Rescue the all ETH
-        vm.prank(owner);
-        aavePM.rescueETH();
+        vm.prank(owner1);
+        aavePM.rescueETH(owner1);
         assertEq(address(aavePM).balance, 0);
     }
 
     function test_RescueETH() public {
         rescueETH_SetUp();
 
-        // Check only owner can call rescueETH
+        // Check only owner1 can call rescueETH
         vm.expectRevert(encodedRevert);
-        vm.prank(user1);
-        aavePM.rescueETH(balanceBefore / 2);
+        vm.prank(attacker1);
+        aavePM.rescueETH(attacker1, balanceBefore / 2);
 
         // Rescue the half the ETH
-        vm.prank(owner);
-        aavePM.rescueETH(balanceBefore / 2);
+        vm.prank(owner1);
+        aavePM.rescueETH(owner1, balanceBefore / 2);
         assertEq(address(aavePM).balance, balanceBefore / 2);
     }
 
     function test_RescueETHCallFailureThrowsError() public {
         // This covers the edge case where the .call fails because the
         // receiving contract doesn't have a receive() or fallback() function.
-        // Very unlikely on the rescue function as only the owner can call it,
+        // Very unlikely on the rescue function as only the owner1 can call it,
         // but it is needed for the coverage test, and is a good check anyway.
-
         rescueETH_SetUp();
-        InvalidOwner invalidOwner = transferOwnershipToInvalidOwnerContract();
+        vm.startPrank(owner1);
+        InvalidOwner invalidOwner = grantOwnerRoleToInvalidOwnerContract();
+        vm.stopPrank();
 
         vm.expectRevert(AavePM.AavePM__RescueETHFailed.selector);
         invalidOwner.aavePMRescueAllETH();
@@ -129,7 +156,7 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 // ================================================================
 // │                          MISC TESTS                          │
 // ================================================================
-contract AavePMMiscTest is AavePMTestSetup {
+contract AavePMMiscTests is AavePMTestSetup {
     function test_CoverageForReceiveFunction() public {
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success);

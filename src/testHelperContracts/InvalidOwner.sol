@@ -6,23 +6,23 @@ import "../AavePM.sol";
 /**
  * This contract is used to test the .call functions failing in AavePM.sol
  * The test is found in AavePMTest.t.sol:
- * - "AavePMRescueEthTest"
+ * - "test_RescueETHCallFailureThrowsError()"
  *
  * The reason this contract causes the .call to fail is because it doesn't have a receive()
- * or fallback() function so the ETH can't be accepted
+ * or fallback() function so the ETH can't be accepted.
  */
 contract InvalidOwner {
-    AavePM aavePMContract;
+    AavePM aavePM;
 
-    constructor(address aavePMContractAddress) {
-        aavePMContract = AavePM(payable(aavePMContractAddress));
+    constructor(address aavePMAddress) {
+        aavePM = AavePM(payable(aavePMAddress));
     }
 
     function aavePMRescueAllETH() public payable {
-        aavePMContract.rescueETH();
+        aavePM.rescueETH(address(this));
     }
 
     function aavePMRescueETH() public payable {
-        aavePMContract.rescueETH(address(aavePMContract).balance / 2);
+        aavePM.rescueETH(address(this), address(aavePM).balance / 2);
     }
 }

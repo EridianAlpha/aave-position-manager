@@ -3,7 +3,7 @@
 # ================================================================
 -include .env
 
-.PHONY: all test clean help install snapshot format anvil
+.PHONY: all test clean help install snapshot format anvil ethernal
 
 help:
 	@echo "Usage:"
@@ -19,14 +19,13 @@ format 		:; forge fmt
 
 # Configure Anvil
 anvil 		:; anvil -m 'test test test test test test test test test test test junk' --steps-tracing  #--block-time 1
-DEFAULT_ANVIL_KEY 	:= 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
 # Configure Network Variables
 anvil-network:
 	$(eval \
 		NETWORK_ARGS := --broadcast \
 						--rpc-url $(ANVIL_RPC_URL) \
-						--private-key $(DEFAULT_ANVIL_KEY) \
+						--private-key $(ANVIL_PRIVATE_KEY) \
 	)
 
 holesky-network: 
@@ -46,6 +45,14 @@ holesky-network:
 # 			--verify \
 # 			--etherscan-api-key $(ETHERSCAN_API_KEY) \
 # 	)
+
+
+# ================================================================
+# │            ETHERNAL BLOCK EXPLORER CONFIGURATION             │
+# ================================================================
+# https://app.tryethernal.com
+ethernal:
+	ETHERNAL_API_TOKEN=${ETHERNAL_API_TOKEN} ethernal listen --astUpload true
 
 
 # ================================================================

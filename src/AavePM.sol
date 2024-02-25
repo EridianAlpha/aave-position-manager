@@ -42,6 +42,8 @@ contract AavePM is AccessControl {
     // ================================================================
     // │                            EVENTS                            │
     // ================================================================
+    event RescueETH(address indexed to, uint256 amount);
+    event AaveUpdated(address indexed previousAaveAddress, address indexed newAaveAddress);
 
     // ================================================================
     // │                           MODIFIERS                          │
@@ -74,9 +76,11 @@ contract AavePM is AccessControl {
     /**
      * @notice Update the Aave contract address.
      * @dev Only the contract owner can call this function.
+     *      Emits an AaveUpdated event.
      * @param _aave The new Aave contract address.
      */
     function updateAave(address _aave) external onlyRole(OWNER_ROLE) {
+        emit AaveUpdated(aave, _aave);
         aave = _aave;
     }
 
@@ -90,9 +94,12 @@ contract AavePM is AccessControl {
      *      Only the contract owner can call this function.
      *      The use of nonReentrant isn't required due to the owner-only restriction.
      *      Throws `AavePM__RescueETHFailed` if the ETH transfer fails.
+     *      Emits a RescueETH event.
+     * @param rescueAddress The address to send the rescued ETH to.
      */
     function rescueETH(address rescueAddress) external onlyRole(WITHDRAWER_ROLE) {
         // ***** TRANSFER ETH *****
+        emit RescueETH(rescueAddress, getRescueETHBalance());
         (bool callSuccess,) = rescueAddress.call{value: getRescueETHBalance()}("");
         if (!callSuccess) revert AavePM__RescueETHFailed();
     }
@@ -102,15 +109,16 @@ contract AavePM is AccessControl {
      * @dev This function is an overload of rescueETH().
      *      This variant allows specifying the amount of ETH to rescue in WEI.
      *      Throws `AavePM__RescueETHFailed` if the ETH transfer fails.
+     *      Emits a RescueETH event.
+     * @param rescueAddress The address to send the rescued ETH to.
      * @param ethAmount The amount of ETH to rescue, specified in WEI.
      */
     function rescueETH(address rescueAddress, uint256 ethAmount) external onlyRole(WITHDRAWER_ROLE) {
         // ***** TRANSFER ETH *****
+        emit RescueETH(rescueAddress, ethAmount);
         (bool callSuccess,) = rescueAddress.call{value: ethAmount}("");
         if (!callSuccess) revert AavePM__RescueETHFailed();
     }
-
-    // Change Aave contract address
 
     // ================================================================
     // │               FUNCTIONS - PRIVATE AND INTERNAL VIEW          │

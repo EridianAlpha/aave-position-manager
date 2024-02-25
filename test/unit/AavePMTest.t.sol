@@ -53,10 +53,15 @@ contract AavePMConstructorTests is AavePMTestSetup {
 // ================================================================
 
 contract AavePMUpdateTests is AavePMTestSetup {
+    event AaveUpdated(address indexed previousAaveAddress, address indexed newAaveAddress);
+
     function test_UpdateAave() public {
         address aaveTestAddress = makeAddr("AaveContractAddress");
-
         assertEq(aavePM.getAave(), address(0));
+
+        vm.expectEmit();
+        emit AaveUpdated(address(0), aaveTestAddress);
+
         vm.prank(owner1);
         aavePM.updateAave(aaveTestAddress);
         assertEq(aavePM.getAave(), aaveTestAddress);
@@ -84,6 +89,8 @@ contract AavePMGetterTests is AavePMTestSetup {
 // │                       RESCUE ETH TESTS                       │
 // ================================================================
 contract AavePMRescueEthTest is AavePMTestSetup {
+    event RescueETH(address indexed to, uint256 amount);
+
     bytes encodedRevert;
     uint256 balanceBefore;
 
@@ -116,6 +123,9 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         aavePM.rescueETH(attacker1);
 
         // Rescue the all ETH
+        vm.expectEmit();
+        emit RescueETH(owner1, address(aavePM).balance);
+
         vm.prank(owner1);
         aavePM.rescueETH(owner1);
         assertEq(address(aavePM).balance, 0);
@@ -130,6 +140,9 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         aavePM.rescueETH(attacker1, balanceBefore / 2);
 
         // Rescue the half the ETH
+        vm.expectEmit();
+        emit RescueETH(owner1, balanceBefore / 2);
+
         vm.prank(owner1);
         aavePM.rescueETH(owner1, balanceBefore / 2);
         assertEq(address(aavePM).balance, balanceBefore / 2);

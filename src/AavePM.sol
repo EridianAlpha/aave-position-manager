@@ -19,6 +19,7 @@ contract AavePM is AccessControl {
     // │                            ERRORS                            │
     // ================================================================
     error AavePM__FunctionDoesNotExist();
+    error AavePM__RescueAddressNotAnOwner();
     error AavePM__RescueETHFailed();
 
     // ================================================================
@@ -59,9 +60,6 @@ contract AavePM is AccessControl {
 
         _grantRole(MANAGER_ROLE, owner);
         _setRoleAdmin(MANAGER_ROLE, OWNER_ROLE);
-
-        _grantRole(WITHDRAWER_ROLE, owner);
-        _setRoleAdmin(WITHDRAWER_ROLE, OWNER_ROLE);
     }
 
     receive() external payable {}
@@ -97,7 +95,10 @@ contract AavePM is AccessControl {
      *      Emits a RescueETH event.
      * @param rescueAddress The address to send the rescued ETH to.
      */
-    function rescueETH(address rescueAddress) external onlyRole(WITHDRAWER_ROLE) {
+    function rescueETH(address rescueAddress) external onlyRole(OWNER_ROLE) {
+        // Check if the rescueAddress is an owner
+        if (!hasRole(OWNER_ROLE, rescueAddress)) revert AavePM__RescueAddressNotAnOwner();
+
         // ***** TRANSFER ETH *****
         emit RescueETH(rescueAddress, getRescueETHBalance());
         (bool callSuccess,) = rescueAddress.call{value: getRescueETHBalance()}("");
@@ -111,9 +112,13 @@ contract AavePM is AccessControl {
      *      Throws `AavePM__RescueETHFailed` if the ETH transfer fails.
      *      Emits a RescueETH event.
      * @param rescueAddress The address to send the rescued ETH to.
+     *                      Address must have the OWNER_ROLE.
      * @param ethAmount The amount of ETH to rescue, specified in WEI.
      */
-    function rescueETH(address rescueAddress, uint256 ethAmount) external onlyRole(WITHDRAWER_ROLE) {
+    function rescueETH(address rescueAddress, uint256 ethAmount) external onlyRole(OWNER_ROLE) {
+        // Check if the rescueAddress is an owner
+        if (!hasRole(OWNER_ROLE, rescueAddress)) revert AavePM__RescueAddressNotAnOwner();
+
         // ***** TRANSFER ETH *****
         emit RescueETH(rescueAddress, ethAmount);
         (bool callSuccess,) = rescueAddress.call{value: ethAmount}("");

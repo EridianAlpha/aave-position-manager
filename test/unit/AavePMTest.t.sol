@@ -42,9 +42,6 @@ contract AavePMConstructorTests is AavePMTestSetup {
 
         assert(aavePM.hasRole(aavePM.MANAGER_ROLE(), owner1));
         assert(aavePM.getRoleAdmin(aavePM.MANAGER_ROLE()) == aavePM.OWNER_ROLE());
-
-        assert(aavePM.hasRole(aavePM.WITHDRAWER_ROLE(), owner1));
-        assert(aavePM.getRoleAdmin(aavePM.WITHDRAWER_ROLE()) == aavePM.OWNER_ROLE());
     }
 }
 
@@ -96,7 +93,7 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 
     function rescueETH_SetUp() public {
         encodedRevert = abi.encodeWithSelector(
-            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.WITHDRAWER_ROLE()
+            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.OWNER_ROLE()
         );
         vm.prank(manager1);
         (bool callSuccess,) = address(aavePM).call{value: SEND_VALUE}("");
@@ -110,43 +107,86 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         InvalidOwner invalidOwner = new InvalidOwner(address(aavePM));
 
         // Transfer ownership to invalid owner1 contract
-        aavePM.grantRole(aavePM.WITHDRAWER_ROLE(), address(invalidOwner));
+        aavePM.grantRole(aavePM.OWNER_ROLE(), address(invalidOwner));
         return invalidOwner;
     }
 
-    function test_RescueAllETH() public {
+    function runRescueETHTest(bool rescueAll, uint256 amount) internal {
         rescueETH_SetUp();
 
         // Check only owner1 can call rescueETH
         vm.expectRevert(encodedRevert);
         vm.prank(attacker1);
-        aavePM.rescueETH(attacker1);
+        rescueAll ? aavePM.rescueETH(attacker1) : aavePM.rescueETH(attacker1, amount);
 
-        // Rescue the all ETH
+        // Check rescueAddress is an owner
+        vm.expectRevert(AavePM.AavePM__RescueAddressNotAnOwner.selector);
+        vm.prank(owner1);
+        rescueAll ? aavePM.rescueETH(manager1) : aavePM.rescueETH(manager1, amount);
+
+        // Rescue ETH
         vm.expectEmit();
-        emit RescueETH(owner1, address(aavePM).balance);
+        uint256 expectedBalance = rescueAll ? address(aavePM).balance : amount;
+        emit RescueETH(owner1, expectedBalance);
 
         vm.prank(owner1);
-        aavePM.rescueETH(owner1);
-        assertEq(address(aavePM).balance, 0);
+        rescueAll ? aavePM.rescueETH(owner1) : aavePM.rescueETH(owner1, amount);
+
+        uint256 expectedRemaining = rescueAll ? 0 : balanceBefore - amount;
+        assertEq(address(aavePM).balance, expectedRemaining);
+    }
+
+    function test_RescueAllETH() public {
+        runRescueETHTest(true, 0);
     }
 
     function test_RescueETH() public {
-        rescueETH_SetUp();
-
-        // Check only owner1 can call rescueETH
-        vm.expectRevert(encodedRevert);
-        vm.prank(attacker1);
-        aavePM.rescueETH(attacker1, balanceBefore / 2);
-
-        // Rescue the half the ETH
-        vm.expectEmit();
-        emit RescueETH(owner1, balanceBefore / 2);
-
-        vm.prank(owner1);
-        aavePM.rescueETH(owner1, balanceBefore / 2);
-        assertEq(address(aavePM).balance, balanceBefore / 2);
+        runRescueETHTest(false, balanceBefore / 2);
     }
+
+    // function test_RescueAllETH() public {
+    //     rescueETH_SetUp();
+
+    //     // Check only owner1 can call rescueETH
+    //     vm.expectRevert(encodedRevert);
+    //     vm.prank(attacker1);
+    //     aavePM.rescueETH(attacker1);
+
+    //     // Check rescueAddress is an owner
+    //     vm.expectRevert(AavePM.AavePM__RescueAddressNotAnOwner.selector);
+    //     vm.prank(owner1);
+    //     aavePM.rescueETH(manager1);
+
+    //     // Rescue the all ETH
+    //     vm.expectEmit();
+    //     emit RescueETH(owner1, address(aavePM).balance);
+
+    //     vm.prank(owner1);
+    //     aavePM.rescueETH(owner1);
+    //     assertEq(address(aavePM).balance, 0);
+    // }
+
+    // function test_RescueETH() public {
+    //     rescueETH_SetUp();
+
+    //     // Check only owner1 can call rescueETH
+    //     vm.expectRevert(encodedRevert);
+    //     vm.prank(attacker1);
+    //     aavePM.rescueETH(attacker1, balanceBefore / 2);
+
+    //     // Check rescueAddress is an owner
+    //     vm.expectRevert(AavePM.AavePM__RescueAddressNotAnOwner.selector);
+    //     vm.prank(owner1);
+    //     aavePM.rescueETH(manager1, balanceBefore / 2);
+
+    //     // Rescue the half the ETH
+    //     vm.expectEmit();
+    //     emit RescueETH(owner1, balanceBefore / 2);
+
+    //     vm.prank(owner1);
+    //     aavePM.rescueETH(owner1, balanceBefore / 2);
+    //     assertEq(address(aavePM).balance, balanceBefore / 2);
+    // }
 
     function test_RescueETHCallFailureThrowsError() public {
         // This covers the edge case where the .call fails because the

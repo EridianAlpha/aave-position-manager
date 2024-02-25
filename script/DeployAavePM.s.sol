@@ -18,8 +18,10 @@ contract DeployAavePM is Script {
     }
 
     function deployContract(address owner) public returns (AavePM) {
+        uint256 initialHealthFactorTarget = 2;
+
         vm.startBroadcast();
-        AavePM aavePM = new AavePM(owner);
+        AavePM aavePM = new AavePM(owner, initialHealthFactorTarget);
         vm.stopBroadcast();
         return aavePM;
     }

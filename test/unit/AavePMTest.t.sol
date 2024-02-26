@@ -19,6 +19,7 @@ contract AavePMTestSetup is Test {
     uint256 constant GAS_PRICE = 1;
     uint256 constant SEND_VALUE = 1 ether;
     uint256 constant STARTING_BALANCE = 10 ether;
+    uint256 constant INITIAL_VERSION = 1;
     uint256 constant INITIAL_HEALTH_FACTOR_TARGET = 2;
     uint256 constant INITIAL_HEALTH_FACTOR_MINIMUM = 2;
 
@@ -91,31 +92,6 @@ contract AavePMUpdateTests is AavePMTestSetup {
         vm.expectRevert(IAavePM.AavePM__HealthFactorBelowMinimum.selector);
         vm.prank(owner1);
         aavePM.updateHealthFactorTarget(newHealthFactorTarget);
-    }
-}
-
-// ================================================================
-// │                         GETTER TESTS                         │
-// ================================================================
-contract AavePMGetterTests is AavePMTestSetup {
-    function test_GetCreator() public {
-        assertEq(aavePM.getCreator(), msg.sender);
-    }
-
-    function test_GetAave() public {
-        assertEq(aavePM.getAave(), address(0));
-    }
-
-    function test_GetHealthFactorTarget() public {
-        assertEq(aavePM.getHealthFactorTarget(), INITIAL_HEALTH_FACTOR_TARGET);
-    }
-
-    function test_getHealthFactorMinimum() public {
-        assertEq(aavePM.getHealthFactorMinimum(), INITIAL_HEALTH_FACTOR_MINIMUM);
-    }
-
-    function test_GetRescueEthBalance() public {
-        assertEq(aavePM.getRescueEthBalance(), address(aavePM).balance);
     }
 }
 
@@ -194,6 +170,43 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 
         vm.expectRevert(IAavePM.AavePM__RescueEthFailed.selector);
         invalidOwner.aavePMRescueEth();
+    }
+}
+
+// ================================================================
+// │                         GETTER TESTS                         │
+// ================================================================
+contract AavePMGetterTests is AavePMTestSetup {
+    function test_GetCreator() public {
+        assertEq(aavePM.getCreator(), msg.sender);
+    }
+
+    function test_GetVersion() public {
+        assertEq(aavePM.getVersion(), INITIAL_VERSION);
+    }
+
+    function test_GetOwnerRole() public {
+        assertEq(aavePM.getOwnerRole(), keccak256("OWNER_ROLE"));
+    }
+
+    function test_GetManagerRole() public {
+        assertEq(aavePM.getManagerRole(), keccak256("MANAGER_ROLE"));
+    }
+
+    function test_GetAave() public {
+        assertEq(aavePM.getAave(), address(0));
+    }
+
+    function test_GetHealthFactorTarget() public {
+        assertEq(aavePM.getHealthFactorTarget(), INITIAL_HEALTH_FACTOR_TARGET);
+    }
+
+    function test_getHealthFactorMinimum() public {
+        assertEq(aavePM.getHealthFactorMinimum(), INITIAL_HEALTH_FACTOR_MINIMUM);
+    }
+
+    function test_GetRescueEthBalance() public {
+        assertEq(aavePM.getRescueEthBalance(), address(aavePM).balance);
     }
 }
 

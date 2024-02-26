@@ -4,11 +4,6 @@ pragma solidity ^0.8.24;
 import {IAavePM} from "./interfaces/IAavePM.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-// TODO: Decide if/where reentrancy guard is needed
-// import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-
-// CHANGE
-
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha
 /// @notice A contract to manage positions on Aave.
@@ -18,7 +13,7 @@ contract AavePM is IAavePM, AccessControl {
     // │                        STATE VARIABLES                       │
     // ================================================================
     // Contract version
-    uint256 private version;
+    uint256 private version = 1;
 
     // Addresses
     address private immutable i_creator;

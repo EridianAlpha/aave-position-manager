@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+
 import {IAavePM} from "./interfaces/IAavePM.sol";
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha
 /// @notice A contract to manage positions on Aave.
 
-contract AavePM is IAavePM, AccessControl {
+contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     // ================================================================
     // │                        STATE VARIABLES                       │
     // ================================================================
-    // Contract version
-    uint256 private version = 1;
-
     // Addresses
-    address private immutable i_creator;
+    address private s_creator;
     address private s_aave;
 
     // Roles
@@ -24,8 +24,9 @@ contract AavePM is IAavePM, AccessControl {
     bytes32 private constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
     // Values
+    uint256 private version;
     uint256 private s_healthFactorTarget;
-    uint256 private s_healthFactorMinimum = 2; // TODO: In future, this lower bound healthFactorMinimum could be a variable
+    uint256 private s_healthFactorMinimum;
 
     // ================================================================
     // │                           MODIFIERS                          │
@@ -34,15 +35,9 @@ contract AavePM is IAavePM, AccessControl {
     // ================================================================
     // │                           FUNCTIONS                          │
     // ================================================================
-    constructor(address owner, uint256 initialHealthFactorTarget) {
-        i_creator = msg.sender;
-        _grantRole(OWNER_ROLE, owner);
-        _setRoleAdmin(OWNER_ROLE, OWNER_ROLE);
-
-        _grantRole(MANAGER_ROLE, owner);
-        _setRoleAdmin(MANAGER_ROLE, OWNER_ROLE);
-
-        s_healthFactorTarget = initialHealthFactorTarget;
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
     }
 
     receive() external payable {}
@@ -50,6 +45,34 @@ contract AavePM is IAavePM, AccessControl {
     fallback() external payable {
         revert AavePM__FunctionDoesNotExist();
     }
+
+    // ================================================================
+    // │                    FUNCTIONS - INITIALIZER                   │
+    // ================================================================
+    function initialize(address owner, uint256 initialHealthFactorTarget) public initializer {
+        __AccessControl_init();
+        __UUPSUpgradeable_init();
+
+        version = 1;
+        s_creator = msg.sender;
+
+        _grantRole(OWNER_ROLE, owner);
+        _setRoleAdmin(OWNER_ROLE, OWNER_ROLE);
+
+        _grantRole(MANAGER_ROLE, owner);
+        _setRoleAdmin(MANAGER_ROLE, OWNER_ROLE);
+
+        s_healthFactorTarget = initialHealthFactorTarget;
+        s_healthFactorMinimum = 2;
+    }
+
+    // ================================================================
+    // │                   FUNCTIONS - UUPS UPGRADES                  │
+    // ================================================================
+    /// @notice Internal function to authorize an upgrade.
+    /// @dev Only callable by the owner role.
+    /// @param _newImplementation Address of the new contract implementation.
+    function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE) {}
 
     // ================================================================
     // │                     FUNCTIONS - EXTERNAL                     │
@@ -129,7 +152,7 @@ contract AavePM is IAavePM, AccessControl {
     /// @dev Public function to allow anyone to view the contract creator.
     /// @return address of the creator.
     function getCreator() public view returns (address) {
-        return i_creator;
+        return s_creator;
     }
 
     function getVersion() public view returns (uint256) {

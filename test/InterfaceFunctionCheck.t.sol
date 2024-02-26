@@ -9,11 +9,9 @@ contract InterfaceTest is Test, Script {
         string memory accessControlFunctions =
             "getRoleAdmin,hasRole,getRoleMember,getRoleMemberCount,grantRole,revokeRole,renounceRole,supportsInterface,DEFAULT_ADMIN_ROLE";
 
-        // ADD ADDITIONAL FUNCTIONS TO IGNORE HERE
-        // string memory otherFunctions = "TEST";
-        // string memory ignoreList = string(abi.encodePacked(accessControlFunctions, ",", otherFunctions));
+        string memory uupsFunctions = "UPGRADE_INTERFACE_VERSION,proxiableUUID,upgradeToAndCall";
 
-        string memory ignoreList = accessControlFunctions;
+        string memory ignoreList = string(abi.encodePacked(accessControlFunctions, ",", uupsFunctions));
 
         // Command as an array with arguments
         string[] memory command = new string[](4);

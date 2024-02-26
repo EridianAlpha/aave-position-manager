@@ -2,27 +2,37 @@
 pragma solidity ^0.8.24;
 
 import {Script} from "forge-std/Script.sol";
+import {console} from "forge-std/console.sol";
 import {AavePM} from "../src/AavePM.sol";
-import "forge-std/console.sol";
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract DeployAavePM is Script {
-    // Overload the run function to allow owner address to be optional
-    // when running the deployment script, even though it is required
-    // in the contract constructor.
     function run() public returns (AavePM) {
-        return deployContract(msg.sender);
+        return getAavePM(deployContract(msg.sender));
     }
 
     function run(address owner) public returns (AavePM) {
-        return deployContract(owner);
+        return getAavePM(deployContract(owner));
     }
 
-    function deployContract(address owner) public returns (AavePM) {
+    function getAavePM(address proxyAddress) public pure returns (AavePM) {
+        AavePM proxy = AavePM(payable(proxyAddress));
+        return proxy;
+    }
+
+    function deployContract(address owner) internal returns (address) {
         uint256 initialHealthFactorTarget = 2;
 
         vm.startBroadcast();
-        AavePM aavePM = new AavePM(owner, initialHealthFactorTarget);
+        // Deploy the implementation contract
+        AavePM aavePMImplementation = new AavePM();
+
+        // Encode the initializer function
+        bytes memory initData = abi.encodeWithSelector(AavePM.initialize.selector, owner, initialHealthFactorTarget);
+
+        // Deploy the proxy pointing to the implementation
+        ERC1967Proxy proxy = new ERC1967Proxy(address(aavePMImplementation), initData);
         vm.stopBroadcast();
-        return aavePM;
+        return address(proxy);
     }
 }

@@ -6,6 +6,7 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 import {AavePM} from "../../src/AavePM.sol";
+import {IAavePM} from "../../src/interfaces/IAavePM.sol";
 import {InvalidOwner} from "../../src/testHelperContracts/InvalidOwner.sol";
 
 import {DeployAavePM} from "../../script/DeployAavePM.s.sol";
@@ -39,11 +40,11 @@ contract AavePMConstructorTests is AavePMTestSetup {
     function test_Constructor() public {
         assertEq(aavePM.getCreator(), msg.sender);
 
-        assert(aavePM.hasRole(aavePM.OWNER_ROLE(), owner1));
-        assert(aavePM.getRoleAdmin(aavePM.OWNER_ROLE()) == aavePM.OWNER_ROLE());
+        assert(aavePM.hasRole(aavePM.getOwnerRole(), owner1));
+        assert(aavePM.getRoleAdmin(aavePM.getOwnerRole()) == aavePM.getOwnerRole());
 
-        assert(aavePM.hasRole(aavePM.MANAGER_ROLE(), owner1));
-        assert(aavePM.getRoleAdmin(aavePM.MANAGER_ROLE()) == aavePM.OWNER_ROLE());
+        assert(aavePM.hasRole(aavePM.getManagerRole(), owner1));
+        assert(aavePM.getRoleAdmin(aavePM.getManagerRole()) == aavePM.getOwnerRole());
     }
 }
 
@@ -52,15 +53,12 @@ contract AavePMConstructorTests is AavePMTestSetup {
 // ================================================================
 
 contract AavePMUpdateTests is AavePMTestSetup {
-    event AaveUpdated(address indexed previousAaveAddress, address indexed newAaveAddress);
-    event HealthFactorTargetUpdated(uint256 previousHealthFactorTarget, uint256 newHealthFactorTarget);
-
     function test_UpdateAave() public {
         address aaveTestAddress = makeAddr("AaveContractAddress");
         assertEq(aavePM.getAave(), address(0));
 
         vm.expectEmit();
-        emit AaveUpdated(address(0), aaveTestAddress);
+        emit IAavePM.AaveUpdated(address(0), aaveTestAddress);
 
         vm.prank(owner1);
         aavePM.updateAave(aaveTestAddress);
@@ -72,7 +70,7 @@ contract AavePMUpdateTests is AavePMTestSetup {
         uint256 previousHealthFactorTarget = aavePM.getHealthFactorTarget();
 
         vm.expectEmit();
-        emit AavePM.HealthFactorTargetUpdated(previousHealthFactorTarget, newHealthFactorTarget);
+        emit IAavePM.HealthFactorTargetUpdated(previousHealthFactorTarget, newHealthFactorTarget);
 
         vm.prank(owner1);
         aavePM.updateHealthFactorTarget(newHealthFactorTarget);
@@ -82,7 +80,7 @@ contract AavePMUpdateTests is AavePMTestSetup {
     function test_UpdateHealthFactorTargetUnchanged() public {
         uint256 previousHealthFactorTarget = aavePM.getHealthFactorTarget();
 
-        vm.expectRevert(AavePM.AavePM__HealthFactorUnchanged.selector);
+        vm.expectRevert(IAavePM.AavePM__HealthFactorUnchanged.selector);
         vm.prank(owner1);
         aavePM.updateHealthFactorTarget(previousHealthFactorTarget);
     }
@@ -90,7 +88,7 @@ contract AavePMUpdateTests is AavePMTestSetup {
     function test_UpdateHealthFactorTargetBelowMinimum() public {
         uint256 newHealthFactorTarget = aavePM.getHealthFactorMinimum() - 1;
 
-        vm.expectRevert(AavePM.AavePM__HealthFactorBelowMinimum.selector);
+        vm.expectRevert(IAavePM.AavePM__HealthFactorBelowMinimum.selector);
         vm.prank(owner1);
         aavePM.updateHealthFactorTarget(newHealthFactorTarget);
     }
@@ -125,14 +123,12 @@ contract AavePMGetterTests is AavePMTestSetup {
 // │                       RESCUE ETH TESTS                       │
 // ================================================================
 contract AavePMRescueEthTest is AavePMTestSetup {
-    event EthRescued(address indexed to, uint256 amount);
-
     bytes encodedRevert;
     uint256 balanceBefore;
 
     function rescueEth_SetUp() public {
         encodedRevert = abi.encodeWithSelector(
-            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.OWNER_ROLE()
+            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.getOwnerRole()
         );
         vm.prank(manager1);
         (bool callSuccess,) = address(aavePM).call{value: SEND_VALUE}("");
@@ -146,7 +142,7 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         InvalidOwner invalidOwner = new InvalidOwner(address(aavePM));
 
         // Transfer ownership to invalid owner1 contract
-        aavePM.grantRole(aavePM.OWNER_ROLE(), address(invalidOwner));
+        aavePM.grantRole(aavePM.getOwnerRole(), address(invalidOwner));
         return invalidOwner;
     }
 
@@ -159,14 +155,14 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         rescueAll ? aavePM.rescueEth(attacker1) : aavePM.rescueEth(attacker1, amount);
 
         // Check rescueAddress is an owner
-        vm.expectRevert(AavePM.AavePM__RescueAddressNotAnOwner.selector);
+        vm.expectRevert(IAavePM.AavePM__RescueAddressNotAnOwner.selector);
         vm.prank(owner1);
         rescueAll ? aavePM.rescueEth(manager1) : aavePM.rescueEth(manager1, amount);
 
         // Rescue ETH
         vm.expectEmit();
         uint256 expectedBalance = rescueAll ? address(aavePM).balance : amount;
-        emit EthRescued(owner1, expectedBalance);
+        emit IAavePM.EthRescued(owner1, expectedBalance);
 
         vm.prank(owner1);
         rescueAll ? aavePM.rescueEth(owner1) : aavePM.rescueEth(owner1, amount);
@@ -193,10 +189,10 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         InvalidOwner invalidOwner = grantOwnerRoleToInvalidOwnerContract();
         vm.stopPrank();
 
-        vm.expectRevert(AavePM.AavePM__RescueEthFailed.selector);
+        vm.expectRevert(IAavePM.AavePM__RescueEthFailed.selector);
         invalidOwner.aavePMRescueAllETH();
 
-        vm.expectRevert(AavePM.AavePM__RescueEthFailed.selector);
+        vm.expectRevert(IAavePM.AavePM__RescueEthFailed.selector);
         invalidOwner.aavePMRescueEth();
     }
 }
@@ -212,7 +208,7 @@ contract AavePMMiscTests is AavePMTestSetup {
     }
 
     function test_CoverageForFallbackFunction() public {
-        vm.expectRevert(AavePM.AavePM__RescueEthFailed.selector);
+        vm.expectRevert(IAavePM.AavePM__RescueEthFailed.selector);
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("123");
         require(!success);
     }

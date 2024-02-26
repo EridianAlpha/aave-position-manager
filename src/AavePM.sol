@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.24;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
@@ -28,6 +28,9 @@ contract AavePM is AccessControl {
     // ================================================================
     // │                        STATE VARIABLES                       │
     // ================================================================
+    // Contract version
+    uint256 public version;
+
     // Addresses
     address private immutable i_creator;
     address private s_aave;

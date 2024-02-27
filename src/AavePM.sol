@@ -45,6 +45,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
 
     // Values
     uint24 private constant UNISWAPV3_WSTETH_ETH_POOL_FEE = 100; // 0.01%
+    uint256 private constant UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE = 200; // 0.5%
     address private constant UNISWAPV3_WSTETH_ETH_POOL_ADDRESS = 0x109830a1AAaD605BbF02a9dFA7B0B92EC2FB7dAa;
 
     // ================================================================
@@ -207,7 +208,14 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         uint256 ethAmount = address(this).balance;
         require(ethAmount > 0, "No ETH available");
 
-        uint256 minOut = calculateMinOut(ethAmount);
+        // Calculate minimum output amount for the wstETH/ETH pool
+        IUniswapV3Pool pool = IUniswapV3Pool(UNISWAPV3_WSTETH_ETH_POOL_ADDRESS);
+        (uint160 sqrtRatioX96,,,,,,) = pool.slot0(); // Fetch current ratio from the pool
+        uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (1e18) >> (96 * 2);
+        uint256 expectedOut = (ethAmount * 1e18) / currentRatio;
+        uint256 slippageTolerance = expectedOut / UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE;
+        uint256 minOut = expectedOut - slippageTolerance;
+
         uint160 priceLimit = /* TODO: Calculate price limit */ 0;
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
@@ -222,24 +230,6 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         });
 
         amountOut = swapRouter.exactInputSingle{value: ethAmount}(params);
-    }
-
-    function calculateMinOut(uint256 ethAmount) internal view returns (uint256) {
-        // Fetch current ratio from the pool
-        IUniswapV3Pool pool = IUniswapV3Pool(UNISWAPV3_WSTETH_ETH_POOL_ADDRESS);
-        (uint160 sqrtRatioX96,,,,,,) = pool.slot0();
-
-        // Convert sqrtRatioX96 to regular ratio
-        uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (1e18) >> (96 * 2);
-
-        // Calculate expected output amount
-        uint256 expectedOut = (ethAmount * 1e18) / currentRatio;
-
-        // Apply 0.5% slippage tolerance
-        uint256 slippageTolerance = expectedOut / 200; // 0.5% of expectedOut
-        uint256 minOut = expectedOut - slippageTolerance;
-
-        return minOut;
     }
 
     // ================================================================

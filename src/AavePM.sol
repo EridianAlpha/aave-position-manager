@@ -5,6 +5,10 @@ import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/acce
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
+import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
+
 import {IAavePM} from "./interfaces/IAavePM.sol";
 
 /// @title AavePM - Aave Position Manager
@@ -18,6 +22,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // Addresses
     address private s_creator; // Creator of the contract
     address private s_aave; // Aave contract address
+    address private s_uniswapV3Router; // Uniswap V3 Router contract address
     address private s_wstETH; // Lido wrapped staked ETH contract address
     address private s_USDC; // Circle USDC contract address
 
@@ -34,6 +39,13 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // Roles
     bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
     bytes32 private constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
+
+    // Addresses
+    address private constant WETH9 = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+
+    // Values
+    uint24 private constant UNISWAPV3_WSTETH_ETH_POOL_FEE = 100; // 0.01%
+    address private constant UNISWAPV3_WSTETH_ETH_POOL_ADDRESS = 0x109830a1AAaD605BbF02a9dFA7B0B92EC2FB7dAa;
 
     // ================================================================
     // │                           MODIFIERS                          │
@@ -56,10 +68,14 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                    FUNCTIONS - INITIALIZER                   │
     // ================================================================
-    function initialize(address owner, address aave, address wstETH, address USDC, uint256 initialHealthFactorTarget)
-        public
-        initializer
-    {
+    function initialize(
+        address owner,
+        address aave,
+        address uniswapV3Router,
+        address wstETH,
+        address USDC,
+        uint256 initialHealthFactorTarget
+    ) public initializer {
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
@@ -72,6 +88,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         _setRoleAdmin(MANAGER_ROLE, OWNER_ROLE);
 
         s_aave = aave;
+        s_uniswapV3Router = uniswapV3Router;
         s_wstETH = wstETH;
         s_USDC = USDC;
 
@@ -90,7 +107,6 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                     FUNCTIONS - EXTERNAL                     │
     // ================================================================
-
     /// @notice Update the Aave contract address.
     /// @dev Only the contract owner can call this function.
     ///      Emits an AaveUpdated event.
@@ -98,6 +114,15 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     function updateAave(address _aave) external onlyRole(OWNER_ROLE) {
         emit AaveUpdated(s_aave, _aave);
         s_aave = _aave;
+    }
+
+    /// @notice Update the UniswapV3Router contract address.
+    /// @dev Only the contract owner can call this function.
+    ///      Emits an UniswapV3RouterUpdated event.
+    /// @param _uniswapV3Router The new UniswapV3Router contract address.
+    function updateUniswapV3Router(address _uniswapV3Router) external onlyRole(OWNER_ROLE) {
+        emit UniswapV3RouterUpdated(s_uniswapV3Router, _uniswapV3Router);
+        s_uniswapV3Router = _uniswapV3Router;
     }
 
     /// @notice Update the wstETH contract address.
@@ -173,6 +198,51 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     }
 
     // ================================================================
+    // │                     FUNCTIONS - TOKEN SWAPS                  │
+    // ================================================================
+    // TODO: Public for testing, but could be internal in future?
+    function convertETHToWstETH() public onlyRole(MANAGER_ROLE) returns (uint256 amountOut) {
+        ISwapRouter swapRouter = ISwapRouter(s_uniswapV3Router);
+
+        uint256 ethAmount = address(this).balance;
+        require(ethAmount > 0, "No ETH available");
+
+        uint256 minOut = calculateMinOut(ethAmount);
+        uint160 priceLimit = /* TODO: Calculate price limit */ 0;
+
+        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
+            tokenIn: WETH9,
+            tokenOut: s_wstETH,
+            fee: UNISWAPV3_WSTETH_ETH_POOL_FEE,
+            recipient: address(this),
+            deadline: block.timestamp,
+            amountIn: ethAmount,
+            amountOutMinimum: minOut,
+            sqrtPriceLimitX96: priceLimit
+        });
+
+        amountOut = swapRouter.exactInputSingle{value: ethAmount}(params);
+    }
+
+    function calculateMinOut(uint256 ethAmount) internal view returns (uint256) {
+        // Fetch current ratio from the pool
+        IUniswapV3Pool pool = IUniswapV3Pool(UNISWAPV3_WSTETH_ETH_POOL_ADDRESS);
+        (uint160 sqrtRatioX96,,,,,,) = pool.slot0();
+
+        // Convert sqrtRatioX96 to regular ratio
+        uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (1e18) >> (96 * 2);
+
+        // Calculate expected output amount
+        uint256 expectedOut = (ethAmount * 1e18) / currentRatio;
+
+        // Apply 0.5% slippage tolerance
+        uint256 slippageTolerance = expectedOut / 200; // 0.5% of expectedOut
+        uint256 minOut = expectedOut - slippageTolerance;
+
+        return minOut;
+    }
+
+    // ================================================================
     // │               FUNCTIONS - PRIVATE AND INTERNAL VIEW          │
     // ================================================================
 
@@ -196,6 +266,13 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
 
     function getManagerRole() public pure returns (bytes32) {
         return MANAGER_ROLE;
+    }
+
+    /// @notice Getter function to get the UniswapV3Router address.
+    /// @dev Public function to allow anyone to view the UniswapV3Router contract address.
+    /// @return address of the UniswapV3Router contract.
+    function getUniswapV3Router() public view returns (address) {
+        return s_uniswapV3Router;
     }
 
     /// @notice Getter function to get the Aave address.

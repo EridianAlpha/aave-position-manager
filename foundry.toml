@@ -6,7 +6,9 @@ solc = "0.8.24"
 remappings = [
     "@foundry-devops/=lib/foundry-devops/",
     "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
-    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/"
+    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+    "@uniswap/v3-core/contracts/=lib/v3-core/contracts/",
+    "@uniswap/v3-periphery/contracts/=lib/v3-periphery/contracts/",
     ]
 
 # Allow foundry to run commands on the command line

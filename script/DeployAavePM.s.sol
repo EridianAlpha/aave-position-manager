@@ -12,6 +12,7 @@ contract DeployAavePM is Script {
         HelperConfig helperConfig = new HelperConfig();
         (
             address aave,
+            address uniswapV3Router,
             address wstETH,
             address USDC,
             uint256 initialHealthFactorTarget,
@@ -27,6 +28,7 @@ contract DeployAavePM is Script {
             AavePM.initialize.selector,
             msg.sender,
             aave,
+            uniswapV3Router,
             wstETH,
             USDC,
             initialHealthFactorTarget,

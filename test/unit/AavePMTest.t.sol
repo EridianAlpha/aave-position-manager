@@ -7,6 +7,7 @@ import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol"
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {AavePM} from "../../src/AavePM.sol";
 import {IAavePM} from "../../src/interfaces/IAavePM.sol";
@@ -26,6 +27,7 @@ contract AavePMTestSetup is Test {
     HelperConfig helperConfig;
 
     address aave;
+    address uniswapV3Router;
     address wstETH;
     address USDC;
     uint256 initialHealthFactorTarget;
@@ -47,7 +49,8 @@ contract AavePMTestSetup is Test {
         DeployAavePM deployAavePM = new DeployAavePM();
 
         (aavePM, helperConfig) = deployAavePM.run();
-        (aave, wstETH, USDC, initialHealthFactorTarget, initialHealthFactorMinimum) = helperConfig.activeNetworkConfig();
+        (aave, uniswapV3Router, wstETH, USDC, initialHealthFactorTarget, initialHealthFactorMinimum) =
+            helperConfig.activeNetworkConfig();
 
         aavePM.grantRole(aavePM.getOwnerRole(), owner1);
         aavePM.grantRole(aavePM.getManagerRole(), owner1);
@@ -239,6 +242,26 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 
         vm.expectRevert(IAavePM.AavePM__RescueEthFailed.selector);
         invalidOwner.aavePMRescueEth();
+    }
+}
+
+// ================================================================
+// │                       TOKEN SWAP TESTS                       │
+// ================================================================
+contract AavePMTokenSwapTests is AavePMTestSetup {
+    function test_ConvertETHToWstETH() public {
+        IERC20 token = IERC20(aavePM.getWstETH());
+
+        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
+        require(success, "Failed to send ETH to AavePM contract");
+
+        // Call the convertETHToWstETH function
+        uint256 amountOut = aavePM.convertETHToWstETH();
+
+        // Check the wstETH balance of the contract
+        uint256 wstETHbalance = token.balanceOf(address(aavePM));
+
+        assertEq(amountOut, wstETHbalance);
     }
 }
 

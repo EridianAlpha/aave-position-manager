@@ -71,7 +71,9 @@ install:
 	forge install foundry-rs/forge-std@v1.7.6 --no-commit && \
 	forge install Cyfrin/foundry-devops@0.1.0 --no-commit && \
 	forge install openzeppelin/openzeppelin-contracts@v5.0.1 --no-commit \
-	forge install openzeppelin/openzeppelin-contracts-upgradeable@v5.0.1 --no-commit
+	forge install openzeppelin/openzeppelin-contracts-upgradeable@v5.0.1 --no-commit \
+	forge install uniswap/v3-core --no-commit \
+	forge install uniswap/v3-periphery --no-commit \
 
 deploy:
 	@forge script script/DeployAavePM.s.sol:DeployAavePM ${NETWORK_ARGS} -vvvv

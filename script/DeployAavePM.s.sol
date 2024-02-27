@@ -8,14 +8,13 @@ import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.s
 
 contract DeployAavePM is Script {
     function run() public returns (AavePM) {
-        return getAavePM(deployContract(msg.sender));
+        address proxyAddress = deployContract(msg.sender);
+        AavePM proxy = AavePM(payable(proxyAddress));
+        return proxy;
     }
 
     function run(address owner) public returns (AavePM) {
-        return getAavePM(deployContract(owner));
-    }
-
-    function getAavePM(address proxyAddress) public pure returns (AavePM) {
+        address proxyAddress = deployContract(owner);
         AavePM proxy = AavePM(payable(proxyAddress));
         return proxy;
     }

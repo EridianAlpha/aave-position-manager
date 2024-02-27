@@ -60,6 +60,10 @@ ethernal:
 # ================================================================
 # │                CONTRACT SPECIFIC CONFIGURATION               │
 # ================================================================
+coverage:
+	@forge coverage | awk '!/script\/HelperFunctions.s.sol/ && !/test\// && !/Total/'
+	@echo
+
 install:
 	forge install foundry-rs/forge-std@v1.7.6 --no-commit && \
 	forge install Cyfrin/foundry-devops@0.1.0 --no-commit && \

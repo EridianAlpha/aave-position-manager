@@ -61,7 +61,7 @@ ethernal:
 # │                CONTRACT SPECIFIC CONFIGURATION               │
 # ================================================================
 coverage:
-	@forge coverage | awk '!/script\/HelperFunctions.s.sol/ && !/test\// && !/Total/'
+	@forge coverage | awk '!/script\/HelperFunctions.s.sol/ && !/test\// && !/src\/testHelperContracts\// && !/Total/'
 	@echo
 
 install:

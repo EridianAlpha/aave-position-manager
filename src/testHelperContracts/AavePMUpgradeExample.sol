@@ -11,7 +11,7 @@ import {IAavePM} from "../interfaces/IAavePM.sol";
 /// @author EridianAlpha
 /// @notice A contract to manage positions on Aave.
 
-contract AavePMV2Example is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
+contract AavePMUpgradeExample is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
     string private constant VERSION = "0.0.2";
 

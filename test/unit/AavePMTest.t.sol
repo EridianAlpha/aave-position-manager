@@ -6,12 +6,14 @@ import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/acce
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 
 import {AavePM} from "../../src/AavePM.sol";
 import {IAavePM} from "../../src/interfaces/IAavePM.sol";
 
 import {InvalidOwner} from "../../src/testHelperContracts/InvalidOwner.sol";
-import {AavePMV2Example} from "../../src/testHelperContracts/AavePMV2Example.sol";
+import {InvalidUpgrade} from "../../src/testHelperContracts/InvalidUpgrade.sol";
+import {AavePMUpgradeExample} from "../../src/testHelperContracts/AavePMUpgradeExample.sol";
 
 import {DeployAavePM} from "../../script/DeployAavePM.s.sol";
 
@@ -21,7 +23,7 @@ import {DeployAavePM} from "../../script/DeployAavePM.s.sol";
 contract AavePMTestSetup is Test {
     AavePM aavePM;
     string constant INITIAL_VERSION = "0.0.1";
-    string constant NEW_VERSION = "0.0.2";
+    string constant UPGRADE_EXAMPLE_VERSION = "0.0.2";
     uint256 constant GAS_PRICE = 1;
     uint256 constant SEND_VALUE = 1 ether;
     uint256 constant STARTING_BALANCE = 10 ether;
@@ -60,33 +62,46 @@ contract AavePMConstructorTests is AavePMTestSetup {
 contract AavePMUpgradeTests is AavePMTestSetup {
     function test_UpgradeV1ToV2() public {
         // Deploy new contract
-        AavePMV2Example aavePMImplementationV2 = new AavePMV2Example();
+        AavePMUpgradeExample aavePMUpgradeExample = new AavePMUpgradeExample();
 
         // Check version before upgrade
         assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(INITIAL_VERSION)));
 
         // Upgrade
         vm.prank(owner1);
-        aavePM.upgradeToAndCall(address(aavePMImplementationV2), "");
-        assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(NEW_VERSION)));
+        aavePM.upgradeToAndCall(address(aavePMUpgradeExample), "");
+        assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(UPGRADE_EXAMPLE_VERSION)));
     }
 
     function test_DowngradeV2ToV1() public {
         // Deploy V1 and V2 implementation contract
         AavePM aavePMImplementationV1 = new AavePM();
-        AavePMV2Example aavePMImplementationV2 = new AavePMV2Example();
+        AavePMUpgradeExample aavePMUpgradeExample = new AavePMUpgradeExample();
 
         // Upgrade
         vm.prank(owner1);
-        aavePM.upgradeToAndCall(address(aavePMImplementationV2), "");
+        aavePM.upgradeToAndCall(address(aavePMUpgradeExample), "");
 
         // Check version before downgrade
-        assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(NEW_VERSION)));
+        assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(UPGRADE_EXAMPLE_VERSION)));
 
         // Downgrade
         vm.prank(owner1);
         aavePM.upgradeToAndCall(address(aavePMImplementationV1), "");
         assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(INITIAL_VERSION)));
+    }
+
+    function test_InvalidUpgrade() public {
+        // Deploy InvalidUpgrade contract
+        InvalidUpgrade invalidUpgrade = new InvalidUpgrade();
+
+        bytes memory encodedRevert =
+            abi.encodeWithSelector(ERC1967Utils.ERC1967InvalidImplementation.selector, address(invalidUpgrade));
+
+        // Check revert on upgrade
+        vm.expectRevert(encodedRevert);
+        vm.prank(owner1);
+        aavePM.upgradeToAndCall(address(invalidUpgrade), "");
     }
 }
 

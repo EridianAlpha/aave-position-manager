@@ -51,8 +51,10 @@ holesky-network:
 # │            ETHERNAL BLOCK EXPLORER CONFIGURATION             │
 # ================================================================
 # https://app.tryethernal.com
+# TODO: Uising a local build until they fix a bug with foundry 0.2.0
+# https://github.com/tryethernal/ethernal-cli/pull/28
 ethernal:
-	ETHERNAL_API_TOKEN=${ETHERNAL_API_TOKEN} ethernal listen --astUpload true
+	ETHERNAL_API_TOKEN=${ETHERNAL_API_TOKEN} ethernal-local listen --astUpload true
 
 
 # ================================================================

@@ -45,6 +45,9 @@ contract AavePMTestSetup is Test {
     address manager1 = makeAddr("manager1");
     address attacker1 = makeAddr("attacker1");
 
+    // Encoded reverts
+    bytes encodedRevert_AccessControlUnauthorizedAccount_Owner;
+
     function setUp() external {
         DeployAavePM deployAavePM = new DeployAavePM();
 
@@ -52,12 +55,22 @@ contract AavePMTestSetup is Test {
         (aave, uniswapV3Router, wstETH, USDC, initialHealthFactorTarget, initialHealthFactorMinimum) =
             helperConfig.activeNetworkConfig();
 
+        // Add the owner1 user as the new owner and manager
         aavePM.grantRole(aavePM.getOwnerRole(), owner1);
         aavePM.grantRole(aavePM.getManagerRole(), owner1);
+
+        // Remove the test contract as a manager and then an owner
+        // Order matters as you can't remove the manager role if you're not an owner
+        aavePM.revokeRole(aavePM.getManagerRole(), address(this));
+        aavePM.revokeRole(aavePM.getOwnerRole(), address(this));
 
         vm.deal(owner1, STARTING_BALANCE);
         vm.deal(manager1, STARTING_BALANCE);
         vm.deal(attacker1, STARTING_BALANCE);
+
+        encodedRevert_AccessControlUnauthorizedAccount_Owner = abi.encodeWithSelector(
+            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.getOwnerRole()
+        );
     }
 }
 
@@ -112,11 +125,11 @@ contract AavePMUpgradeTests is AavePMTestSetup {
         // Deploy InvalidUpgrade contract
         InvalidUpgrade invalidUpgrade = new InvalidUpgrade();
 
-        bytes memory encodedRevert =
+        bytes memory encodedRevert_ERC1967InvalidImplementation =
             abi.encodeWithSelector(ERC1967Utils.ERC1967InvalidImplementation.selector, address(invalidUpgrade));
 
         // Check revert on upgrade
-        vm.expectRevert(encodedRevert);
+        vm.expectRevert(encodedRevert_ERC1967InvalidImplementation);
         vm.prank(owner1);
         aavePM.upgradeToAndCall(address(invalidUpgrade), "");
     }
@@ -127,15 +140,63 @@ contract AavePMUpgradeTests is AavePMTestSetup {
 // ================================================================
 contract AavePMUpdateTests is AavePMTestSetup {
     function test_UpdateAave() public {
-        address aaveTestAddress = makeAddr("AaveContractAddress");
-        assertEq(aavePM.getAave(), address(0));
+        address newAave = makeAddr("newAaveAddress");
+
+        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
+        vm.prank(attacker1);
+        aavePM.updateAave(newAave);
 
         vm.expectEmit();
-        emit IAavePM.AaveUpdated(address(0), aaveTestAddress);
+        emit IAavePM.AaveUpdated(aavePM.getAave(), newAave);
 
         vm.prank(owner1);
-        aavePM.updateAave(aaveTestAddress);
-        assertEq(aavePM.getAave(), aaveTestAddress);
+        aavePM.updateAave(newAave);
+        assertEq(aavePM.getAave(), newAave);
+    }
+
+    function test_UpdateUniswapV3Router() public {
+        address newUniswapV3Router = makeAddr("newUniswapV3RouterAddress");
+
+        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
+        vm.prank(attacker1);
+        aavePM.updateUniswapV3Router(newUniswapV3Router);
+
+        vm.expectEmit();
+        emit IAavePM.UniswapV3RouterUpdated(aavePM.getUniswapV3Router(), newUniswapV3Router);
+
+        vm.prank(owner1);
+        aavePM.updateUniswapV3Router(newUniswapV3Router);
+        assertEq(aavePM.getUniswapV3Router(), newUniswapV3Router);
+    }
+
+    function test_UpdateWstETH() public {
+        address newWstETH = makeAddr("newWstETHAddress");
+
+        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
+        vm.prank(attacker1);
+        aavePM.updateWstETH(newWstETH);
+
+        vm.expectEmit();
+        emit IAavePM.WstETHUpdated(aavePM.getWstETH(), newWstETH);
+
+        vm.prank(owner1);
+        aavePM.updateWstETH(newWstETH);
+        assertEq(aavePM.getWstETH(), newWstETH);
+    }
+
+    function test_UpdateUSDC() public {
+        address newUSDC = makeAddr("newUSDCAddress");
+
+        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
+        vm.prank(attacker1);
+        aavePM.updateUSDC(newUSDC);
+
+        vm.expectEmit();
+        emit IAavePM.USDCUpdated(aavePM.getUSDC(), newUSDC);
+
+        vm.prank(owner1);
+        aavePM.updateUSDC(newUSDC);
+        assertEq(aavePM.getUSDC(), newUSDC);
     }
 
     function test_UpdateHealthFactorTarget() public {
@@ -171,13 +232,9 @@ contract AavePMUpdateTests is AavePMTestSetup {
 // │                       RESCUE ETH TESTS                       │
 // ================================================================
 contract AavePMRescueEthTest is AavePMTestSetup {
-    bytes encodedRevert;
     uint256 balanceBefore;
 
     function rescueEth_SetUp() public {
-        encodedRevert = abi.encodeWithSelector(
-            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.getOwnerRole()
-        );
         vm.prank(manager1);
         (bool callSuccess,) = address(aavePM).call{value: SEND_VALUE}("");
         require(callSuccess, "Failed to send ETH to AavePM contract");
@@ -198,7 +255,7 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         rescueEth_SetUp();
 
         // Check only owner1 can call rescueEth
-        vm.expectRevert(encodedRevert);
+        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
         vm.prank(attacker1);
         aavePM.rescueEth(attacker1);
 
@@ -245,6 +302,7 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
         require(success, "Failed to send ETH to AavePM contract");
 
         // Call the convertETHToWstETH function
+        vm.prank(owner1);
         uint256 amountOut = aavePM.convertETHToWstETH();
 
         // Check the wstETH balance of the contract
@@ -276,6 +334,10 @@ contract AavePMGetterTests is AavePMTestSetup {
 
     function test_GetAave() public {
         assertEq(aavePM.getAave(), aave);
+    }
+
+    function test_GetUniswapV3Router() public {
+        assertEq(aavePM.getUniswapV3Router(), uniswapV3Router);
     }
 
     function test_GetWstETH() public {

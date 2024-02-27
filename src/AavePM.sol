@@ -209,7 +209,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
             sqrtPriceLimitX96: priceLimit
         });
 
-        amountOut = swapRouter.exactInputSingle{value: ethAmount}(params);
+        return amountOut = swapRouter.exactInputSingle{value: ethAmount}(params);
     }
 
     // ================================================================
@@ -238,18 +238,18 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         return MANAGER_ROLE;
     }
 
-    /// @notice Getter function to get the UniswapV3Router address.
-    /// @dev Public function to allow anyone to view the UniswapV3Router contract address.
-    /// @return address of the UniswapV3Router contract.
-    function getUniswapV3Router() public view returns (address) {
-        return s_uniswapV3Router;
-    }
-
     /// @notice Getter function to get the Aave address.
     /// @dev Public function to allow anyone to view the Aave contract address.
     /// @return address of the Aave contract.
     function getAave() public view returns (address) {
         return s_aave;
+    }
+
+    /// @notice Getter function to get the UniswapV3Router address.
+    /// @dev Public function to allow anyone to view the UniswapV3Router contract address.
+    /// @return address of the UniswapV3Router contract.
+    function getUniswapV3Router() public view returns (address) {
+        return s_uniswapV3Router;
     }
 
     /// @notice Getter function to get the wstETH address.

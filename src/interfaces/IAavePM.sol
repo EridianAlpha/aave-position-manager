@@ -18,6 +18,8 @@ interface IAavePM {
     // ================================================================
     event EthRescued(address indexed to, uint256 amount);
     event AaveUpdated(address indexed previousAaveAddress, address indexed newAaveAddress);
+    event WstETHUpdated(address indexed previousWstETHAddress, address indexed newWstETHAddress);
+    event USDCUpdated(address indexed previousUSDCAddress, address indexed newUSDCAddress);
     event HealthFactorTargetUpdated(uint256 previousHealthFactorTarget, uint256 newHealthFactorTarget);
 
     // ================================================================
@@ -31,12 +33,15 @@ interface IAavePM {
     // ================================================================
     // │                    FUNCTIONS - INITIALIZER                   │
     // ================================================================
-    function initialize(address owner, uint256 initialHealthFactorTarget) external;
+    function initialize(address owner, address aave, address wstETH, address USDC, uint256 initialHealthFactorTarget)
+        external;
 
     // ================================================================
     // │                     FUNCTIONS - EXTERNAL                     │
     // ================================================================
     function updateAave(address _aave) external;
+    function updateWstETH(address _wstETH) external;
+    function updateUSDC(address _USDC) external;
     function updateHealthFactorTarget(uint256 _healthFactorTarget) external;
     function rescueEth(address rescueAddress) external;
     function rescueEth(address rescueAddress, uint256 ethAmount) external;
@@ -53,6 +58,8 @@ interface IAavePM {
     function getOwnerRole() external pure returns (bytes32);
     function getManagerRole() external pure returns (bytes32);
     function getAave() external view returns (address);
+    function getWstETH() external view returns (address);
+    function getUSDC() external view returns (address);
     function getHealthFactorTarget() external view returns (uint256);
     function getHealthFactorMinimum() external view returns (uint256);
     function getRescueEthBalance() external view returns (uint256);

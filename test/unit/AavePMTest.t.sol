@@ -11,6 +11,7 @@ import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.s
 import {AavePM} from "../../src/AavePM.sol";
 import {IAavePM} from "../../src/interfaces/IAavePM.sol";
 
+import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {InvalidOwner} from "../../src/testHelperContracts/InvalidOwner.sol";
 import {InvalidUpgrade} from "../../src/testHelperContracts/InvalidUpgrade.sol";
 import {AavePMUpgradeExample} from "../../src/testHelperContracts/AavePMUpgradeExample.sol";
@@ -22,12 +23,19 @@ import {DeployAavePM} from "../../script/DeployAavePM.s.sol";
 // ================================================================
 contract AavePMTestSetup is Test {
     AavePM aavePM;
+    HelperConfig helperConfig;
+
+    address aave;
+    address wstETH;
+    address USDC;
+    uint256 initialHealthFactorTarget;
+    uint256 initialHealthFactorMinimum;
+
     string constant INITIAL_VERSION = "0.0.1";
     string constant UPGRADE_EXAMPLE_VERSION = "0.0.2";
     uint256 constant GAS_PRICE = 1;
     uint256 constant SEND_VALUE = 1 ether;
     uint256 constant STARTING_BALANCE = 10 ether;
-    uint256 constant INITIAL_HEALTH_FACTOR_TARGET = 2;
     uint256 constant INITIAL_HEALTH_FACTOR_MINIMUM = 2;
 
     // Create users
@@ -37,7 +45,10 @@ contract AavePMTestSetup is Test {
 
     function setUp() external {
         DeployAavePM deployAavePM = new DeployAavePM();
-        aavePM = deployAavePM.run(owner1);
+        (aavePM, helperConfig) = deployAavePM.run();
+        (aave, wstETH, USDC, initialHealthFactorTarget, initialHealthFactorMinimum) = helperConfig.activeNetworkConfig();
+        aavePM.grantRole(aavePM.getOwnerRole(), owner1);
+        aavePM.grantRole(aavePM.getManagerRole(), owner1);
         vm.deal(owner1, STARTING_BALANCE);
         vm.deal(manager1, STARTING_BALANCE);
         vm.deal(attacker1, STARTING_BALANCE);
@@ -249,11 +260,19 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetAave() public {
-        assertEq(aavePM.getAave(), address(0));
+        assertEq(aavePM.getAave(), aave);
+    }
+
+    function test_GetWstETH() public {
+        assertEq(aavePM.getWstETH(), wstETH);
+    }
+
+    function test_GetUSDC() public {
+        assertEq(aavePM.getUSDC(), USDC);
     }
 
     function test_GetHealthFactorTarget() public {
-        assertEq(aavePM.getHealthFactorTarget(), INITIAL_HEALTH_FACTOR_TARGET);
+        assertEq(aavePM.getHealthFactorTarget(), initialHealthFactorTarget);
     }
 
     function test_getHealthFactorMinimum() public {

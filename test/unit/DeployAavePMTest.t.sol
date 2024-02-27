@@ -16,13 +16,13 @@ contract DeployAavePMTest is Test {
 
     function test_DeployAavePMWithoutPassingOwner() external {
         DeployAavePM deployAavePM = new DeployAavePM();
-        aavePM = deployAavePM.run();
+        (aavePM,) = deployAavePM.run();
         assert(address(aavePM) != address(0));
     }
 
     function test_DeployAavePMWithPassingOwner() external {
         DeployAavePM deployAavePM = new DeployAavePM();
-        aavePM = deployAavePM.run(owner1);
+        (aavePM,) = deployAavePM.run();
         assert(address(aavePM) != address(0));
     }
 }

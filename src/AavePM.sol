@@ -16,8 +16,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // │                        STATE VARIABLES                       │
     // ================================================================
     // Addresses
-    address private s_creator;
-    address private s_aave;
+    address private s_creator; // Creator of the contract
+    address private s_aave; // Aave contract address
+    address private s_wstETH; // Lido wrapped staked ETH contract address
+    address private s_USDC; // Circle USDC contract address
 
     // Values
     uint256 private s_healthFactorTarget;
@@ -54,11 +56,13 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                    FUNCTIONS - INITIALIZER                   │
     // ================================================================
-    function initialize(address owner, uint256 initialHealthFactorTarget) public initializer {
+    function initialize(address owner, address aave, address wstETH, address USDC, uint256 initialHealthFactorTarget)
+        public
+        initializer
+    {
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
-        // version = 1;
         s_creator = msg.sender;
 
         _grantRole(OWNER_ROLE, owner);
@@ -66,6 +70,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
 
         _grantRole(MANAGER_ROLE, owner);
         _setRoleAdmin(MANAGER_ROLE, OWNER_ROLE);
+
+        s_aave = aave;
+        s_wstETH = wstETH;
+        s_USDC = USDC;
 
         s_healthFactorTarget = initialHealthFactorTarget;
         s_healthFactorMinimum = 2;
@@ -90,6 +98,24 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     function updateAave(address _aave) external onlyRole(OWNER_ROLE) {
         emit AaveUpdated(s_aave, _aave);
         s_aave = _aave;
+    }
+
+    /// @notice Update the wstETH contract address.
+    /// @dev Only the contract owner can call this function.
+    ///      Emits an WstETHUpdated event.
+    /// @param _wstETH The new wstETH contract address.
+    function updateWstETH(address _wstETH) external onlyRole(OWNER_ROLE) {
+        emit WstETHUpdated(s_wstETH, _wstETH);
+        s_wstETH = _wstETH;
+    }
+
+    /// @notice Update the USDC contract address.
+    /// @dev Only the contract owner can call this function.
+    ///      Emits an USDCUpdated event.
+    /// @param _USDC The new USDC contract address.
+    function updateUSDC(address _USDC) external onlyRole(OWNER_ROLE) {
+        emit USDCUpdated(s_USDC, _USDC);
+        s_USDC = _USDC;
     }
 
     /// @notice Update the Health Factor target.
@@ -177,6 +203,20 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @return address of the Aave contract.
     function getAave() public view returns (address) {
         return s_aave;
+    }
+
+    /// @notice Getter function to get the wstETH address.
+    /// @dev Public function to allow anyone to view the wstETH contract address.
+    /// @return address of the wstETH contract.
+    function getWstETH() public view returns (address) {
+        return s_wstETH;
+    }
+
+    /// @notice Getter function to get the USDC address.
+    /// @dev Public function to allow anyone to view the USDC contract address.
+    /// @return address of the USDC contract.
+    function getUSDC() public view returns (address) {
+        return s_USDC;
     }
 
     /// @notice Getter function to get the Health Factor target.

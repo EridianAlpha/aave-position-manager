@@ -45,10 +45,13 @@ contract AavePMTestSetup is Test {
 
     function setUp() external {
         DeployAavePM deployAavePM = new DeployAavePM();
+
         (aavePM, helperConfig) = deployAavePM.run();
         (aave, wstETH, USDC, initialHealthFactorTarget, initialHealthFactorMinimum) = helperConfig.activeNetworkConfig();
+
         aavePM.grantRole(aavePM.getOwnerRole(), owner1);
         aavePM.grantRole(aavePM.getManagerRole(), owner1);
+
         vm.deal(owner1, STARTING_BALANCE);
         vm.deal(manager1, STARTING_BALANCE);
         vm.deal(attacker1, STARTING_BALANCE);

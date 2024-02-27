@@ -16,8 +16,14 @@ contract HelperConfig is Script {
     }
 
     constructor() {
-        if (block.chainid == 17000) {
-            // activeNetworkConfig = getHoleskyEthConfig();
+        if (block.chainid == 1) {
+            activeNetworkConfig = NetworkConfig({
+                aave: address(0),
+                wstETH: 0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0,
+                USDC: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48,
+                initialHealthFactorTarget: 2,
+                initialHealthFactorMinimum: 2
+            });
         } else if (block.chainid == 31337) {
             // Anvil local network
             // Using Mainnet addresses for testing on a fork

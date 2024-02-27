@@ -24,26 +24,26 @@ anvil 		:; anvil -m 'test test test test test test test test test test test junk
 anvil-network:
 	$(eval \
 		NETWORK_ARGS := --broadcast \
-						--rpc-url $(ANVIL_RPC_URL) \
-						--private-key $(ANVIL_PRIVATE_KEY) \
+						--rpc-url ${ANVIL_RPC_URL} \
+						--private-key ${ANVIL_PRIVATE_KEY} \
 	)
 
 holesky-network: 
 	$(eval \
 		NETWORK_ARGS := --broadcast \
-			--rpc-url $(HOLESKY_RPC_URL) \
-			--private-key $(HOLESKY_PRIVATE_KEY) \
+			--rpc-url ${HOLESKY_RPC_URL} \
+			--private-key ${HOLESKY_PRIVATE_KEY} \
 			--verify \
-			--etherscan-api-key $(ETHERSCAN_API_KEY) \
+			--etherscan-api-key ${ETHERSCAN_API_KEY} \
 	)
 
 # mainnet-network: 
 # 	$(eval \
 # 		NETWORK_ARGS := --broadcast \
-# 			--rpc-url $(MAINNET_RPC_URL) \
-# 			--private-key $(MAINNET_PRIVATE_KEY) \
+# 			--rpc-url ${MAINNET_RPC_URL} \
+# 			--private-key ${MAINNET_PRIVATE_KEY} \
 # 			--verify \
-# 			--etherscan-api-key $(ETHERSCAN_API_KEY) \
+# 			--etherscan-api-key ${ETHERSCAN_API_KEY} \
 # 	)
 
 
@@ -56,6 +56,9 @@ holesky-network:
 ethernal:
 	ETHERNAL_API_TOKEN=${ETHERNAL_API_TOKEN} ethernal-local listen --astUpload true
 
+test-fork-mainnet:; forge test --fork-url ${MAINNET_RPC_URL}
+test-fork-mainnet-v:; forge test --fork-url ${MAINNET_RPC_URL} -vvvv
+test-fork-mainnet-summary:; forge test --fork-url ${MAINNET_RPC_URL} --summary
 
 # ================================================================
 # │                CONTRACT SPECIFIC CONFIGURATION               │
@@ -71,10 +74,10 @@ install:
 	forge install openzeppelin/openzeppelin-contracts-upgradeable@v5.0.1 --no-commit
 
 deploy:
-	@forge script script/DeployAavePM.s.sol:DeployAavePM $(NETWORK_ARGS) -vvvv
+	@forge script script/DeployAavePM.s.sol:DeployAavePM ${NETWORK_ARGS} -vvvv
 
 deposit-wstEth: 
-	@forge script script/Interactions.s.sol:DepositWstEth $(NETWORK_ARGS) -vvvv
+	@forge script script/Interactions.s.sol:DepositWstEth ${NETWORK_ARGS} -vvvv
 
 
 # ================================================================

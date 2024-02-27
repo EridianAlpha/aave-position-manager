@@ -19,14 +19,19 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     address private s_creator;
     address private s_aave;
 
+    // Values
+    uint256 private s_healthFactorTarget;
+    uint256 private s_healthFactorMinimum;
+
+    // ================================================================
+    // │                           CONSTANTS                          │
+    // ================================================================
+    // Version
+    string private constant VERSION = "0.0.1";
+
     // Roles
     bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
     bytes32 private constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
-
-    // Values
-    uint256 private version;
-    uint256 private s_healthFactorTarget;
-    uint256 private s_healthFactorMinimum;
 
     // ================================================================
     // │                           MODIFIERS                          │
@@ -53,7 +58,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
-        version = 1;
+        // version = 1;
         s_creator = msg.sender;
 
         _grantRole(OWNER_ROLE, owner);
@@ -155,8 +160,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         return s_creator;
     }
 
-    function getVersion() public view returns (uint256) {
-        return version;
+    function getVersion() public pure returns (string memory) {
+        return VERSION;
     }
 
     function getOwnerRole() public pure returns (bytes32) {

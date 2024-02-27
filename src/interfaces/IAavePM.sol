@@ -49,7 +49,7 @@ interface IAavePM {
     // │               FUNCTIONS - PUBLIC AND EXTERNAL VIEW           │
     // ================================================================
     function getCreator() external view returns (address);
-    function getVersion() external view returns (uint256);
+    function getVersion() external pure returns (string memory);
     function getOwnerRole() external pure returns (bytes32);
     function getManagerRole() external pure returns (bytes32);
     function getAave() external view returns (address);

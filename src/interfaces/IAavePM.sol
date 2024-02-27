@@ -54,7 +54,6 @@ interface IAavePM {
     function updateUSDC(address _USDC) external;
     function updateHealthFactorTarget(uint256 _healthFactorTarget) external;
     function rescueEth(address rescueAddress) external;
-    function rescueEth(address rescueAddress, uint256 ethAmount) external;
 
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │

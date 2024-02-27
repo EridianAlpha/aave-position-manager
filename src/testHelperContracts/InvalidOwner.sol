@@ -18,8 +18,4 @@ contract InvalidOwner {
     function aavePMRescueAllETH() public payable {
         aavePM.rescueEth(address(this));
     }
-
-    function aavePMRescueEth() public payable {
-        aavePM.rescueEth(address(this), address(aavePM).balance / 2);
-    }
 }

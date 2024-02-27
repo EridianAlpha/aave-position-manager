@@ -159,12 +159,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         s_healthFactorTarget = _healthFactorTarget;
     }
 
-    /// @notice Rescue ETH from the contract. Overloaded to allow rescuing
-    ///         all or a specific amount.
+    /// @notice Rescue all ETH from the contract.
     /// @dev This function is intended for emergency use.
     ///      In normal operation, the contract shouldn't hold ETH.
-    ///      It can be called without an argument to rescue the entire balance
-    ///      or with an amount in WEI to rescue a specific amount.
+    ///      It can be called without an argument to rescue the entire balance.
     ///      Only the contract owner can call this function.
     ///      The use of nonReentrant isn't required due to the owner-only restriction.
     ///      Throws `AavePM__RescueEthFailed` if the ETH transfer fails.
@@ -180,28 +178,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         if (!callSuccess) revert AavePM__RescueEthFailed();
     }
 
-    /// @notice Rescue a specific amount of ETH from the contract.
-    /// @dev This function is an overload of rescueEth().
-    ///      This variant allows specifying the amount of ETH to rescue in WEI.
-    ///      Throws `AavePM__RescueEthFailed` if the ETH transfer fails.
-    ///      Emits a RescueEth event.
-    /// @param rescueAddress The address to send the rescued ETH to.
-    ///                      Address must have the OWNER_ROLE.
-    /// @param ethAmount The amount of ETH to rescue, specified in WEI.
-    function rescueEth(address rescueAddress, uint256 ethAmount) external onlyRole(OWNER_ROLE) {
-        // Check if the rescueAddress is an owner
-        if (!hasRole(OWNER_ROLE, rescueAddress)) revert AavePM__RescueAddressNotAnOwner();
-
-        // ***** TRANSFER ETH *****
-        emit EthRescued(rescueAddress, ethAmount);
-        (bool callSuccess,) = rescueAddress.call{value: ethAmount}("");
-        if (!callSuccess) revert AavePM__RescueEthFailed();
-    }
-
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │
     // ================================================================
-    // TODO: Public for testing, but could be internal in future?
+    // TODO: Public for testing, but will be internal once called by rebalance function
     function convertETHToWstETH() public onlyRole(MANAGER_ROLE) returns (uint256 amountOut) {
         ISwapRouter swapRouter = ISwapRouter(s_uniswapV3Router);
 

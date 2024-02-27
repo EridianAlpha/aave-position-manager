@@ -194,37 +194,29 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         return invalidOwner;
     }
 
-    function runRescueEthTest(bool rescueAll, uint256 amount) internal {
+    function test_RescueAllETH() public {
         rescueEth_SetUp();
 
         // Check only owner1 can call rescueEth
         vm.expectRevert(encodedRevert);
         vm.prank(attacker1);
-        rescueAll ? aavePM.rescueEth(attacker1) : aavePM.rescueEth(attacker1, amount);
+        aavePM.rescueEth(attacker1);
 
         // Check rescueAddress is an owner
         vm.expectRevert(IAavePM.AavePM__RescueAddressNotAnOwner.selector);
         vm.prank(owner1);
-        rescueAll ? aavePM.rescueEth(manager1) : aavePM.rescueEth(manager1, amount);
+        aavePM.rescueEth(manager1);
 
         // Rescue ETH
         vm.expectEmit();
-        uint256 expectedBalance = rescueAll ? address(aavePM).balance : amount;
+        uint256 expectedBalance = address(aavePM).balance;
         emit IAavePM.EthRescued(owner1, expectedBalance);
 
         vm.prank(owner1);
-        rescueAll ? aavePM.rescueEth(owner1) : aavePM.rescueEth(owner1, amount);
+        aavePM.rescueEth(owner1);
 
-        uint256 expectedRemaining = rescueAll ? 0 : balanceBefore - amount;
+        uint256 expectedRemaining = 0;
         assertEq(address(aavePM).balance, expectedRemaining);
-    }
-
-    function test_RescueAllETH() public {
-        runRescueEthTest(true, 0);
-    }
-
-    function test_RescueEth() public {
-        runRescueEthTest(false, balanceBefore / 2);
     }
 
     function test_RescueEthCallFailureThrowsError() public {
@@ -239,9 +231,6 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 
         vm.expectRevert(IAavePM.AavePM__RescueEthFailed.selector);
         invalidOwner.aavePMRescueAllETH();
-
-        vm.expectRevert(IAavePM.AavePM__RescueEthFailed.selector);
-        invalidOwner.aavePMRescueEth();
     }
 }
 

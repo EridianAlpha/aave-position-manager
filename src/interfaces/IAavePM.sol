@@ -50,14 +50,10 @@ interface IAavePM {
     // ================================================================
     function initialize(
         address owner,
-        address aave,
-        address uniswapV3Router,
+        ContractAddress[] memory contractAddresses,
+        TokenAddress[] memory tokenAddresses,
         address uniswapV3WstETHETHPoolAddress,
         uint24 uniswapV3WstETHETHPoolFee,
-        // address WETH9,
-        // address wstETH,
-        // address USDC,
-        TokenAddress[] memory tokenAddresses,
         uint256 initialHealthFactorTarget
     ) external;
 

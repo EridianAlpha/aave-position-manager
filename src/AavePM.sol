@@ -21,8 +21,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // Addresses
     address private s_creator; // Creator of the contract
-    address private s_aave; // Aave contract address
-    address private s_uniswapV3Router; // Uniswap V3 Router contract address
+    mapping(string => address) s_contractAddresses;
 
     // Token Addresses
     mapping(string => address) s_tokenAddresses;
@@ -69,11 +68,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     function initialize(
         address owner,
-        address aave,
-        address uniswapV3Router,
+        ContractAddress[] memory contractAddresses,
+        TokenAddress[] memory tokenAddresses,
         address uniswapV3WstETHETHPoolAddress,
         uint24 uniswapV3WstETHETHPoolFee,
-        TokenAddress[] memory tokenAddresses,
         uint256 initialHealthFactorTarget
     ) public initializer {
         __AccessControl_init();
@@ -87,10 +85,13 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         _grantRole(MANAGER_ROLE, owner);
         _setRoleAdmin(MANAGER_ROLE, OWNER_ROLE);
 
-        s_aave = aave;
-        s_uniswapV3Router = uniswapV3Router;
         s_uniswapV3WstETHETHPool =
             UniswapV3Pool({poolAddress: uniswapV3WstETHETHPoolAddress, fee: uniswapV3WstETHETHPoolFee});
+
+        // Convert the contractAddresses array to a mapping
+        for (uint256 i = 0; i < contractAddresses.length; i++) {
+            s_contractAddresses[contractAddresses[i].identifier] = contractAddresses[i].contractAddress;
+        }
 
         // Convert the tokenAddresses array to a mapping
         for (uint256 i = 0; i < tokenAddresses.length; i++) {
@@ -117,8 +118,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     ///      Emits an AaveUpdated event.
     /// @param _aave The new Aave contract address.
     function updateAave(address _aave) external onlyRole(OWNER_ROLE) {
-        emit AaveUpdated(s_aave, _aave);
-        s_aave = _aave;
+        emit AaveUpdated(s_contractAddresses["aave"], _aave);
+        s_contractAddresses["aave"] = _aave;
     }
 
     /// @notice Update the UniswapV3Router contract address.
@@ -126,8 +127,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     ///      Emits an UniswapV3RouterUpdated event.
     /// @param _uniswapV3Router The new UniswapV3Router contract address.
     function updateUniswapV3Router(address _uniswapV3Router) external onlyRole(OWNER_ROLE) {
-        emit UniswapV3RouterUpdated(s_uniswapV3Router, _uniswapV3Router);
-        s_uniswapV3Router = _uniswapV3Router;
+        emit UniswapV3RouterUpdated(s_contractAddresses["uniswapV3Router"], _uniswapV3Router);
+        s_contractAddresses["uniswapV3Router"] = _uniswapV3Router;
     }
 
     /// @notice Update the WETH9 contract address.
@@ -203,7 +204,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // TODO: Public for testing, but will be internal once called by rebalance function
     function swapETHToWstETH() public onlyRole(MANAGER_ROLE) returns (uint256 amountOut) {
-        ISwapRouter swapRouter = ISwapRouter(s_uniswapV3Router);
+        ISwapRouter swapRouter = ISwapRouter(s_contractAddresses["uniswapV3Router"]);
 
         uint256 ethAmount = address(this).balance;
         require(ethAmount > 0, "No ETH available");
@@ -258,14 +259,14 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @dev Public function to allow anyone to view the Aave contract address.
     /// @return address of the Aave contract.
     function getAave() public view returns (address) {
-        return s_aave;
+        return s_contractAddresses["aave"];
     }
 
     /// @notice Getter function to get the UniswapV3Router address.
     /// @dev Public function to allow anyone to view the UniswapV3Router contract address.
     /// @return address of the UniswapV3Router contract.
     function getUniswapV3Router() public view returns (address) {
-        return s_uniswapV3Router;
+        return s_contractAddresses["uniswapV3Router"];
     }
 
     /// @notice Getter function to get the WETH9 address.

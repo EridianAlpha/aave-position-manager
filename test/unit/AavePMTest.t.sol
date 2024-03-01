@@ -26,11 +26,10 @@ contract AavePMTestSetup is Test {
     AavePM aavePM;
     HelperConfig helperConfig;
 
-    address aave;
-    address uniswapV3Router;
+    mapping(string => address) s_contractAddresses;
+    mapping(string => address) s_tokenAddresses;
     address uniswapV3WstETHETHPoolAddress;
     uint24 uniswapV3WstETHETHPoolFee;
-    mapping(string => address) s_tokenAddresses;
     uint256 initialHealthFactorTarget;
 
     string constant INITIAL_VERSION = "0.0.1";
@@ -54,12 +53,16 @@ contract AavePMTestSetup is Test {
         (aavePM, helperConfig) = deployAavePM.run();
         HelperConfig.NetworkConfig memory config = helperConfig.getActiveNetworkConfig();
 
-        aave = config.aave;
-        uniswapV3Router = config.uniswapV3Router;
+        IAavePM.ContractAddress[] memory contractAddresses = config.contractAddresses;
+        IAavePM.TokenAddress[] memory tokenAddresses = config.tokenAddresses;
         uniswapV3WstETHETHPoolAddress = config.uniswapV3WstETHETHPoolAddress;
         uniswapV3WstETHETHPoolFee = config.uniswapV3WstETHETHPoolFee;
-        IAavePM.TokenAddress[] memory tokenAddresses = config.tokenAddresses;
         initialHealthFactorTarget = config.initialHealthFactorTarget;
+
+        // Convert the contractAddresses array to a mapping
+        for (uint256 i = 0; i < contractAddresses.length; i++) {
+            s_contractAddresses[contractAddresses[i].identifier] = contractAddresses[i].contractAddress;
+        }
 
         // Convert the tokenAddresses array to a mapping
         for (uint256 i = 0; i < tokenAddresses.length; i++) {
@@ -359,11 +362,11 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetAave() public {
-        assertEq(aavePM.getAave(), aave);
+        assertEq(aavePM.getAave(), s_contractAddresses["aave"]);
     }
 
     function test_GetUniswapV3Router() public {
-        assertEq(aavePM.getUniswapV3Router(), uniswapV3Router);
+        assertEq(aavePM.getUniswapV3Router(), s_contractAddresses["uniswapV3Router"]);
     }
 
     function test_GetWETH9() public {

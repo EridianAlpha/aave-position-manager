@@ -13,11 +13,10 @@ contract DeployAavePM is Script {
         HelperConfig helperConfig = new HelperConfig();
         HelperConfig.NetworkConfig memory config = helperConfig.getActiveNetworkConfig();
 
-        address aave = config.aave;
-        address uniswapV3Router = config.uniswapV3Router;
+        IAavePM.ContractAddress[] memory contractAddresses = config.contractAddresses;
+        IAavePM.TokenAddress[] memory tokenAddresses = config.tokenAddresses;
         address uniswapV3WstETHETHPoolAddress = config.uniswapV3WstETHETHPoolAddress;
         uint24 uniswapV3WstETHETHPoolFee = config.uniswapV3WstETHETHPoolFee;
-        IAavePM.TokenAddress[] memory tokenAddresses = config.tokenAddresses;
         uint256 initialHealthFactorTarget = config.initialHealthFactorTarget;
 
         vm.startBroadcast();
@@ -28,11 +27,10 @@ contract DeployAavePM is Script {
         bytes memory initData = abi.encodeWithSelector(
             AavePM.initialize.selector,
             msg.sender,
-            aave,
-            uniswapV3Router,
+            contractAddresses,
+            tokenAddresses,
             uniswapV3WstETHETHPoolAddress,
             uniswapV3WstETHETHPoolFee,
-            tokenAddresses,
             initialHealthFactorTarget
         );
 

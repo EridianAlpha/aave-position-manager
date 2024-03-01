@@ -247,12 +247,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         return VERSION;
     }
 
-    function getOwnerRole() public pure returns (bytes32) {
-        return OWNER_ROLE;
-    }
-
-    function getManagerRole() public pure returns (bytes32) {
-        return MANAGER_ROLE;
+    function getRoleHash(string memory role) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(role));
     }
 
     /// @notice Generic getter function to get the contract address for a given identifier.

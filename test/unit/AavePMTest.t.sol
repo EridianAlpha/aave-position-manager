@@ -70,20 +70,20 @@ contract AavePMTestSetup is Test {
         }
 
         // Add the owner1 user as the new owner and manager
-        aavePM.grantRole(aavePM.getOwnerRole(), owner1);
-        aavePM.grantRole(aavePM.getManagerRole(), owner1);
+        aavePM.grantRole(aavePM.getRoleHash("OWNER_ROLE"), owner1);
+        aavePM.grantRole(aavePM.getRoleHash("MANAGER_ROLE"), owner1);
 
         // Remove the test contract as a manager and then an owner
         // Order matters as you can't remove the manager role if you're not an owner
-        aavePM.revokeRole(aavePM.getManagerRole(), address(this));
-        aavePM.revokeRole(aavePM.getOwnerRole(), address(this));
+        aavePM.revokeRole(aavePM.getRoleHash("MANAGER_ROLE"), address(this));
+        aavePM.revokeRole(aavePM.getRoleHash("OWNER_ROLE"), address(this));
 
         vm.deal(owner1, STARTING_BALANCE);
         vm.deal(manager1, STARTING_BALANCE);
         vm.deal(attacker1, STARTING_BALANCE);
 
         encodedRevert_AccessControlUnauthorizedAccount_Owner = abi.encodeWithSelector(
-            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.getOwnerRole()
+            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.getRoleHash("OWNER_ROLE")
         );
     }
 }
@@ -92,11 +92,11 @@ contract AavePMConstructorTests is AavePMTestSetup {
     function test_Constructor() public {
         assertEq(aavePM.getCreator(), msg.sender);
 
-        assert(aavePM.hasRole(aavePM.getOwnerRole(), owner1));
-        assert(aavePM.getRoleAdmin(aavePM.getOwnerRole()) == aavePM.getOwnerRole());
+        assert(aavePM.hasRole(aavePM.getRoleHash("OWNER_ROLE"), owner1));
+        assert(aavePM.getRoleAdmin(aavePM.getRoleHash("OWNER_ROLE")) == aavePM.getRoleHash("OWNER_ROLE"));
 
-        assert(aavePM.hasRole(aavePM.getManagerRole(), owner1));
-        assert(aavePM.getRoleAdmin(aavePM.getManagerRole()) == aavePM.getOwnerRole());
+        assert(aavePM.hasRole(aavePM.getRoleHash("MANAGER_ROLE"), owner1));
+        assert(aavePM.getRoleAdmin(aavePM.getRoleHash("MANAGER_ROLE")) == aavePM.getRoleHash("OWNER_ROLE"));
     }
 }
 
@@ -276,7 +276,7 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         InvalidOwner invalidOwner = new InvalidOwner(address(aavePM));
 
         // Transfer ownership to invalid owner1 contract
-        aavePM.grantRole(aavePM.getOwnerRole(), address(invalidOwner));
+        aavePM.grantRole(aavePM.getRoleHash("OWNER_ROLE"), address(invalidOwner));
         return invalidOwner;
     }
 
@@ -354,11 +354,11 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetOwnerRole() public {
-        assertEq(aavePM.getOwnerRole(), keccak256("OWNER_ROLE"));
+        assertEq(aavePM.getRoleHash("OWNER_ROLE"), keccak256("OWNER_ROLE"));
     }
 
     function test_GetManagerRole() public {
-        assertEq(aavePM.getManagerRole(), keccak256("MANAGER_ROLE"));
+        assertEq(aavePM.getRoleHash("MANAGER_ROLE"), keccak256("MANAGER_ROLE"));
     }
 
     function test_GetAave() public {

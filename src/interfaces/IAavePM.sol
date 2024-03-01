@@ -83,8 +83,7 @@ interface IAavePM {
     // ================================================================
     function getCreator() external view returns (address);
     function getVersion() external pure returns (string memory);
-    function getOwnerRole() external pure returns (bytes32);
-    function getManagerRole() external pure returns (bytes32);
+    function getRoleHash(string memory) external pure returns (bytes32);
     function getContractAddress(string memory) external view returns (address);
     function getTokenAddress(string memory) external view returns (address);
     function getHealthFactorTarget() external view returns (uint256);

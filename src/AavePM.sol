@@ -23,12 +23,15 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     address private s_creator; // Creator of the contract
     address private s_aave; // Aave contract address
     address private s_uniswapV3Router; // Uniswap V3 Router contract address
-    address private s_wstETH; // Lido wrapped staked ETH contract address
-    address private s_USDC; // Circle USDC contract address
+
+    // Token Addresses
+    mapping(string => address) s_tokenAddresses;
 
     // Values
     uint256 private s_healthFactorTarget;
     uint256 private s_healthFactorMinimum;
+
+    UniswapV3Pool private s_uniswapV3WstETHETHPool;
 
     // ================================================================
     // │                           CONSTANTS                          │
@@ -40,13 +43,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
     bytes32 private constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
-    // Addresses
-    address private constant WETH9 = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-
     // Values
-    uint24 private constant UNISWAPV3_WSTETH_ETH_POOL_FEE = 100; // 0.01%
-    uint256 private constant UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE = 200; // 0.5%
-    address private constant UNISWAPV3_WSTETH_ETH_POOL_ADDRESS = 0x109830a1AAaD605BbF02a9dFA7B0B92EC2FB7dAa;
+    uint256 private constant UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE = 200; // 0.5% // TODO: Make this a calldata parameter
 
     // ================================================================
     // │                           MODIFIERS                          │
@@ -73,8 +71,9 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         address owner,
         address aave,
         address uniswapV3Router,
-        address wstETH,
-        address USDC,
+        address uniswapV3WstETHETHPoolAddress,
+        uint24 uniswapV3WstETHETHPoolFee,
+        TokenAddress[] memory tokenAddresses,
         uint256 initialHealthFactorTarget
     ) public initializer {
         __AccessControl_init();
@@ -90,8 +89,13 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
 
         s_aave = aave;
         s_uniswapV3Router = uniswapV3Router;
-        s_wstETH = wstETH;
-        s_USDC = USDC;
+        s_uniswapV3WstETHETHPool =
+            UniswapV3Pool({poolAddress: uniswapV3WstETHETHPoolAddress, fee: uniswapV3WstETHETHPoolFee});
+
+        // Convert the tokenAddresses array to a mapping
+        for (uint256 i = 0; i < tokenAddresses.length; i++) {
+            s_tokenAddresses[tokenAddresses[i].identifier] = tokenAddresses[i].tokenAddress;
+        }
 
         s_healthFactorTarget = initialHealthFactorTarget;
         s_healthFactorMinimum = 2;
@@ -106,7 +110,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE) {}
 
     // ================================================================
-    // │                     FUNCTIONS - EXTERNAL                     │
+    // │                      FUNCTIONS - UPDATES                     │
     // ================================================================
     /// @notice Update the Aave contract address.
     /// @dev Only the contract owner can call this function.
@@ -126,13 +130,22 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         s_uniswapV3Router = _uniswapV3Router;
     }
 
+    /// @notice Update the WETH9 contract address.
+    /// @dev Only the contract owner can call this function.
+    ///      Emits a WETH9Updated event.
+    /// @param _WETH9 The new WETH9 contract address.
+    function updateWETH9(address _WETH9) external onlyRole(OWNER_ROLE) {
+        emit WETH9Updated(s_tokenAddresses["WETH9"], _WETH9);
+        s_tokenAddresses["WETH9"] = _WETH9;
+    }
+
     /// @notice Update the wstETH contract address.
     /// @dev Only the contract owner can call this function.
     ///      Emits an WstETHUpdated event.
     /// @param _wstETH The new wstETH contract address.
     function updateWstETH(address _wstETH) external onlyRole(OWNER_ROLE) {
-        emit WstETHUpdated(s_wstETH, _wstETH);
-        s_wstETH = _wstETH;
+        emit WstETHUpdated(s_tokenAddresses["wstETH"], _wstETH);
+        s_tokenAddresses["wstETH"] = _wstETH;
     }
 
     /// @notice Update the USDC contract address.
@@ -140,8 +153,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     ///      Emits an USDCUpdated event.
     /// @param _USDC The new USDC contract address.
     function updateUSDC(address _USDC) external onlyRole(OWNER_ROLE) {
-        emit USDCUpdated(s_USDC, _USDC);
-        s_USDC = _USDC;
+        emit USDCUpdated(s_tokenAddresses["USDC"], _USDC);
+        s_tokenAddresses["USDC"] = _USDC;
     }
 
     /// @notice Update the Health Factor target.
@@ -159,9 +172,16 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         s_healthFactorTarget = _healthFactorTarget;
     }
 
+    // ================================================================
+    // │                        FUNCTIONS - ETH                       │
+    // ================================================================
+    //TODO: Remove for production. Only used in development for testing.
+    function receiveEth() external payable {}
+
     /// @notice Rescue all ETH from the contract.
     /// @dev This function is intended for emergency use.
-    ///      In normal operation, the contract shouldn't hold ETH.
+    ///      In normal operation, the contract shouldn't hold ETH,
+    ///      as it is used to swap for wstETH.
     ///      It can be called without an argument to rescue the entire balance.
     ///      Only the contract owner can call this function.
     ///      The use of nonReentrant isn't required due to the owner-only restriction.
@@ -182,14 +202,14 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // │                     FUNCTIONS - TOKEN SWAPS                  │
     // ================================================================
     // TODO: Public for testing, but will be internal once called by rebalance function
-    function convertETHToWstETH() public onlyRole(MANAGER_ROLE) returns (uint256 amountOut) {
+    function swapETHToWstETH() public onlyRole(MANAGER_ROLE) returns (uint256 amountOut) {
         ISwapRouter swapRouter = ISwapRouter(s_uniswapV3Router);
 
         uint256 ethAmount = address(this).balance;
         require(ethAmount > 0, "No ETH available");
 
         // Calculate minimum output amount for the wstETH/ETH pool
-        IUniswapV3Pool pool = IUniswapV3Pool(UNISWAPV3_WSTETH_ETH_POOL_ADDRESS);
+        IUniswapV3Pool pool = IUniswapV3Pool(s_uniswapV3WstETHETHPool.poolAddress);
         (uint160 sqrtRatioX96,,,,,,) = pool.slot0(); // Fetch current ratio from the pool
         uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (1e18) >> (96 * 2);
         uint256 expectedOut = (ethAmount * 1e18) / currentRatio;
@@ -199,9 +219,9 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         uint160 priceLimit = /* TODO: Calculate price limit */ 0;
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
-            tokenIn: WETH9,
-            tokenOut: s_wstETH,
-            fee: UNISWAPV3_WSTETH_ETH_POOL_FEE,
+            tokenIn: s_tokenAddresses["WETH9"],
+            tokenOut: s_tokenAddresses["wstETH"],
+            fee: s_uniswapV3WstETHETHPool.fee,
             recipient: address(this),
             deadline: block.timestamp,
             amountIn: ethAmount,
@@ -213,11 +233,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     }
 
     // ================================================================
-    // │               FUNCTIONS - PRIVATE AND INTERNAL VIEW          │
-    // ================================================================
-
-    // ================================================================
-    // │               FUNCTIONS - PUBLIC AND EXTERNAL VIEW           │
+    // │                       FUNCTIONS - GETTERS                    │
     // ================================================================
     /// @notice Getter function to get the i_creator address.
     /// @dev Public function to allow anyone to view the contract creator.
@@ -252,18 +268,25 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         return s_uniswapV3Router;
     }
 
+    /// @notice Getter function to get the WETH9 address.
+    /// @dev Public function to allow anyone to view the WETH9 contract address.
+    /// @return address of the WETH9 contract.
+    function getWETH9() public view returns (address) {
+        return s_tokenAddresses["WETH9"];
+    }
+
     /// @notice Getter function to get the wstETH address.
     /// @dev Public function to allow anyone to view the wstETH contract address.
     /// @return address of the wstETH contract.
     function getWstETH() public view returns (address) {
-        return s_wstETH;
+        return s_tokenAddresses["wstETH"];
     }
 
     /// @notice Getter function to get the USDC address.
     /// @dev Public function to allow anyone to view the USDC contract address.
     /// @return address of the USDC contract.
     function getUSDC() public view returns (address) {
-        return s_USDC;
+        return s_tokenAddresses["USDC"];
     }
 
     /// @notice Getter function to get the Health Factor target.

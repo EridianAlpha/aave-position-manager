@@ -28,10 +28,10 @@ contract AavePMTestSetup is Test {
 
     address aave;
     address uniswapV3Router;
-    address wstETH;
-    address USDC;
+    address uniswapV3WstETHETHPoolAddress;
+    uint24 uniswapV3WstETHETHPoolFee;
+    mapping(string => address) s_tokenAddresses;
     uint256 initialHealthFactorTarget;
-    uint256 initialHealthFactorMinimum;
 
     string constant INITIAL_VERSION = "0.0.1";
     string constant UPGRADE_EXAMPLE_VERSION = "0.0.2";
@@ -52,8 +52,19 @@ contract AavePMTestSetup is Test {
         DeployAavePM deployAavePM = new DeployAavePM();
 
         (aavePM, helperConfig) = deployAavePM.run();
-        (aave, uniswapV3Router, wstETH, USDC, initialHealthFactorTarget, initialHealthFactorMinimum) =
-            helperConfig.activeNetworkConfig();
+        HelperConfig.NetworkConfig memory config = helperConfig.getActiveNetworkConfig();
+
+        aave = config.aave;
+        uniswapV3Router = config.uniswapV3Router;
+        uniswapV3WstETHETHPoolAddress = config.uniswapV3WstETHETHPoolAddress;
+        uniswapV3WstETHETHPoolFee = config.uniswapV3WstETHETHPoolFee;
+        IAavePM.TokenAddress[] memory tokenAddresses = config.tokenAddresses;
+        initialHealthFactorTarget = config.initialHealthFactorTarget;
+
+        // Convert the tokenAddresses array to a mapping
+        for (uint256 i = 0; i < tokenAddresses.length; i++) {
+            s_tokenAddresses[tokenAddresses[i].identifier] = tokenAddresses[i].tokenAddress;
+        }
 
         // Add the owner1 user as the new owner and manager
         aavePM.grantRole(aavePM.getOwnerRole(), owner1);
@@ -167,6 +178,21 @@ contract AavePMUpdateTests is AavePMTestSetup {
         vm.prank(owner1);
         aavePM.updateUniswapV3Router(newUniswapV3Router);
         assertEq(aavePM.getUniswapV3Router(), newUniswapV3Router);
+    }
+
+    function test_UpdateWETH9() public {
+        address newWETH9 = makeAddr("newWETH9Address");
+
+        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
+        vm.prank(attacker1);
+        aavePM.updateWETH9(newWETH9);
+
+        vm.expectEmit();
+        emit IAavePM.WETH9Updated(aavePM.getWETH9(), newWETH9);
+
+        vm.prank(owner1);
+        aavePM.updateWETH9(newWETH9);
+        assertEq(aavePM.getWETH9(), newWETH9);
     }
 
     function test_UpdateWstETH() public {
@@ -295,15 +321,15 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 // │                       TOKEN SWAP TESTS                       │
 // ================================================================
 contract AavePMTokenSwapTests is AavePMTestSetup {
-    function test_ConvertETHToWstETH() public {
+    function test_SwapETHToWstETH() public {
         IERC20 token = IERC20(aavePM.getWstETH());
 
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
 
-        // Call the convertETHToWstETH function
+        // Call the swapETHToWstETH function
         vm.prank(owner1);
-        uint256 amountOut = aavePM.convertETHToWstETH();
+        uint256 amountOut = aavePM.swapETHToWstETH();
 
         // Check the wstETH balance of the contract
         uint256 wstETHbalance = token.balanceOf(address(aavePM));
@@ -340,12 +366,16 @@ contract AavePMGetterTests is AavePMTestSetup {
         assertEq(aavePM.getUniswapV3Router(), uniswapV3Router);
     }
 
+    function test_GetWETH9() public {
+        assertEq(aavePM.getWETH9(), s_tokenAddresses["WETH9"]);
+    }
+
     function test_GetWstETH() public {
-        assertEq(aavePM.getWstETH(), wstETH);
+        assertEq(aavePM.getWstETH(), s_tokenAddresses["wstETH"]);
     }
 
     function test_GetUSDC() public {
-        assertEq(aavePM.getUSDC(), USDC);
+        assertEq(aavePM.getUSDC(), s_tokenAddresses["USDC"]);
     }
 
     function test_GetHealthFactorTarget() public {

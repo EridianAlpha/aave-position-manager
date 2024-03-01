@@ -85,11 +85,8 @@ interface IAavePM {
     function getVersion() external pure returns (string memory);
     function getOwnerRole() external pure returns (bytes32);
     function getManagerRole() external pure returns (bytes32);
-    function getAave() external view returns (address);
-    function getUniswapV3Router() external view returns (address);
-    function getWETH9() external view returns (address);
-    function getWstETH() external view returns (address);
-    function getUSDC() external view returns (address);
+    function getContractAddress(string memory) external view returns (address);
+    function getTokenAddress(string memory) external view returns (address);
     function getHealthFactorTarget() external view returns (uint256);
     function getHealthFactorMinimum() external view returns (uint256);
     function getRescueEthBalance() external view returns (uint256);

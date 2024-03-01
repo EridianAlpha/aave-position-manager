@@ -255,39 +255,20 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         return MANAGER_ROLE;
     }
 
-    /// @notice Getter function to get the Aave address.
-    /// @dev Public function to allow anyone to view the Aave contract address.
-    /// @return address of the Aave contract.
-    function getAave() public view returns (address) {
-        return s_contractAddresses["aave"];
+    /// @notice Generic getter function to get the contract address for a given identifier.
+    /// @dev Public function to allow anyone to view the contract address for the given identifier.
+    /// @param identifier The identifier for the contract address.
+    /// @return address of the contract corresponding to the given identifier.
+    function getContractAddress(string memory identifier) public view returns (address) {
+        return s_contractAddresses[identifier];
     }
 
-    /// @notice Getter function to get the UniswapV3Router address.
-    /// @dev Public function to allow anyone to view the UniswapV3Router contract address.
-    /// @return address of the UniswapV3Router contract.
-    function getUniswapV3Router() public view returns (address) {
-        return s_contractAddresses["uniswapV3Router"];
-    }
-
-    /// @notice Getter function to get the WETH9 address.
-    /// @dev Public function to allow anyone to view the WETH9 contract address.
-    /// @return address of the WETH9 contract.
-    function getWETH9() public view returns (address) {
-        return s_tokenAddresses["WETH9"];
-    }
-
-    /// @notice Getter function to get the wstETH address.
-    /// @dev Public function to allow anyone to view the wstETH contract address.
-    /// @return address of the wstETH contract.
-    function getWstETH() public view returns (address) {
-        return s_tokenAddresses["wstETH"];
-    }
-
-    /// @notice Getter function to get the USDC address.
-    /// @dev Public function to allow anyone to view the USDC contract address.
-    /// @return address of the USDC contract.
-    function getUSDC() public view returns (address) {
-        return s_tokenAddresses["USDC"];
+    /// @notice Generic getter function to get the token address for a given identifier.
+    /// @dev Public function to allow anyone to view the token address for the given identifier.
+    /// @param identifier The identifier for the contract address.
+    /// @return address of the token corresponding to the given identifier.
+    function getTokenAddress(string memory identifier) public view returns (address) {
+        return s_tokenAddresses[identifier];
     }
 
     /// @notice Getter function to get the Health Factor target.

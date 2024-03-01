@@ -161,11 +161,11 @@ contract AavePMUpdateTests is AavePMTestSetup {
         aavePM.updateAave(newAave);
 
         vm.expectEmit();
-        emit IAavePM.AaveUpdated(aavePM.getAave(), newAave);
+        emit IAavePM.AaveUpdated(aavePM.getContractAddress("aave"), newAave);
 
         vm.prank(owner1);
         aavePM.updateAave(newAave);
-        assertEq(aavePM.getAave(), newAave);
+        assertEq(aavePM.getContractAddress("aave"), newAave);
     }
 
     function test_UpdateUniswapV3Router() public {
@@ -176,11 +176,11 @@ contract AavePMUpdateTests is AavePMTestSetup {
         aavePM.updateUniswapV3Router(newUniswapV3Router);
 
         vm.expectEmit();
-        emit IAavePM.UniswapV3RouterUpdated(aavePM.getUniswapV3Router(), newUniswapV3Router);
+        emit IAavePM.UniswapV3RouterUpdated(aavePM.getContractAddress("uniswapV3Router"), newUniswapV3Router);
 
         vm.prank(owner1);
         aavePM.updateUniswapV3Router(newUniswapV3Router);
-        assertEq(aavePM.getUniswapV3Router(), newUniswapV3Router);
+        assertEq(aavePM.getContractAddress("uniswapV3Router"), newUniswapV3Router);
     }
 
     function test_UpdateWETH9() public {
@@ -191,11 +191,11 @@ contract AavePMUpdateTests is AavePMTestSetup {
         aavePM.updateWETH9(newWETH9);
 
         vm.expectEmit();
-        emit IAavePM.WETH9Updated(aavePM.getWETH9(), newWETH9);
+        emit IAavePM.WETH9Updated(aavePM.getTokenAddress("WETH9"), newWETH9);
 
         vm.prank(owner1);
         aavePM.updateWETH9(newWETH9);
-        assertEq(aavePM.getWETH9(), newWETH9);
+        assertEq(aavePM.getTokenAddress("WETH9"), newWETH9);
     }
 
     function test_UpdateWstETH() public {
@@ -206,11 +206,11 @@ contract AavePMUpdateTests is AavePMTestSetup {
         aavePM.updateWstETH(newWstETH);
 
         vm.expectEmit();
-        emit IAavePM.WstETHUpdated(aavePM.getWstETH(), newWstETH);
+        emit IAavePM.WstETHUpdated(aavePM.getTokenAddress("wstETH"), newWstETH);
 
         vm.prank(owner1);
         aavePM.updateWstETH(newWstETH);
-        assertEq(aavePM.getWstETH(), newWstETH);
+        assertEq(aavePM.getTokenAddress("wstETH"), newWstETH);
     }
 
     function test_UpdateUSDC() public {
@@ -221,11 +221,11 @@ contract AavePMUpdateTests is AavePMTestSetup {
         aavePM.updateUSDC(newUSDC);
 
         vm.expectEmit();
-        emit IAavePM.USDCUpdated(aavePM.getUSDC(), newUSDC);
+        emit IAavePM.USDCUpdated(aavePM.getTokenAddress("USDC"), newUSDC);
 
         vm.prank(owner1);
         aavePM.updateUSDC(newUSDC);
-        assertEq(aavePM.getUSDC(), newUSDC);
+        assertEq(aavePM.getTokenAddress("USDC"), newUSDC);
     }
 
     function test_UpdateHealthFactorTarget() public {
@@ -325,7 +325,7 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 // ================================================================
 contract AavePMTokenSwapTests is AavePMTestSetup {
     function test_SwapETHToWstETH() public {
-        IERC20 token = IERC20(aavePM.getWstETH());
+        IERC20 token = IERC20(aavePM.getTokenAddress("wstETH"));
 
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
@@ -362,23 +362,23 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetAave() public {
-        assertEq(aavePM.getAave(), s_contractAddresses["aave"]);
+        assertEq(aavePM.getContractAddress("aave"), s_contractAddresses["aave"]);
     }
 
     function test_GetUniswapV3Router() public {
-        assertEq(aavePM.getUniswapV3Router(), s_contractAddresses["uniswapV3Router"]);
+        assertEq(aavePM.getContractAddress("uniswapV3Router"), s_contractAddresses["uniswapV3Router"]);
     }
 
     function test_GetWETH9() public {
-        assertEq(aavePM.getWETH9(), s_tokenAddresses["WETH9"]);
+        assertEq(aavePM.getTokenAddress("WETH9"), s_tokenAddresses["WETH9"]);
     }
 
     function test_GetWstETH() public {
-        assertEq(aavePM.getWstETH(), s_tokenAddresses["wstETH"]);
+        assertEq(aavePM.getTokenAddress("wstETH"), s_tokenAddresses["wstETH"]);
     }
 
     function test_GetUSDC() public {
-        assertEq(aavePM.getUSDC(), s_tokenAddresses["USDC"]);
+        assertEq(aavePM.getTokenAddress("USDC"), s_tokenAddresses["USDC"]);
     }
 
     function test_GetHealthFactorTarget() public {

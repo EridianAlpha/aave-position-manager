@@ -1,0 +1,39 @@
+name: Deploy Docs to GitHub Pages
+
+on: [push]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Install Dependencies
+        run: forge install
+
+      - name: Generate Documentation
+        run: forge doc --build
+
+      - name: Show current directory
+        run: pwd
+
+      - name: List files in directory
+        run: ls -la docs
+
+      - name: Show git branch
+        run: git branch
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/book

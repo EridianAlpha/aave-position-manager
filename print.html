@@ -1,0 +1,659 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title></title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="book.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item "><a href="index.html">Home</a></li><li class="chapter-item affix "><li class="part-title">src</li><li class="chapter-item "><a href="src/interfaces/index.html">❱ interfaces</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a></li></ol></li><li class="chapter-item "><a href="src/testHelperContracts/index.html">❱ testHelperContracts</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="src/testHelperContracts/AavePMUpgradeExample.sol/contract.AavePMUpgradeExample.html">AavePMUpgradeExample</a></li><li class="chapter-item "><a href="src/testHelperContracts/InvalidOwner.sol/contract.InvalidOwner.html">InvalidOwner</a></li><li class="chapter-item "><a href="src/testHelperContracts/InvalidUpgrade.sol/contract.InvalidUpgrade.html">InvalidUpgrade</a></li></ol></li><li class="chapter-item "><a href="src/AavePM.sol/contract.AavePM.html">AavePM</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/EridianAlpha/aave-position-manager" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="aavepm---aave-position-manager"><a class="header" href="#aavepm---aave-position-manager">AavePM - Aave Position Manager</a></h1>
+<p>A smart contract that manages Aave positions.</p>
+<h2 id="clone-repository"><a class="header" href="#clone-repository">Clone repository</a></h2>
+<pre><code class="language-bash">git clone https://github.com/EridianAlpha/aave-position-manager.git
+</code></pre>
+<h2 id="install-modules"><a class="header" href="#install-modules">Install modules</a></h2>
+<pre><code class="language-bash">git submodule init
+git submodule update
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="contents"><a class="header" href="#contents">Contents</a></h1>
+<ul>
+<li><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b9b659ba1d43ca8f8339b484243869945e533a7a/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p>This interface defines the essential structures and functions for the AavePM contract.</p>
+<h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
+<h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
+<pre><code class="language-solidity">function initialize(
+    address owner,
+    ContractAddress[] memory contractAddresses,
+    TokenAddress[] memory tokenAddresses,
+    address uniswapV3WstETHETHPoolAddress,
+    uint24 uniswapV3WstETHETHPoolFee,
+    uint256 initialHealthFactorTarget
+) external;
+</code></pre>
+<h3 id="updateaave"><a class="header" href="#updateaave">updateAave</a></h3>
+<pre><code class="language-solidity">function updateAave(address _aave) external;
+</code></pre>
+<h3 id="updateuniswapv3router"><a class="header" href="#updateuniswapv3router">updateUniswapV3Router</a></h3>
+<pre><code class="language-solidity">function updateUniswapV3Router(address _uniswapV3Router) external;
+</code></pre>
+<h3 id="updateweth9"><a class="header" href="#updateweth9">updateWETH9</a></h3>
+<pre><code class="language-solidity">function updateWETH9(address _WETH9) external;
+</code></pre>
+<h3 id="updatewsteth"><a class="header" href="#updatewsteth">updateWstETH</a></h3>
+<pre><code class="language-solidity">function updateWstETH(address _wstETH) external;
+</code></pre>
+<h3 id="updateusdc"><a class="header" href="#updateusdc">updateUSDC</a></h3>
+<pre><code class="language-solidity">function updateUSDC(address _USDC) external;
+</code></pre>
+<h3 id="updatehealthfactortarget"><a class="header" href="#updatehealthfactortarget">updateHealthFactorTarget</a></h3>
+<pre><code class="language-solidity">function updateHealthFactorTarget(uint256 _healthFactorTarget) external;
+</code></pre>
+<h3 id="receiveeth"><a class="header" href="#receiveeth">receiveEth</a></h3>
+<pre><code class="language-solidity">function receiveEth() external payable;
+</code></pre>
+<h3 id="rescueeth"><a class="header" href="#rescueeth">rescueEth</a></h3>
+<pre><code class="language-solidity">function rescueEth(address rescueAddress) external;
+</code></pre>
+<h3 id="swapethtowsteth"><a class="header" href="#swapethtowsteth">swapETHToWstETH</a></h3>
+<pre><code class="language-solidity">function swapETHToWstETH() external returns (uint256 amountOut);
+</code></pre>
+<h3 id="getcreator"><a class="header" href="#getcreator">getCreator</a></h3>
+<pre><code class="language-solidity">function getCreator() external view returns (address);
+</code></pre>
+<h3 id="getversion"><a class="header" href="#getversion">getVersion</a></h3>
+<pre><code class="language-solidity">function getVersion() external pure returns (string memory);
+</code></pre>
+<h3 id="getrolehash"><a class="header" href="#getrolehash">getRoleHash</a></h3>
+<pre><code class="language-solidity">function getRoleHash(string memory) external pure returns (bytes32);
+</code></pre>
+<h3 id="getcontractaddress"><a class="header" href="#getcontractaddress">getContractAddress</a></h3>
+<pre><code class="language-solidity">function getContractAddress(string memory) external view returns (address);
+</code></pre>
+<h3 id="gettokenaddress"><a class="header" href="#gettokenaddress">getTokenAddress</a></h3>
+<pre><code class="language-solidity">function getTokenAddress(string memory) external view returns (address);
+</code></pre>
+<h3 id="gethealthfactortarget"><a class="header" href="#gethealthfactortarget">getHealthFactorTarget</a></h3>
+<pre><code class="language-solidity">function getHealthFactorTarget() external view returns (uint256);
+</code></pre>
+<h3 id="gethealthfactorminimum"><a class="header" href="#gethealthfactorminimum">getHealthFactorMinimum</a></h3>
+<pre><code class="language-solidity">function getHealthFactorMinimum() external view returns (uint256);
+</code></pre>
+<h3 id="getrescueethbalance"><a class="header" href="#getrescueethbalance">getRescueEthBalance</a></h3>
+<pre><code class="language-solidity">function getRescueEthBalance() external view returns (uint256);
+</code></pre>
+<h2 id="events"><a class="header" href="#events">Events</a></h2>
+<h3 id="ethrescued"><a class="header" href="#ethrescued">EthRescued</a></h3>
+<pre><code class="language-solidity">event EthRescued(address indexed to, uint256 amount);
+</code></pre>
+<h3 id="aaveupdated"><a class="header" href="#aaveupdated">AaveUpdated</a></h3>
+<pre><code class="language-solidity">event AaveUpdated(address indexed previousAaveAddress, address indexed newAaveAddress);
+</code></pre>
+<h3 id="uniswapv3routerupdated"><a class="header" href="#uniswapv3routerupdated">UniswapV3RouterUpdated</a></h3>
+<pre><code class="language-solidity">event UniswapV3RouterUpdated(address indexed previousUniswapV3RouterAddress, address indexed newUniswapV3RouterAddress);
+</code></pre>
+<h3 id="weth9updated"><a class="header" href="#weth9updated">WETH9Updated</a></h3>
+<pre><code class="language-solidity">event WETH9Updated(address indexed previousWETH9Address, address indexed newWETH9Address);
+</code></pre>
+<h3 id="wstethupdated"><a class="header" href="#wstethupdated">WstETHUpdated</a></h3>
+<pre><code class="language-solidity">event WstETHUpdated(address indexed previousWstETHAddress, address indexed newWstETHAddress);
+</code></pre>
+<h3 id="usdcupdated"><a class="header" href="#usdcupdated">USDCUpdated</a></h3>
+<pre><code class="language-solidity">event USDCUpdated(address indexed previousUSDCAddress, address indexed newUSDCAddress);
+</code></pre>
+<h3 id="healthfactortargetupdated"><a class="header" href="#healthfactortargetupdated">HealthFactorTargetUpdated</a></h3>
+<pre><code class="language-solidity">event HealthFactorTargetUpdated(uint256 previousHealthFactorTarget, uint256 newHealthFactorTarget);
+</code></pre>
+<h2 id="errors"><a class="header" href="#errors">Errors</a></h2>
+<h3 id="aavepm__functiondoesnotexist"><a class="header" href="#aavepm__functiondoesnotexist">AavePM__FunctionDoesNotExist</a></h3>
+<pre><code class="language-solidity">error AavePM__FunctionDoesNotExist();
+</code></pre>
+<h3 id="aavepm__rescueethfailed"><a class="header" href="#aavepm__rescueethfailed">AavePM__RescueEthFailed</a></h3>
+<pre><code class="language-solidity">error AavePM__RescueEthFailed();
+</code></pre>
+<h3 id="aavepm__rescueaddressnotanowner"><a class="header" href="#aavepm__rescueaddressnotanowner">AavePM__RescueAddressNotAnOwner</a></h3>
+<pre><code class="language-solidity">error AavePM__RescueAddressNotAnOwner();
+</code></pre>
+<h3 id="aavepm__healthfactorunchanged"><a class="header" href="#aavepm__healthfactorunchanged">AavePM__HealthFactorUnchanged</a></h3>
+<pre><code class="language-solidity">error AavePM__HealthFactorUnchanged();
+</code></pre>
+<h3 id="aavepm__healthfactorbelowminimum"><a class="header" href="#aavepm__healthfactorbelowminimum">AavePM__HealthFactorBelowMinimum</a></h3>
+<pre><code class="language-solidity">error AavePM__HealthFactorBelowMinimum();
+</code></pre>
+<h2 id="structs"><a class="header" href="#structs">Structs</a></h2>
+<h3 id="contractaddress"><a class="header" href="#contractaddress">ContractAddress</a></h3>
+<pre><code class="language-solidity">struct ContractAddress {
+    string identifier;
+    address contractAddress;
+}
+</code></pre>
+<h3 id="tokenaddress"><a class="header" href="#tokenaddress">TokenAddress</a></h3>
+<pre><code class="language-solidity">struct TokenAddress {
+    string identifier;
+    address tokenAddress;
+}
+</code></pre>
+<h3 id="uniswapv3pool"><a class="header" href="#uniswapv3pool">UniswapV3Pool</a></h3>
+<pre><code class="language-solidity">struct UniswapV3Pool {
+    address poolAddress;
+    uint24 fee;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="contents-1"><a class="header" href="#contents-1">Contents</a></h1>
+<ul>
+<li><a href="src/testHelperContracts/AavePMUpgradeExample.sol/contract.AavePMUpgradeExample.html">AavePMUpgradeExample</a></li>
+<li><a href="src/testHelperContracts/InvalidOwner.sol/contract.InvalidOwner.html">InvalidOwner</a></li>
+<li><a href="src/testHelperContracts/InvalidUpgrade.sol/contract.InvalidUpgrade.html">InvalidUpgrade</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="aavepmupgradeexample"><a class="header" href="#aavepmupgradeexample">AavePMUpgradeExample</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b9b659ba1d43ca8f8339b484243869945e533a7a/src/testHelperContracts/AavePMUpgradeExample.sol">Git Source</a></p>
+<p><strong>Inherits:</strong>
+Initializable, AccessControlUpgradeable, UUPSUpgradeable</p>
+<p><strong>Author:</strong>
+EridianAlpha</p>
+<p>A contract to manage positions on Aave.</p>
+<h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
+<h3 id="owner_role"><a class="header" href="#owner_role">OWNER_ROLE</a></h3>
+<pre><code class="language-solidity">bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
+</code></pre>
+<h3 id="version"><a class="header" href="#version">VERSION</a></h3>
+<pre><code class="language-solidity">string private constant VERSION = "0.0.2";
+</code></pre>
+<h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
+<h3 id="_authorizeupgrade"><a class="header" href="#_authorizeupgrade">_authorizeUpgrade</a></h3>
+<p>Internal function to authorize an upgrade.</p>
+<p><em>Only callable by the owner role.</em></p>
+<pre><code class="language-solidity">function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_newImplementation</code></td><td><code>address</code></td><td>Address of the new contract implementation.</td></tr>
+</tbody></table>
+</div>
+<h3 id="getversion-1"><a class="header" href="#getversion-1">getVersion</a></h3>
+<pre><code class="language-solidity">function getVersion() public pure returns (string memory);
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="invalidowner"><a class="header" href="#invalidowner">InvalidOwner</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b9b659ba1d43ca8f8339b484243869945e533a7a/src/testHelperContracts/InvalidOwner.sol">Git Source</a></p>
+<p>This contract is used to test the .call functions failing in AavePM.sol</p>
+<p>*The test is found in AavePMTest.t.sol:</p>
+<ul>
+<li>"test_RescueEthCallFailureThrowsError()"
+The reason this contract causes the .call to fail is because it doesn't have a receive()
+or fallback() function so the ETH can't be accepted.*</li>
+</ul>
+<h2 id="state-variables-1"><a class="header" href="#state-variables-1">State Variables</a></h2>
+<h3 id="aavepm"><a class="header" href="#aavepm">aavePM</a></h3>
+<pre><code class="language-solidity">AavePM aavePM;
+</code></pre>
+<h2 id="functions-2"><a class="header" href="#functions-2">Functions</a></h2>
+<h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
+<pre><code class="language-solidity">constructor(address aavePMAddress);
+</code></pre>
+<h3 id="aavepmrescuealleth"><a class="header" href="#aavepmrescuealleth">aavePMRescueAllETH</a></h3>
+<pre><code class="language-solidity">function aavePMRescueAllETH() public payable;
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="invalidupgrade"><a class="header" href="#invalidupgrade">InvalidUpgrade</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b9b659ba1d43ca8f8339b484243869945e533a7a/src/testHelperContracts/InvalidUpgrade.sol">Git Source</a></p>
+<p>This contract is used to test uups upgrade to an invalid contract</p>
+<p><em>The contact is not a valid upgradeable contract so the test should fail</em></p>
+<h2 id="state-variables-2"><a class="header" href="#state-variables-2">State Variables</a></h2>
+<h3 id="version-1"><a class="header" href="#version-1">VERSION</a></h3>
+<pre><code class="language-solidity">string private constant VERSION = "INVALID_UPGRADE";
+</code></pre>
+<h2 id="functions-3"><a class="header" href="#functions-3">Functions</a></h2>
+<h3 id="getversion-2"><a class="header" href="#getversion-2">getVersion</a></h3>
+<pre><code class="language-solidity">function getVersion() public pure returns (string memory);
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm-1"><a class="header" href="#aavepm-1">AavePM</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b9b659ba1d43ca8f8339b484243869945e533a7a/src/AavePM.sol">Git Source</a></p>
+<p><strong>Inherits:</strong>
+<a href="src/AavePM.sol//src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, Initializable, AccessControlUpgradeable, UUPSUpgradeable</p>
+<p><strong>Author:</strong>
+EridianAlpha</p>
+<p>A contract to manage positions on Aave.</p>
+<h2 id="state-variables-3"><a class="header" href="#state-variables-3">State Variables</a></h2>
+<h3 id="s_creator"><a class="header" href="#s_creator">s_creator</a></h3>
+<pre><code class="language-solidity">address private s_creator;
+</code></pre>
+<h3 id="s_contractaddresses"><a class="header" href="#s_contractaddresses">s_contractAddresses</a></h3>
+<pre><code class="language-solidity">mapping(string =&gt; address) s_contractAddresses;
+</code></pre>
+<h3 id="s_tokenaddresses"><a class="header" href="#s_tokenaddresses">s_tokenAddresses</a></h3>
+<pre><code class="language-solidity">mapping(string =&gt; address) s_tokenAddresses;
+</code></pre>
+<h3 id="s_healthfactortarget"><a class="header" href="#s_healthfactortarget">s_healthFactorTarget</a></h3>
+<pre><code class="language-solidity">uint256 private s_healthFactorTarget;
+</code></pre>
+<h3 id="s_healthfactorminimum"><a class="header" href="#s_healthfactorminimum">s_healthFactorMinimum</a></h3>
+<pre><code class="language-solidity">uint256 private s_healthFactorMinimum;
+</code></pre>
+<h3 id="s_uniswapv3wstethethpool"><a class="header" href="#s_uniswapv3wstethethpool">s_uniswapV3WstETHETHPool</a></h3>
+<pre><code class="language-solidity">UniswapV3Pool private s_uniswapV3WstETHETHPool;
+</code></pre>
+<h3 id="version-2"><a class="header" href="#version-2">VERSION</a></h3>
+<pre><code class="language-solidity">string private constant VERSION = "0.0.1";
+</code></pre>
+<h3 id="owner_role-1"><a class="header" href="#owner_role-1">OWNER_ROLE</a></h3>
+<pre><code class="language-solidity">bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
+</code></pre>
+<h3 id="manager_role"><a class="header" href="#manager_role">MANAGER_ROLE</a></h3>
+<pre><code class="language-solidity">bytes32 private constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
+</code></pre>
+<h3 id="uniswapv3_wsteth_eth_pool_slippage"><a class="header" href="#uniswapv3_wsteth_eth_pool_slippage">UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE</a></h3>
+<pre><code class="language-solidity">uint256 private constant UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE = 200;
+</code></pre>
+<h2 id="functions-4"><a class="header" href="#functions-4">Functions</a></h2>
+<h3 id="constructor-1"><a class="header" href="#constructor-1">constructor</a></h3>
+<pre><code class="language-solidity">constructor();
+</code></pre>
+<h3 id="receive"><a class="header" href="#receive">receive</a></h3>
+<pre><code class="language-solidity">receive() external payable;
+</code></pre>
+<h3 id="fallback"><a class="header" href="#fallback">fallback</a></h3>
+<pre><code class="language-solidity">fallback() external payable;
+</code></pre>
+<h3 id="initialize-1"><a class="header" href="#initialize-1">initialize</a></h3>
+<pre><code class="language-solidity">function initialize(
+    address owner,
+    ContractAddress[] memory contractAddresses,
+    TokenAddress[] memory tokenAddresses,
+    address uniswapV3WstETHETHPoolAddress,
+    uint24 uniswapV3WstETHETHPoolFee,
+    uint256 initialHealthFactorTarget
+) public initializer;
+</code></pre>
+<h3 id="_authorizeupgrade-1"><a class="header" href="#_authorizeupgrade-1">_authorizeUpgrade</a></h3>
+<p>Internal function to authorize an upgrade.</p>
+<p><em>Only callable by the owner role.</em></p>
+<pre><code class="language-solidity">function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_newImplementation</code></td><td><code>address</code></td><td>Address of the new contract implementation.</td></tr>
+</tbody></table>
+</div>
+<h3 id="updateaave-1"><a class="header" href="#updateaave-1">updateAave</a></h3>
+<p>Update the Aave contract address.</p>
+<p><em>Only the contract owner can call this function.
+Emits an AaveUpdated event.</em></p>
+<pre><code class="language-solidity">function updateAave(address _aave) external onlyRole(OWNER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_aave</code></td><td><code>address</code></td><td>The new Aave contract address.</td></tr>
+</tbody></table>
+</div>
+<h3 id="updateuniswapv3router-1"><a class="header" href="#updateuniswapv3router-1">updateUniswapV3Router</a></h3>
+<p>Update the UniswapV3Router contract address.</p>
+<p><em>Only the contract owner can call this function.
+Emits an UniswapV3RouterUpdated event.</em></p>
+<pre><code class="language-solidity">function updateUniswapV3Router(address _uniswapV3Router) external onlyRole(OWNER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_uniswapV3Router</code></td><td><code>address</code></td><td>The new UniswapV3Router contract address.</td></tr>
+</tbody></table>
+</div>
+<h3 id="updateweth9-1"><a class="header" href="#updateweth9-1">updateWETH9</a></h3>
+<p>Update the WETH9 contract address.</p>
+<p><em>Only the contract owner can call this function.
+Emits a WETH9Updated event.</em></p>
+<pre><code class="language-solidity">function updateWETH9(address _WETH9) external onlyRole(OWNER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_WETH9</code></td><td><code>address</code></td><td>The new WETH9 contract address.</td></tr>
+</tbody></table>
+</div>
+<h3 id="updatewsteth-1"><a class="header" href="#updatewsteth-1">updateWstETH</a></h3>
+<p>Update the wstETH contract address.</p>
+<p><em>Only the contract owner can call this function.
+Emits an WstETHUpdated event.</em></p>
+<pre><code class="language-solidity">function updateWstETH(address _wstETH) external onlyRole(OWNER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_wstETH</code></td><td><code>address</code></td><td>The new wstETH contract address.</td></tr>
+</tbody></table>
+</div>
+<h3 id="updateusdc-1"><a class="header" href="#updateusdc-1">updateUSDC</a></h3>
+<p>Update the USDC contract address.</p>
+<p><em>Only the contract owner can call this function.
+Emits an USDCUpdated event.</em></p>
+<pre><code class="language-solidity">function updateUSDC(address _USDC) external onlyRole(OWNER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_USDC</code></td><td><code>address</code></td><td>The new USDC contract address.</td></tr>
+</tbody></table>
+</div>
+<h3 id="updatehealthfactortarget-1"><a class="header" href="#updatehealthfactortarget-1">updateHealthFactorTarget</a></h3>
+<p>Update the Health Factor target.</p>
+<p><em>Only the contract owner can call this function.
+Emits a HealthFactorTargetUpdated event.</em></p>
+<pre><code class="language-solidity">function updateHealthFactorTarget(uint256 _healthFactorTarget) external onlyRole(OWNER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_healthFactorTarget</code></td><td><code>uint256</code></td><td>The new Health Factor target.</td></tr>
+</tbody></table>
+</div>
+<h3 id="receiveeth-1"><a class="header" href="#receiveeth-1">receiveEth</a></h3>
+<pre><code class="language-solidity">function receiveEth() external payable;
+</code></pre>
+<h3 id="rescueeth-1"><a class="header" href="#rescueeth-1">rescueEth</a></h3>
+<p>Rescue all ETH from the contract.</p>
+<p><em>This function is intended for emergency use.
+In normal operation, the contract shouldn't hold ETH,
+as it is used to swap for wstETH.
+It can be called without an argument to rescue the entire balance.
+Only the contract owner can call this function.
+The use of nonReentrant isn't required due to the owner-only restriction.
+Throws <code>AavePM__RescueEthFailed</code> if the ETH transfer fails.
+Emits a RescueEth event.</em></p>
+<pre><code class="language-solidity">function rescueEth(address rescueAddress) external onlyRole(OWNER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>rescueAddress</code></td><td><code>address</code></td><td>The address to send the rescued ETH to.</td></tr>
+</tbody></table>
+</div>
+<h3 id="swapethtowsteth-1"><a class="header" href="#swapethtowsteth-1">swapETHToWstETH</a></h3>
+<pre><code class="language-solidity">function swapETHToWstETH() public onlyRole(MANAGER_ROLE) returns (uint256 amountOut);
+</code></pre>
+<h3 id="getcreator-1"><a class="header" href="#getcreator-1">getCreator</a></h3>
+<p>Getter function to get the i_creator address.</p>
+<p><em>Public function to allow anyone to view the contract creator.</em></p>
+<pre><code class="language-solidity">function getCreator() public view returns (address);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>address of the creator.</td></tr>
+</tbody></table>
+</div>
+<h3 id="getversion-3"><a class="header" href="#getversion-3">getVersion</a></h3>
+<pre><code class="language-solidity">function getVersion() public pure returns (string memory);
+</code></pre>
+<h3 id="getrolehash-1"><a class="header" href="#getrolehash-1">getRoleHash</a></h3>
+<pre><code class="language-solidity">function getRoleHash(string memory role) public pure returns (bytes32);
+</code></pre>
+<h3 id="getcontractaddress-1"><a class="header" href="#getcontractaddress-1">getContractAddress</a></h3>
+<p>Generic getter function to get the contract address for a given identifier.</p>
+<p><em>Public function to allow anyone to view the contract address for the given identifier.</em></p>
+<pre><code class="language-solidity">function getContractAddress(string memory identifier) public view returns (address);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>identifier</code></td><td><code>string</code></td><td>The identifier for the contract address.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>address of the contract corresponding to the given identifier.</td></tr>
+</tbody></table>
+</div>
+<h3 id="gettokenaddress-1"><a class="header" href="#gettokenaddress-1">getTokenAddress</a></h3>
+<p>Generic getter function to get the token address for a given identifier.</p>
+<p><em>Public function to allow anyone to view the token address for the given identifier.</em></p>
+<pre><code class="language-solidity">function getTokenAddress(string memory identifier) public view returns (address);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>identifier</code></td><td><code>string</code></td><td>The identifier for the contract address.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>address of the token corresponding to the given identifier.</td></tr>
+</tbody></table>
+</div>
+<h3 id="gethealthfactortarget-1"><a class="header" href="#gethealthfactortarget-1">getHealthFactorTarget</a></h3>
+<p>Getter function to get the Health Factor target.</p>
+<p><em>Public function to allow anyone to view the Health Factor target value.</em></p>
+<pre><code class="language-solidity">function getHealthFactorTarget() public view returns (uint256);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>uint256 of the Health Factor target.</td></tr>
+</tbody></table>
+</div>
+<h3 id="gethealthfactorminimum-1"><a class="header" href="#gethealthfactorminimum-1">getHealthFactorMinimum</a></h3>
+<p>Getter function to get the Health Factor minimum.</p>
+<p><em>Public function to allow anyone to view the Health Factor minimum value.</em></p>
+<pre><code class="language-solidity">function getHealthFactorMinimum() public view returns (uint256);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>uint256 of the Health Factor minimum.</td></tr>
+</tbody></table>
+</div>
+<h3 id="getrescueethbalance-1"><a class="header" href="#getrescueethbalance-1">getRescueEthBalance</a></h3>
+<p>Getter function to get the contract's ETH balance.</p>
+<p><em>Public function to allow anyone to view the contract's ETH balance.</em></p>
+<pre><code class="language-solidity">function getRescueEthBalance() public view returns (uint256);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>uint256 of the contract's ETH balance.</td></tr>
+</tbody></table>
+</div>
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="solidity.min.js"></script>
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>

@@ -2,6 +2,8 @@
 
 A smart contract that manages Aave positions.
 
+Docs: [https://eridianalpha.github.io/aave-position-manager](https://eridianalpha.github.io/aave-position-manager)
+
 ## Clone repository
 
 ```bash

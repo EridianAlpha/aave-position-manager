@@ -249,7 +249,7 @@ make test-fork-mainnet-summary
 <li><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/1ac85aa942f453a7aa747e6051475da80462a2f5/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d58aa31e72f66ce67739b6a2731c0684b0e2dee0/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -371,7 +371,7 @@ make test-fork-mainnet-summary
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/1ac85aa942f453a7aa747e6051475da80462a2f5/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d58aa31e72f66ce67739b6a2731c0684b0e2dee0/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AavePM.sol//src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, Initializable, AccessControlUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -410,6 +410,8 @@ EridianAlpha</p>
 </code></pre>
 <h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
+<p>Constructor implemented but unused.</p>
+<p><em>Contract is upgradeable and therefore the constructor is not used.</em></p>
 <pre><code class="language-solidity">constructor();
 </code></pre>
 <h3 id="receive"><a class="header" href="#receive">receive</a></h3>
@@ -419,6 +421,8 @@ EridianAlpha</p>
 <pre><code class="language-solidity">fallback() external payable;
 </code></pre>
 <h3 id="initialize-1"><a class="header" href="#initialize-1">initialize</a></h3>
+<p>Initializes contract with the owner and relevant addresses and parameters for operation.</p>
+<p><em>This function sets up all necessary state variables for the contract and can only be called once due to the <code>initializer</code> modifier.</em></p>
 <pre><code class="language-solidity">function initialize(
     address owner,
     ContractAddress[] memory contractAddresses,
@@ -428,6 +432,16 @@ EridianAlpha</p>
     uint256 initialHealthFactorTarget
 ) public initializer;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>owner</code></td><td><code>address</code></td><td>The address of the owner of the contract.</td></tr>
+<tr><td><code>contractAddresses</code></td><td><code>ContractAddress[]</code></td><td>An array of <code>ContractAddress</code> structures containing addresses of related contracts.</td></tr>
+<tr><td><code>tokenAddresses</code></td><td><code>TokenAddress[]</code></td><td>An array of <code>TokenAddress</code> structures containing addresses of relevant ERC-20 tokens.</td></tr>
+<tr><td><code>uniswapV3WstETHETHPoolAddress</code></td><td><code>address</code></td><td>The address of the Uniswap V3 WSTETH-ETH pool.</td></tr>
+<tr><td><code>uniswapV3WstETHETHPoolFee</code></td><td><code>uint24</code></td><td>The fee tier of the Uniswap V3 WSTETH-ETH pool.</td></tr>
+<tr><td><code>initialHealthFactorTarget</code></td><td><code>uint256</code></td><td>The initial target health factor, used to manage risk.</td></tr>
+</tbody></table>
+</div>
 <h3 id="_authorizeupgrade"><a class="header" href="#_authorizeupgrade">_authorizeUpgrade</a></h3>
 <p>Internal function to authorize an upgrade.</p>
 <p><em>Only callable by the owner role.</em></p>
@@ -441,7 +455,7 @@ EridianAlpha</p>
 <h3 id="updateaave-1"><a class="header" href="#updateaave-1">updateAave</a></h3>
 <p>Update the Aave contract address.</p>
 <p><em>Only the contract owner can call this function.
-Emits an AaveUpdated event.</em></p>
+Emits an <code>AaveUpdated</code> event.</em></p>
 <pre><code class="language-solidity">function updateAave(address _aave) external onlyRole(OWNER_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -452,7 +466,7 @@ Emits an AaveUpdated event.</em></p>
 <h3 id="updateuniswapv3router-1"><a class="header" href="#updateuniswapv3router-1">updateUniswapV3Router</a></h3>
 <p>Update the UniswapV3Router contract address.</p>
 <p><em>Only the contract owner can call this function.
-Emits an UniswapV3RouterUpdated event.</em></p>
+Emits a <code>UniswapV3RouterUpdated</code> event.</em></p>
 <pre><code class="language-solidity">function updateUniswapV3Router(address _uniswapV3Router) external onlyRole(OWNER_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -463,7 +477,7 @@ Emits an UniswapV3RouterUpdated event.</em></p>
 <h3 id="updateweth9-1"><a class="header" href="#updateweth9-1">updateWETH9</a></h3>
 <p>Update the WETH9 contract address.</p>
 <p><em>Only the contract owner can call this function.
-Emits a WETH9Updated event.</em></p>
+Emits a <code>WETH9Updated</code> event.</em></p>
 <pre><code class="language-solidity">function updateWETH9(address _WETH9) external onlyRole(OWNER_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -474,7 +488,7 @@ Emits a WETH9Updated event.</em></p>
 <h3 id="updatewsteth-1"><a class="header" href="#updatewsteth-1">updateWstETH</a></h3>
 <p>Update the wstETH contract address.</p>
 <p><em>Only the contract owner can call this function.
-Emits an WstETHUpdated event.</em></p>
+Emits a <code>WstETHUpdated</code> event.</em></p>
 <pre><code class="language-solidity">function updateWstETH(address _wstETH) external onlyRole(OWNER_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -485,7 +499,7 @@ Emits an WstETHUpdated event.</em></p>
 <h3 id="updateusdc-1"><a class="header" href="#updateusdc-1">updateUSDC</a></h3>
 <p>Update the USDC contract address.</p>
 <p><em>Only the contract owner can call this function.
-Emits an USDCUpdated event.</em></p>
+Emits a <code>USDCUpdated</code> event.</em></p>
 <pre><code class="language-solidity">function updateUSDC(address _USDC) external onlyRole(OWNER_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -496,7 +510,7 @@ Emits an USDCUpdated event.</em></p>
 <h3 id="updatehealthfactortarget-1"><a class="header" href="#updatehealthfactortarget-1">updateHealthFactorTarget</a></h3>
 <p>Update the Health Factor target.</p>
 <p><em>Only the contract owner can call this function.
-Emits a HealthFactorTargetUpdated event.</em></p>
+Emits a <code>HealthFactorTargetUpdated</code> event.</em></p>
 <pre><code class="language-solidity">function updateHealthFactorTarget(uint256 _healthFactorTarget) external onlyRole(OWNER_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -513,10 +527,10 @@ Emits a HealthFactorTargetUpdated event.</em></p>
 In normal operation, the contract shouldn't hold ETH,
 as it is used to swap for wstETH.
 It can be called without an argument to rescue the entire balance.
-Only the contract owner can call this function.
-The use of nonReentrant isn't required due to the owner-only restriction.
+Caller must have the <code>OWNER_ROLE</code> role.
+The use of nonReentrant isn't required due to the <code>OWNER_ROLE</code> restriction and it drains 100% of the ETH balance anyway.
 Throws <code>AavePM__RescueEthFailed</code> if the ETH transfer fails.
-Emits a RescueEth event.</em></p>
+Emits a <code>RescueEth</code> event.</em></p>
 <pre><code class="language-solidity">function rescueEth(address rescueAddress) external onlyRole(OWNER_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -525,28 +539,51 @@ Emits a RescueEth event.</em></p>
 </tbody></table>
 </div>
 <h3 id="swapethtowsteth-1"><a class="header" href="#swapethtowsteth-1">swapETHToWstETH</a></h3>
+<p>Swaps the contract's entire ETH balance for wstETH using a Uniswap V3 pool.</p>
+<p><em>This function requires the caller to have the <code>MANAGER_ROLE</code>.
+It calculates the minimum amount of wstETH that should be received based on the current pool's price ratio and a predefined slippage tolerance.
+Reverts if there is no ETH in the contract or if the transaction doesn't meet the <code>amountOutMinimum</code> criteria due to price movements.</em></p>
 <pre><code class="language-solidity">function swapETHToWstETH() public onlyRole(MANAGER_ROLE) returns (uint256 amountOut);
-</code></pre>
-<h3 id="getcreator-1"><a class="header" href="#getcreator-1">getCreator</a></h3>
-<p>Getter function to get the i_creator address.</p>
-<p><em>Public function to allow anyone to view the contract creator.</em></p>
-<pre><code class="language-solidity">function getCreator() public view returns (address);
 </code></pre>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>address of the creator.</td></tr>
+<tr><td><code>amountOut</code></td><td><code>uint256</code></td><td>The amount of wstETH received from the swap.</td></tr>
+</tbody></table>
+</div>
+<h3 id="getcreator-1"><a class="header" href="#getcreator-1">getCreator</a></h3>
+<p>Getter function to get the i_creator address.</p>
+<p><em>Public function to allow anyone to view the contract creator.</em></p>
+<pre><code class="language-solidity">function getCreator() public view returns (address creator);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>creator</code></td><td><code>address</code></td><td>The address of the creator.</td></tr>
 </tbody></table>
 </div>
 <h3 id="getversion-1"><a class="header" href="#getversion-1">getVersion</a></h3>
-<pre><code class="language-solidity">function getVersion() public pure returns (string memory);
+<p>Getter function to get the contract version.</p>
+<p><em>Public function to allow anyone to view the contract version.</em></p>
+<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getrolehash-1"><a class="header" href="#getrolehash-1">getRoleHash</a></h3>
-<pre><code class="language-solidity">function getRoleHash(string memory role) public pure returns (bytes32);
+<p>Getter function to get the role hash of a specified role.</p>
+<p><em>Public function to allow anyone to generate a role hash.</em></p>
+<pre><code class="language-solidity">function getRoleHash(string memory role) public pure returns (bytes32 roleHash);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>roleHash</code></td><td><code>bytes32</code></td><td>The role hash corresponding to the given role.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getcontractaddress-1"><a class="header" href="#getcontractaddress-1">getContractAddress</a></h3>
 <p>Generic getter function to get the contract address for a given identifier.</p>
 <p><em>Public function to allow anyone to view the contract address for the given identifier.</em></p>
-<pre><code class="language-solidity">function getContractAddress(string memory identifier) public view returns (address);
+<pre><code class="language-solidity">function getContractAddress(string memory identifier) public view returns (address contractAddress);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -555,13 +592,13 @@ Emits a RescueEth event.</em></p>
 </div>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>address of the contract corresponding to the given identifier.</td></tr>
+<tr><td><code>contractAddress</code></td><td><code>address</code></td><td>The contract address corresponding to the given identifier.</td></tr>
 </tbody></table>
 </div>
 <h3 id="gettokenaddress-1"><a class="header" href="#gettokenaddress-1">getTokenAddress</a></h3>
 <p>Generic getter function to get the token address for a given identifier.</p>
 <p><em>Public function to allow anyone to view the token address for the given identifier.</em></p>
-<pre><code class="language-solidity">function getTokenAddress(string memory identifier) public view returns (address);
+<pre><code class="language-solidity">function getTokenAddress(string memory identifier) public view returns (address tokenAddress);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -570,37 +607,37 @@ Emits a RescueEth event.</em></p>
 </div>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>address of the token corresponding to the given identifier.</td></tr>
+<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The token address corresponding to the given identifier.</td></tr>
 </tbody></table>
 </div>
 <h3 id="gethealthfactortarget-1"><a class="header" href="#gethealthfactortarget-1">getHealthFactorTarget</a></h3>
 <p>Getter function to get the Health Factor target.</p>
 <p><em>Public function to allow anyone to view the Health Factor target value.</em></p>
-<pre><code class="language-solidity">function getHealthFactorTarget() public view returns (uint256);
+<pre><code class="language-solidity">function getHealthFactorTarget() public view returns (uint256 healthFactorTarget);
 </code></pre>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>uint256 of the Health Factor target.</td></tr>
+<tr><td><code>healthFactorTarget</code></td><td><code>uint256</code></td><td>The Health Factor target.</td></tr>
 </tbody></table>
 </div>
 <h3 id="gethealthfactorminimum-1"><a class="header" href="#gethealthfactorminimum-1">getHealthFactorMinimum</a></h3>
 <p>Getter function to get the Health Factor minimum.</p>
 <p><em>Public function to allow anyone to view the Health Factor minimum value.</em></p>
-<pre><code class="language-solidity">function getHealthFactorMinimum() public view returns (uint256);
+<pre><code class="language-solidity">function getHealthFactorMinimum() public view returns (uint256 healthFactorMinimum);
 </code></pre>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>uint256 of the Health Factor minimum.</td></tr>
+<tr><td><code>healthFactorMinimum</code></td><td><code>uint256</code></td><td>The Health Factor minimum value.</td></tr>
 </tbody></table>
 </div>
 <h3 id="getrescueethbalance-1"><a class="header" href="#getrescueethbalance-1">getRescueEthBalance</a></h3>
 <p>Getter function to get the contract's ETH balance.</p>
 <p><em>Public function to allow anyone to view the contract's ETH balance.</em></p>
-<pre><code class="language-solidity">function getRescueEthBalance() public view returns (uint256);
+<pre><code class="language-solidity">function getRescueEthBalance() public view returns (uint256 rescueEthBalance);
 </code></pre>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>&lt;none&gt;</code></td><td><code>uint256</code></td><td>uint256 of the contract's ETH balance.</td></tr>
+<tr><td><code>rescueEthBalance</code></td><td><code>uint256</code></td><td>The contract's ETH balance in wei.</td></tr>
 </tbody></table>
 </div>
                     </main>

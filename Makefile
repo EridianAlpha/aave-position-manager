@@ -3,14 +3,13 @@
 # ================================================================
 -include .env
 
-.PHONY: all test clean help install snapshot format anvil ethernal
+.PHONY: test clean help install snapshot format anvil ethernal
 
 help:
 	@echo "Usage:"
 	@echo "  make deploy-anvil\n
 
 clean 		:; forge clean
-remove 		:; rm -rf .gitmodules && rm -rf .git/modules/* && rm -rf lib && touch .gitmodules && git add . && git commit -m "modules"
 update 		:; forge update
 build 		:; forge build
 test 		:; forge test
@@ -46,13 +45,10 @@ holesky-network:
 # 			--etherscan-api-key ${ETHERSCAN_API_KEY} \
 # 	)
 
-
 # ================================================================
 # │            ETHERNAL BLOCK EXPLORER CONFIGURATION             │
 # ================================================================
 # https://app.tryethernal.com
-# TODO: Uising a local build until they fix a bug with foundry 0.2.0
-# https://github.com/tryethernal/ethernal-cli/pull/28
 ethernal:
 	ETHERNAL_API_TOKEN=${ETHERNAL_API_TOKEN} ethernal-local listen --astUpload true
 

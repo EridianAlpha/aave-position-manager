@@ -3,10 +3,16 @@ pragma solidity 0.8.24;
 
 import {Script} from "forge-std/Script.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
-
 import {IAavePM} from "../src/interfaces/IAavePM.sol";
 
 contract HelperConfig is Script {
+    address public aaveAddress;
+    address public uniswapV3RouterAddress;
+    address public uniswapV3WstETHETHPoolAddress;
+    address public wethAddress;
+    address public wstETHAddress;
+    address public usdcAddress;
+
     struct NetworkConfig {
         IAavePM.ContractAddress[] contractAddresses;
         IAavePM.TokenAddress[] tokenAddresses;
@@ -15,26 +21,52 @@ contract HelperConfig is Script {
         uint256 initialHealthFactorTarget;
     }
 
-    function getActiveNetworkConfig() public pure returns (NetworkConfig memory) {
+    function getChainVariables() public {
+        uint256 chainId = block.chainid;
+
+        if (chainId == 1) {
+            // Mainnet
+            aaveAddress = vm.envAddress("MAINNET_ADDRESS_AAVE");
+            uniswapV3RouterAddress = vm.envAddress("MAINNET_ADDRESS_UNISWAP_V3_ROUTER");
+            uniswapV3WstETHETHPoolAddress = vm.envAddress("MAINNET_ADDRESS_UNISWAP_V3_WSTETH_ETH_POOL");
+            wethAddress = vm.envAddress("MAINNET_ADDRESS_WETH");
+            wstETHAddress = vm.envAddress("MAINNET_ADDRESS_WSTETH");
+            usdcAddress = vm.envAddress("MAINNET_ADDRESS_USDC");
+        } else if (chainId == 8453) {
+            // Base
+            aaveAddress = vm.envAddress("BASE_ADDRESS_AAVE");
+            uniswapV3RouterAddress = vm.envAddress("BASE_ADDRESS_UNISWAP_V3_ROUTER");
+            uniswapV3WstETHETHPoolAddress = vm.envAddress("BASE_ADDRESS_UNISWAP_V3_WSTETH_ETH_POOL");
+            wethAddress = vm.envAddress("BASE_ADDRESS_WETH");
+            wstETHAddress = vm.envAddress("BASE_ADDRESS_WSTETH");
+            usdcAddress = vm.envAddress("BASE_ADDRESS_USDC");
+        } else {
+            revert("Chain not supported");
+        }
+    }
+
+    function getActiveNetworkConfig() public returns (NetworkConfig memory) {
         NetworkConfig memory activeNetworkConfig;
+
+        getChainVariables();
 
         // Contract addresses
         IAavePM.ContractAddress[] memory contractAddresses = new IAavePM.ContractAddress[](3);
-        contractAddresses[0] = IAavePM.ContractAddress("aave", address(0));
-        contractAddresses[1] = IAavePM.ContractAddress("uniswapV3Router", 0xE592427A0AEce92De3Edee1F18E0157C05861564);
+        contractAddresses[0] = IAavePM.ContractAddress("aave", aaveAddress);
+        contractAddresses[1] = IAavePM.ContractAddress("uniswapV3Router", uniswapV3RouterAddress);
 
         // Token addresses
         IAavePM.TokenAddress[] memory tokenAddresses = new IAavePM.TokenAddress[](3);
-        tokenAddresses[0] = IAavePM.TokenAddress("WETH9", 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
-        tokenAddresses[1] = IAavePM.TokenAddress("wstETH", 0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0);
-        tokenAddresses[2] = IAavePM.TokenAddress("USDC", 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
+        tokenAddresses[0] = IAavePM.TokenAddress("WETH9", wethAddress);
+        tokenAddresses[1] = IAavePM.TokenAddress("wstETH", wstETHAddress);
+        tokenAddresses[2] = IAavePM.TokenAddress("USDC", usdcAddress);
 
         activeNetworkConfig = NetworkConfig({
             contractAddresses: contractAddresses,
             tokenAddresses: tokenAddresses,
-            uniswapV3WstETHETHPoolAddress: 0x109830a1AAaD605BbF02a9dFA7B0B92EC2FB7dAa, // 0.01%
-            uniswapV3WstETHETHPoolFee: 100,
-            initialHealthFactorTarget: 2
+            uniswapV3WstETHETHPoolAddress: uniswapV3WstETHETHPoolAddress,
+            uniswapV3WstETHETHPoolFee: uint24(vm.envUint("INITIAL_UNISWAP_V3_WSTETH_POOL_FEE")),
+            initialHealthFactorTarget: vm.envUint("INITIAL_HEALTH_FACTOR_TARGET")
         });
 
         return activeNetworkConfig;

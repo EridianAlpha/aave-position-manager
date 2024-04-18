@@ -5,7 +5,7 @@ import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/acce
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-import {IAavePM} from "../interfaces/IAavePM.sol";
+import {IAavePM} from "../../src/interfaces/IAavePM.sol";
 
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha

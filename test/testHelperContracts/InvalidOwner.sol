@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import "../AavePM.sol";
+import "../../src/AavePM.sol";
 
 /// @notice This contract is used to test the .call functions failing in AavePM.sol
 /// @dev The test is found in AavePMTest.t.sol:

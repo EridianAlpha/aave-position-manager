@@ -13,9 +13,9 @@ import {AavePM} from "../../src/AavePM.sol";
 import {IAavePM} from "../../src/interfaces/IAavePM.sol";
 
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
-import {InvalidOwner} from "../../src/testHelperContracts/InvalidOwner.sol";
-import {InvalidUpgrade} from "../../src/testHelperContracts/InvalidUpgrade.sol";
-import {AavePMUpgradeExample} from "../../src/testHelperContracts/AavePMUpgradeExample.sol";
+import {InvalidOwner} from "../testHelperContracts/InvalidOwner.sol";
+import {InvalidUpgrade} from "../testHelperContracts/InvalidUpgrade.sol";
+import {AavePMUpgradeExample} from "../testHelperContracts/AavePMUpgradeExample.sol";
 
 import {DeployAavePM} from "../../script/DeployAavePM.s.sol";
 

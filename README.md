@@ -44,7 +44,7 @@ A smart contract manager for Aave positions.
 
 ## WebApp
 
-A WebApp is being developed to allow easy interact with the smart contract and will be linked here when ready.
+A WebApp is being developed to allow easy interaction with the smart contract and will be linked here when ready.
 
 ## Installation
 
@@ -112,7 +112,7 @@ Under development 🏗️
 
 ## Build and Deploy Documentation
 
-Instructions on how to build and deploy the documentation book are details here: [https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages](https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages)
+Instructions on how to build and deploy the documentation book are detailed here: [https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages](https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages)
 
 ## License
 

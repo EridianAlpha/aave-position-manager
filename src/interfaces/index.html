@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="en" class="dark" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>❱ interfaces</title>
+        <title>interfaces - AavePM - Aave Position Manager</title>
 
 
         <!-- Custom HTML head -->
@@ -37,7 +37,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "dark";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -62,7 +62,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('light')
+            html.classList.remove('dark')
             html.classList.add(theme);
             var body = document.querySelector('body');
             body.classList.remove('no-js')
@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item "><a href="../../index.html">Home</a></li><li class="chapter-item affix "><li class="part-title">src</li><li class="chapter-item expanded "><a href="../../src/interfaces/index.html" class="active">❱ interfaces</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a></li></ol></li><li class="chapter-item "><a href="../../src/testHelperContracts/index.html">❱ testHelperContracts</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../src/testHelperContracts/AavePMUpgradeExample.sol/contract.AavePMUpgradeExample.html">AavePMUpgradeExample</a></li><li class="chapter-item "><a href="../../src/testHelperContracts/InvalidOwner.sol/contract.InvalidOwner.html">InvalidOwner</a></li><li class="chapter-item "><a href="../../src/testHelperContracts/InvalidUpgrade.sol/contract.InvalidUpgrade.html">InvalidUpgrade</a></li></ol></li><li class="chapter-item "><a href="../../src/AavePM.sol/contract.AavePM.html">AavePM</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">README</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/index.html" class="active"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.1.</strong> IAavePM</a></li></ol></li><li class="chapter-item expanded "><a href="../../src/testHelperContracts/index.html"><strong aria-hidden="true">2.</strong> testHelperContracts</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../src/testHelperContracts/AavePMUpgradeExample.sol/contract.AavePMUpgradeExample.html"><strong aria-hidden="true">2.1.</strong> AavePMUpgradeExample</a></li><li class="chapter-item expanded "><a href="../../src/testHelperContracts/InvalidOwner.sol/contract.InvalidOwner.html"><strong aria-hidden="true">2.2.</strong> InvalidOwner</a></li><li class="chapter-item expanded "><a href="../../src/testHelperContracts/InvalidUpgrade.sol/contract.InvalidUpgrade.html"><strong aria-hidden="true">2.3.</strong> InvalidUpgrade</a></li></ol></li><li class="chapter-item expanded "><a href="../../src/AavePM.sol/contract.AavePM.html"><strong aria-hidden="true">3.</strong> AavePM</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -142,7 +142,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title"></h1>
+                    <h1 class="menu-title">AavePM - Aave Position Manager</h1>
 
                     <div class="right-buttons">
                         <a href="../../print.html" title="Print this book" aria-label="Print this book">

@@ -57,6 +57,10 @@ Configure an Ethernal account to interact with the smart contract through a UI (
 
 [https://docs.eridianalpha.com/ethereum-dev/useful-tools/ethernal](https://docs.eridianalpha.com/ethereum-dev/useful-tools/ethernal)
 
+```bash
+make ethernal
+```
+
 ## Testing
 
 ### Tests

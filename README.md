@@ -6,9 +6,26 @@
 >
 > ---
 
+- [Overview](#overview)
+  - [Key Functions](#key-functions)
+- [WebApp](#webapp)
+- [Installation](#installation)
+  - [Clone repository](#clone-repository)
+  - [Install Dependencies](#install-dependencies)
+  - [Create `.env` file](#create-env-file)
+  - [Configure Ethernal (optional)](#configure-ethernal-optional)
+- [Testing](#testing)
+  - [Tests](#tests)
+  - [Coverage](#coverage)
+- [Deployment](#deployment)
+- [Interactions](#interactions)
+  - [Deposit](#deposit)
+- [Build and Deploy Documentation](#build-and-deploy-documentation)
+- [License](#license)
+
 ## Overview
 
-Docs: [https://eridianalpha.github.io/aave-position-manager](https://eridianalpha.github.io/aave-position-manager)
+> Docs Site: [https://eridianalpha.github.io/aave-position-manager](https://eridianalpha.github.io/aave-position-manager)
 
 A smart contract manager for Aave positions.
 
@@ -93,7 +110,7 @@ make coverage
 
 Under development 🏗️
 
-## Docs
+## Build and Deploy Documentation
 
 Instructions on how to build and deploy the documentation book are details here: [https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages](https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages)
 

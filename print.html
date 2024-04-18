@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">README</a></li><li class="chapter-item expanded "><a href="src/interfaces/index.html"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.1.</strong> IAavePM</a></li></ol></li><li class="chapter-item expanded "><a href="src/testHelperContracts/index.html"><strong aria-hidden="true">2.</strong> testHelperContracts</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="src/testHelperContracts/AavePMUpgradeExample.sol/contract.AavePMUpgradeExample.html"><strong aria-hidden="true">2.1.</strong> AavePMUpgradeExample</a></li><li class="chapter-item expanded "><a href="src/testHelperContracts/InvalidOwner.sol/contract.InvalidOwner.html"><strong aria-hidden="true">2.2.</strong> InvalidOwner</a></li><li class="chapter-item expanded "><a href="src/testHelperContracts/InvalidUpgrade.sol/contract.InvalidUpgrade.html"><strong aria-hidden="true">2.3.</strong> InvalidUpgrade</a></li></ol></li><li class="chapter-item expanded "><a href="src/AavePM.sol/contract.AavePM.html"><strong aria-hidden="true">3.</strong> AavePM</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">README</a></li><li class="chapter-item expanded "><a href="src/interfaces/index.html"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.1.</strong> IAavePM</a></li></ol></li><li class="chapter-item expanded "><a href="src/AavePM.sol/contract.AavePM.html"><strong aria-hidden="true">2.</strong> AavePM</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -193,7 +193,7 @@ git submodule update
 <li><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/2c3d98cdf6114b89b3c7ced5a345d964c587dcd7/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d7b0482abb3659df624cdfc535d250b07df0c3e2/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -314,80 +314,14 @@ git submodule update
     uint24 fee;
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="contents-1"><a class="header" href="#contents-1">Contents</a></h1>
-<ul>
-<li><a href="src/testHelperContracts/AavePMUpgradeExample.sol/contract.AavePMUpgradeExample.html">AavePMUpgradeExample</a></li>
-<li><a href="src/testHelperContracts/InvalidOwner.sol/contract.InvalidOwner.html">InvalidOwner</a></li>
-<li><a href="src/testHelperContracts/InvalidUpgrade.sol/contract.InvalidUpgrade.html">InvalidUpgrade</a></li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="aavepmupgradeexample"><a class="header" href="#aavepmupgradeexample">AavePMUpgradeExample</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/2c3d98cdf6114b89b3c7ced5a345d964c587dcd7/src/testHelperContracts/AavePMUpgradeExample.sol">Git Source</a></p>
-<p><strong>Inherits:</strong>
-Initializable, AccessControlUpgradeable, UUPSUpgradeable</p>
-<p><strong>Author:</strong>
-EridianAlpha</p>
-<p>A contract to manage positions on Aave.</p>
-<h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
-<h3 id="owner_role"><a class="header" href="#owner_role">OWNER_ROLE</a></h3>
-<pre><code class="language-solidity">bytes32 private constant OWNER_ROLE = keccak256(&quot;OWNER_ROLE&quot;);
-</code></pre>
-<h3 id="version"><a class="header" href="#version">VERSION</a></h3>
-<pre><code class="language-solidity">string private constant VERSION = &quot;0.0.2&quot;;
-</code></pre>
-<h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
-<h3 id="_authorizeupgrade"><a class="header" href="#_authorizeupgrade">_authorizeUpgrade</a></h3>
-<p>Internal function to authorize an upgrade.</p>
-<p><em>Only callable by the owner role.</em></p>
-<pre><code class="language-solidity">function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE);
-</code></pre>
-<p><strong>Parameters</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_newImplementation</code></td><td><code>address</code></td><td>Address of the new contract implementation.</td></tr>
-</tbody></table>
-</div>
-<h3 id="getversion-1"><a class="header" href="#getversion-1">getVersion</a></h3>
-<pre><code class="language-solidity">function getVersion() public pure returns (string memory);
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="invalidowner"><a class="header" href="#invalidowner">InvalidOwner</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/2c3d98cdf6114b89b3c7ced5a345d964c587dcd7/src/testHelperContracts/InvalidOwner.sol">Git Source</a></p>
-<p>This contract is used to test the .call functions failing in AavePM.sol</p>
-<p>*The test is found in AavePMTest.t.sol:</p>
-<ul>
-<li>&quot;test_RescueEthCallFailureThrowsError()&quot;
-The reason this contract causes the .call to fail is because it doesn't have a receive()
-or fallback() function so the ETH can't be accepted.*</li>
-</ul>
-<h2 id="state-variables-1"><a class="header" href="#state-variables-1">State Variables</a></h2>
-<h3 id="aavepm"><a class="header" href="#aavepm">aavePM</a></h3>
-<pre><code class="language-solidity">AavePM aavePM;
-</code></pre>
-<h2 id="functions-2"><a class="header" href="#functions-2">Functions</a></h2>
-<h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
-<pre><code class="language-solidity">constructor(address aavePMAddress);
-</code></pre>
-<h3 id="aavepmrescuealleth"><a class="header" href="#aavepmrescuealleth">aavePMRescueAllETH</a></h3>
-<pre><code class="language-solidity">function aavePMRescueAllETH() public payable;
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="invalidupgrade"><a class="header" href="#invalidupgrade">InvalidUpgrade</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/2c3d98cdf6114b89b3c7ced5a345d964c587dcd7/src/testHelperContracts/InvalidUpgrade.sol">Git Source</a></p>
-<p>This contract is used to test uups upgrade to an invalid contract</p>
-<p><em>The contact is not a valid upgradeable contract so the test should fail</em></p>
-<h2 id="state-variables-2"><a class="header" href="#state-variables-2">State Variables</a></h2>
-<h3 id="version-1"><a class="header" href="#version-1">VERSION</a></h3>
-<pre><code class="language-solidity">string private constant VERSION = &quot;INVALID_UPGRADE&quot;;
-</code></pre>
-<h2 id="functions-3"><a class="header" href="#functions-3">Functions</a></h2>
-<h3 id="getversion-2"><a class="header" href="#getversion-2">getVersion</a></h3>
-<pre><code class="language-solidity">function getVersion() public pure returns (string memory);
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm-1"><a class="header" href="#aavepm-1">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/2c3d98cdf6114b89b3c7ced5a345d964c587dcd7/src/AavePM.sol">Git Source</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d7b0482abb3659df624cdfc535d250b07df0c3e2/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AavePM.sol//src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, Initializable, AccessControlUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>A contract to manage positions on Aave.</p>
-<h2 id="state-variables-3"><a class="header" href="#state-variables-3">State Variables</a></h2>
+<h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="s_creator"><a class="header" href="#s_creator">s_creator</a></h3>
 <pre><code class="language-solidity">address private s_creator;
 </code></pre>
@@ -406,10 +340,10 @@ EridianAlpha</p>
 <h3 id="s_uniswapv3wstethethpool"><a class="header" href="#s_uniswapv3wstethethpool">s_uniswapV3WstETHETHPool</a></h3>
 <pre><code class="language-solidity">UniswapV3Pool private s_uniswapV3WstETHETHPool;
 </code></pre>
-<h3 id="version-2"><a class="header" href="#version-2">VERSION</a></h3>
+<h3 id="version"><a class="header" href="#version">VERSION</a></h3>
 <pre><code class="language-solidity">string private constant VERSION = &quot;0.0.1&quot;;
 </code></pre>
-<h3 id="owner_role-1"><a class="header" href="#owner_role-1">OWNER_ROLE</a></h3>
+<h3 id="owner_role"><a class="header" href="#owner_role">OWNER_ROLE</a></h3>
 <pre><code class="language-solidity">bytes32 private constant OWNER_ROLE = keccak256(&quot;OWNER_ROLE&quot;);
 </code></pre>
 <h3 id="manager_role"><a class="header" href="#manager_role">MANAGER_ROLE</a></h3>
@@ -418,8 +352,8 @@ EridianAlpha</p>
 <h3 id="uniswapv3_wsteth_eth_pool_slippage"><a class="header" href="#uniswapv3_wsteth_eth_pool_slippage">UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE</a></h3>
 <pre><code class="language-solidity">uint256 private constant UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE = 200;
 </code></pre>
-<h2 id="functions-4"><a class="header" href="#functions-4">Functions</a></h2>
-<h3 id="constructor-1"><a class="header" href="#constructor-1">constructor</a></h3>
+<h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
+<h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
 <pre><code class="language-solidity">constructor();
 </code></pre>
 <h3 id="receive"><a class="header" href="#receive">receive</a></h3>
@@ -438,7 +372,7 @@ EridianAlpha</p>
     uint256 initialHealthFactorTarget
 ) public initializer;
 </code></pre>
-<h3 id="_authorizeupgrade-1"><a class="header" href="#_authorizeupgrade-1">_authorizeUpgrade</a></h3>
+<h3 id="_authorizeupgrade"><a class="header" href="#_authorizeupgrade">_authorizeUpgrade</a></h3>
 <p>Internal function to authorize an upgrade.</p>
 <p><em>Only callable by the owner role.</em></p>
 <pre><code class="language-solidity">function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE);
@@ -547,7 +481,7 @@ Emits a RescueEth event.</em></p>
 <tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>address of the creator.</td></tr>
 </tbody></table>
 </div>
-<h3 id="getversion-3"><a class="header" href="#getversion-3">getVersion</a></h3>
+<h3 id="getversion-1"><a class="header" href="#getversion-1">getVersion</a></h3>
 <pre><code class="language-solidity">function getVersion() public pure returns (string memory);
 </code></pre>
 <h3 id="getrolehash-1"><a class="header" href="#getrolehash-1">getRoleHash</a></h3>

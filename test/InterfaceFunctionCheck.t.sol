@@ -15,7 +15,7 @@ contract InterfaceTest is Test, Script {
 
         // Command as an array with arguments
         string[] memory command = new string[](4);
-        command[0] = "./compare_methods.sh";
+        command[0] = "./compare_methods.sh"; // Path to bash script
         command[1] = "./src/Interfaces/IAavePM.sol"; // Path to the interface contract file
         command[2] = "AavePM"; // Contract name
         command[3] = ignoreList; // Ignore list as a single string

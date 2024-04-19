@@ -30,15 +30,15 @@ for METHOD in $METHODS; do
     METHOD_NAME=$(echo "$METHOD" | cut -d'(' -f1)
 
     # Skip if the method name is in the ignore array
-    if printf '%s\n' "${IGNORE_ARRAY[@]}" | grep -qx "$METHOD_NAME"; then
+    if printf '%s\n' "${IGNORE_ARRAY[@]}" | grep -qxE "\b$METHOD_NAME\b"; then
         continue
     fi
 
     # Count occurrences in the contract
-    CONTRACT_COUNT=$(grep -o "$METHOD_NAME" <<< "$METHODS" | wc -l)
+    CONTRACT_COUNT=$(grep -ow "$METHOD_NAME" <<< "$METHODS" | wc -l)
 
     # Count occurrences in the interface contract file
-    INTERFACE_COUNT=$(grep -o "$METHOD_NAME" "$INTERFACE_CONTRACT_FILE" | wc -l)
+    INTERFACE_COUNT=$(grep -ow "$METHOD_NAME" "$INTERFACE_CONTRACT_FILE" | wc -l)
 
     # Check for the presence and the count match of the method name
     if [[ $INTERFACE_COUNT -eq 0 ]]; then

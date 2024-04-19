@@ -18,6 +18,7 @@
   - [Tests](#tests)
   - [Coverage](#coverage)
 - [Deployment](#deployment)
+- [Upgrades](#upgrades)
 - [Interactions](#interactions)
   - [Deposit](#deposit)
 - [Build and Deploy Documentation](#build-and-deploy-documentation)
@@ -103,6 +104,10 @@ make coverage
 | Holesky | `make deploy-holesky`  |
 | Mainnet | `#make deploy-mainnet` |
 | Base    | `#make deploy-base`    |
+
+## Upgrades
+
+Under development 🏗️
 
 ## Interactions
 

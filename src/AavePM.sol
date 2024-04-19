@@ -21,29 +21,32 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // Addresses
     address private s_creator; // Creator of the contract
-    mapping(string => address) s_contractAddresses;
-
-    // Token Addresses
-    mapping(string => address) s_tokenAddresses;
+    mapping(string => address) private s_contractAddresses;
+    mapping(string => address) private s_tokenAddresses;
 
     // Values
     uint256 private s_healthFactorTarget;
-    uint256 private s_healthFactorMinimum;
-
     UniswapV3Pool private s_uniswapV3WstETHETHPool;
 
     // ================================================================
     // │                           CONSTANTS                          │
     // ================================================================
-    // Version
+    /// @notice The version of the contract.
+    /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
     string private constant VERSION = "0.0.1";
 
-    // Roles
+    /// @notice The role hashes for the contract.
+    /// @dev Two independent roles are defined: `OWNER_ROLE` and `MANAGER_ROLE`.
     bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
     bytes32 private constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
-    // Values
-    uint256 private constant UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE = 200; // 0.5% // TODO: Make this a calldata parameter
+    // TODO: Make this a calldata parameter
+    uint256 private constant UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE = 200; // 0.5%
+
+    /// @notice The minimum Health Factor target.
+    /// @dev The value is hardcoded in the contract to prevent the position from being liquidated due to a low target.
+    ///      A contract upgrade is required to change this value.
+    uint256 private constant HEALTH_FACTOR_TARGET_MINIMUM = 2;
 
     // ================================================================
     // │                           MODIFIERS                          │
@@ -52,7 +55,6 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                           FUNCTIONS                          │
     // ================================================================
-
     /// @notice Constructor implemented but unused.
     /// @dev Contract is upgradeable and therefore the constructor is not used.
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -60,8 +62,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         _disableInitializers();
     }
 
+    /// @notice // TODO
     receive() external payable {}
 
+    /// @notice // TODO
     fallback() external payable {
         revert AavePM__FunctionDoesNotExist();
     }
@@ -69,7 +73,6 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                    FUNCTIONS - INITIALIZER                   │
     // ================================================================
-
     /// @notice Initializes contract with the owner and relevant addresses and parameters for operation.
     /// @dev This function sets up all necessary state variables for the contract and can only be called once due to the `initializer` modifier.
     /// @param owner The address of the owner of the contract.
@@ -100,19 +103,17 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         s_uniswapV3WstETHETHPool =
             UniswapV3Pool({poolAddress: uniswapV3WstETHETHPoolAddress, fee: uniswapV3WstETHETHPoolFee});
 
-        // Convert the contractAddresses array to a mapping
+        // Convert the contractAddresses array to a mapping.
         for (uint256 i = 0; i < contractAddresses.length; i++) {
             s_contractAddresses[contractAddresses[i].identifier] = contractAddresses[i].contractAddress;
         }
 
-        // Convert the tokenAddresses array to a mapping
+        // Convert the tokenAddresses array to a mapping.
         for (uint256 i = 0; i < tokenAddresses.length; i++) {
             s_tokenAddresses[tokenAddresses[i].identifier] = tokenAddresses[i].tokenAddress;
         }
 
         s_healthFactorTarget = initialHealthFactorTarget;
-        // TODO: Set elsewhere to remove magic number
-        s_healthFactorMinimum = 2;
     }
 
     // ================================================================
@@ -157,8 +158,9 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         // Should be different from the current healthFactorTarget
         if (s_healthFactorTarget == _healthFactorTarget) revert AavePM__HealthFactorUnchanged();
 
-        // Must be greater than the s_healthFactorMinimum
-        if (_healthFactorTarget < s_healthFactorMinimum) revert AavePM__HealthFactorBelowMinimum();
+        // New healthFactorTarget must be greater than the HEALTH_FACTOR_TARGET_MINIMUM.
+        // Failsafe to prevent the position from being liquidated due to a low target.
+        if (_healthFactorTarget < HEALTH_FACTOR_TARGET_MINIMUM) revert AavePM__HealthFactorBelowMinimum();
 
         emit HealthFactorTargetUpdated(s_healthFactorTarget, _healthFactorTarget);
         s_healthFactorTarget = _healthFactorTarget;
@@ -281,8 +283,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @notice Getter function to get the Health Factor minimum.
     /// @dev Public function to allow anyone to view the Health Factor minimum value.
     /// @return healthFactorMinimum The Health Factor minimum value.
-    function getHealthFactorMinimum() public view returns (uint256 healthFactorMinimum) {
-        return s_healthFactorMinimum;
+    function getHealthFactorMinimum() public pure returns (uint256 healthFactorMinimum) {
+        return HEALTH_FACTOR_TARGET_MINIMUM;
     }
 
     /// @notice Getter function to get the contract's ETH balance.

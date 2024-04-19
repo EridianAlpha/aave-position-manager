@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/3b4adb83ab953ed82584adcabfd48f3f7650dc73/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/cb91521c48984a08da90a0da494743ce235a1506/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, Initializable, AccessControlUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -251,7 +251,7 @@ EridianAlpha</p>
 </div>
 <h3 id="_authorizeupgrade"><a class="header" href="#_authorizeupgrade">_authorizeUpgrade</a></h3>
 <p>Internal function to authorize an upgrade.</p>
-<p><em>Only callable by the owner role.</em></p>
+<p><em>Caller must have <code>OWNER_ROLE</code>.</em></p>
 <pre><code class="language-solidity">function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -259,64 +259,33 @@ EridianAlpha</p>
 <tr><td><code>_newImplementation</code></td><td><code>address</code></td><td>Address of the new contract implementation.</td></tr>
 </tbody></table>
 </div>
-<h3 id="updateaave"><a class="header" href="#updateaave">updateAave</a></h3>
-<p>Update the Aave contract address.</p>
-<p><em>Only the contract owner can call this function.
-Emits an <code>AaveUpdated</code> event.</em></p>
-<pre><code class="language-solidity">function updateAave(address _aave) external onlyRole(OWNER_ROLE);
+<h3 id="updatecontractaddress"><a class="header" href="#updatecontractaddress">updateContractAddress</a></h3>
+<p>Generic update function to set the contract address for a given identifier.</p>
+<p><em>Caller must have <code>OWNER_ROLE</code>.
+Emits a <code>ContractAddressUpdated</code> event.</em></p>
+<pre><code class="language-solidity">function updateContractAddress(string memory identifier, address _newContractAddress) external onlyRole(OWNER_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_aave</code></td><td><code>address</code></td><td>The new Aave contract address.</td></tr>
+<tr><td><code>identifier</code></td><td><code>string</code></td><td>The identifier for the contract address.</td></tr>
+<tr><td><code>_newContractAddress</code></td><td><code>address</code></td><td>The new contract address.</td></tr>
 </tbody></table>
 </div>
-<h3 id="updateuniswapv3router"><a class="header" href="#updateuniswapv3router">updateUniswapV3Router</a></h3>
-<p>Update the UniswapV3Router contract address.</p>
-<p><em>Only the contract owner can call this function.
-Emits a <code>UniswapV3RouterUpdated</code> event.</em></p>
-<pre><code class="language-solidity">function updateUniswapV3Router(address _uniswapV3Router) external onlyRole(OWNER_ROLE);
+<h3 id="updatetokenaddress"><a class="header" href="#updatetokenaddress">updateTokenAddress</a></h3>
+<p>Generic update function to set the token address for a given identifier.</p>
+<p><em>Caller must have <code>OWNER_ROLE</code>.
+Emits a <code>TokenAddressUpdated</code> event.</em></p>
+<pre><code class="language-solidity">function updateTokenAddress(string memory identifier, address _newTokenAddress) external onlyRole(OWNER_ROLE);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_uniswapV3Router</code></td><td><code>address</code></td><td>The new UniswapV3Router contract address.</td></tr>
-</tbody></table>
-</div>
-<h3 id="updateweth9"><a class="header" href="#updateweth9">updateWETH9</a></h3>
-<p>Update the WETH9 contract address.</p>
-<p><em>Only the contract owner can call this function.
-Emits a <code>WETH9Updated</code> event.</em></p>
-<pre><code class="language-solidity">function updateWETH9(address _WETH9) external onlyRole(OWNER_ROLE);
-</code></pre>
-<p><strong>Parameters</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_WETH9</code></td><td><code>address</code></td><td>The new WETH9 contract address.</td></tr>
-</tbody></table>
-</div>
-<h3 id="updatewsteth"><a class="header" href="#updatewsteth">updateWstETH</a></h3>
-<p>Update the wstETH contract address.</p>
-<p><em>Only the contract owner can call this function.
-Emits a <code>WstETHUpdated</code> event.</em></p>
-<pre><code class="language-solidity">function updateWstETH(address _wstETH) external onlyRole(OWNER_ROLE);
-</code></pre>
-<p><strong>Parameters</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_wstETH</code></td><td><code>address</code></td><td>The new wstETH contract address.</td></tr>
-</tbody></table>
-</div>
-<h3 id="updateusdc"><a class="header" href="#updateusdc">updateUSDC</a></h3>
-<p>Update the USDC contract address.</p>
-<p><em>Only the contract owner can call this function.
-Emits a <code>USDCUpdated</code> event.</em></p>
-<pre><code class="language-solidity">function updateUSDC(address _USDC) external onlyRole(OWNER_ROLE);
-</code></pre>
-<p><strong>Parameters</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_USDC</code></td><td><code>address</code></td><td>The new USDC contract address.</td></tr>
+<tr><td><code>identifier</code></td><td><code>string</code></td><td>The identifier for the token address.</td></tr>
+<tr><td><code>_newTokenAddress</code></td><td><code>address</code></td><td>The new token address.</td></tr>
 </tbody></table>
 </div>
 <h3 id="updatehealthfactortarget"><a class="header" href="#updatehealthfactortarget">updateHealthFactorTarget</a></h3>
 <p>Update the Health Factor target.</p>
-<p><em>Only the contract owner can call this function.
+<p><em>Caller must have <code>OWNER_ROLE</code>.
 Emits a <code>HealthFactorTargetUpdated</code> event.</em></p>
 <pre><code class="language-solidity">function updateHealthFactorTarget(uint256 _healthFactorTarget) external onlyRole(OWNER_ROLE);
 </code></pre>
@@ -334,7 +303,7 @@ Emits a <code>HealthFactorTargetUpdated</code> event.</em></p>
 In normal operation, the contract shouldn't hold ETH,
 as it is used to swap for wstETH.
 It can be called without an argument to rescue the entire balance.
-Caller must have the <code>OWNER_ROLE</code> role.
+Caller must have <code>OWNER_ROLE</code>.
 The use of nonReentrant isn't required due to the <code>OWNER_ROLE</code> restriction and it drains 100% of the ETH balance anyway.
 Throws <code>AavePM__RescueEthFailed</code> if the ETH transfer fails.
 Emits a <code>RescueEth</code> event.</em></p>
@@ -347,8 +316,8 @@ Emits a <code>RescueEth</code> event.</em></p>
 </div>
 <h3 id="swapethtowsteth"><a class="header" href="#swapethtowsteth">swapETHToWstETH</a></h3>
 <p>Swaps the contract's entire ETH balance for wstETH using a Uniswap V3 pool.</p>
-<p><em>This function requires the caller to have the <code>MANAGER_ROLE</code>.
-It calculates the minimum amount of wstETH that should be received based on the current pool's price ratio and a predefined slippage tolerance.
+<p><em>Caller must have <code>MANAGER_ROLE</code>.
+Calculates the minimum amount of wstETH that should be received based on the current pool's price ratio and a predefined slippage tolerance.
 Reverts if there is no ETH in the contract or if the transaction doesn't meet the <code>amountOutMinimum</code> criteria due to price movements.</em></p>
 <pre><code class="language-solidity">function swapETHToWstETH() public onlyRole(MANAGER_ROLE) returns (uint256 amountOut);
 </code></pre>

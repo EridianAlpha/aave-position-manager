@@ -52,6 +52,9 @@ holesky-network:
 ethernal:
 	ETHERNAL_API_TOKEN=${ETHERNAL_API_TOKEN} ethernal listen --astUpload true
 
+# ================================================================
+# │                         FORK TESTING                         │
+# ================================================================
 test-fork-mainnet:; forge test --fork-url ${MAINNET_RPC_URL}
 test-fork-mainnet-v:; forge test --fork-url ${MAINNET_RPC_URL} -vvvv
 test-fork-mainnet-summary:; forge test --fork-url ${MAINNET_RPC_URL} --summary

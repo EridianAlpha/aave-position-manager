@@ -23,10 +23,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     address private s_creator; // Creator of the contract
     mapping(string => address) private s_contractAddresses;
     mapping(string => address) private s_tokenAddresses;
+    mapping(string => UniswapV3Pool) private s_uniswapV3Pools;
 
     // Values
     uint256 private s_healthFactorTarget;
-    UniswapV3Pool private s_uniswapV3WstETHETHPool;
 
     // ================================================================
     // │                           CONSTANTS                          │
@@ -78,13 +78,13 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @param owner The address of the owner of the contract.
     /// @param contractAddresses An array of `ContractAddress` structures containing addresses of related contracts.
     /// @param tokenAddresses An array of `TokenAddress` structures containing addresses of relevant ERC-20 tokens.
-    /// @param uniswapV3WstETHETHPool Struct containing the address and fee of the Uniswap V3 pool for wstETH/ETH.
+    /// @param uniswapV3Pools An array of `UniswapV3Pool` structures containing the address and fee of the UniswapV3 pools.
     /// @param initialHealthFactorTarget The initial target health factor, used to manage risk.
     function initialize(
         address owner,
         ContractAddress[] memory contractAddresses,
         TokenAddress[] memory tokenAddresses,
-        UniswapV3Pool memory uniswapV3WstETHETHPool,
+        UniswapV3Pool[] memory uniswapV3Pools,
         uint256 initialHealthFactorTarget
     ) public initializer {
         __AccessControl_init();
@@ -98,8 +98,6 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         _grantRole(MANAGER_ROLE, owner);
         _setRoleAdmin(MANAGER_ROLE, OWNER_ROLE);
 
-        s_uniswapV3WstETHETHPool = uniswapV3WstETHETHPool;
-
         // Convert the contractAddresses array to a mapping.
         for (uint256 i = 0; i < contractAddresses.length; i++) {
             s_contractAddresses[contractAddresses[i].identifier] = contractAddresses[i].contractAddress;
@@ -108,6 +106,12 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         // Convert the tokenAddresses array to a mapping.
         for (uint256 i = 0; i < tokenAddresses.length; i++) {
             s_tokenAddresses[tokenAddresses[i].identifier] = tokenAddresses[i].tokenAddress;
+        }
+
+        // Convert the uniswapV3Pools array to a mapping.
+        for (uint256 i = 0; i < uniswapV3Pools.length; i++) {
+            s_uniswapV3Pools[uniswapV3Pools[i].identifier] =
+                UniswapV3Pool(uniswapV3Pools[i].identifier, uniswapV3Pools[i].poolAddress, uniswapV3Pools[i].fee);
         }
 
         s_healthFactorTarget = initialHealthFactorTarget;
@@ -127,24 +131,24 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @notice Generic update function to set the contract address for a given identifier.
     /// @dev Caller must have `OWNER_ROLE`.
     ///      Emits a `ContractAddressUpdated` event.
-    /// @param identifier The identifier for the contract address.
+    /// @param _identifier The identifier for the contract address.
     /// @param _newContractAddress The new contract address.
-    function updateContractAddress(string memory identifier, address _newContractAddress)
+    function updateContractAddress(string memory _identifier, address _newContractAddress)
         external
         onlyRole(OWNER_ROLE)
     {
-        emit ContractAddressUpdated(identifier, s_contractAddresses[identifier], _newContractAddress);
-        s_contractAddresses[identifier] = _newContractAddress;
+        emit ContractAddressUpdated(_identifier, s_contractAddresses[_identifier], _newContractAddress);
+        s_contractAddresses[_identifier] = _newContractAddress;
     }
 
     /// @notice Generic update function to set the token address for a given identifier.
     /// @dev Caller must have `OWNER_ROLE`.
     ///      Emits a `TokenAddressUpdated` event.
-    /// @param identifier The identifier for the token address.
+    /// @param _identifier The identifier for the token address.
     /// @param _newTokenAddress The new token address.
-    function updateTokenAddress(string memory identifier, address _newTokenAddress) external onlyRole(OWNER_ROLE) {
-        emit TokenAddressUpdated(identifier, s_tokenAddresses[identifier], _newTokenAddress);
-        s_tokenAddresses[identifier] = _newTokenAddress;
+    function updateTokenAddress(string memory _identifier, address _newTokenAddress) external onlyRole(OWNER_ROLE) {
+        emit TokenAddressUpdated(_identifier, s_tokenAddresses[_identifier], _newTokenAddress);
+        s_tokenAddresses[_identifier] = _newTokenAddress;
     }
 
     /// @notice Update the Health Factor target.
@@ -162,6 +166,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         emit HealthFactorTargetUpdated(s_healthFactorTarget, _healthFactorTarget);
         s_healthFactorTarget = _healthFactorTarget;
     }
+
+    /// @notice Update UniSwapV3 pool details.
+    /// @dev Caller must have `OWNER_ROLE`.
+    // function updateUniswapV3WstETHETHPool(string memory _identifier, address _) external onlyRole(OWNER_ROLE) {}
 
     // ================================================================
     // │                        FUNCTIONS - ETH                       │
@@ -207,7 +215,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         require(ethAmount > 0, "No ETH available");
 
         // Calculate minimum output amount for the wstETH/ETH pool
-        IUniswapV3Pool pool = IUniswapV3Pool(s_uniswapV3WstETHETHPool.poolAddress);
+        IUniswapV3Pool pool = IUniswapV3Pool(s_uniswapV3Pools["wstETHETH"].poolAddress);
         (uint160 sqrtRatioX96,,,,,,) = pool.slot0(); // Fetch current ratio from the pool
         uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (1e18) >> (96 * 2);
         uint256 expectedOut = (ethAmount * 1e18) / currentRatio;
@@ -219,7 +227,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
             tokenIn: s_tokenAddresses["WETH9"],
             tokenOut: s_tokenAddresses["wstETH"],
-            fee: s_uniswapV3WstETHETHPool.fee,
+            fee: s_uniswapV3Pools["wstETHETH"].fee,
             recipient: address(this),
             deadline: block.timestamp,
             amountIn: ethAmount,
@@ -256,18 +264,18 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
 
     /// @notice Generic getter function to get the contract address for a given identifier.
     /// @dev Public function to allow anyone to view the contract address for the given identifier.
-    /// @param identifier The identifier for the contract address.
+    /// @param _identifier The identifier for the contract address.
     /// @return contractAddress The contract address corresponding to the given identifier.
-    function getContractAddress(string memory identifier) public view returns (address contractAddress) {
-        return s_contractAddresses[identifier];
+    function getContractAddress(string memory _identifier) public view returns (address contractAddress) {
+        return s_contractAddresses[_identifier];
     }
 
     /// @notice Generic getter function to get the token address for a given identifier.
     /// @dev Public function to allow anyone to view the token address for the given identifier.
-    /// @param identifier The identifier for the contract address.
+    /// @param _identifier The identifier for the contract address.
     /// @return tokenAddress The token address corresponding to the given identifier.
-    function getTokenAddress(string memory identifier) public view returns (address tokenAddress) {
-        return s_tokenAddresses[identifier];
+    function getTokenAddress(string memory _identifier) public view returns (address tokenAddress) {
+        return s_tokenAddresses[_identifier];
     }
 
     /// @notice Getter function to get the Health Factor target.

@@ -17,7 +17,7 @@ contract HelperConfig is Script {
     struct NetworkConfig {
         IAavePM.ContractAddress[] contractAddresses;
         IAavePM.TokenAddress[] tokenAddresses;
-        IAavePM.UniswapV3Pool uniswapV3WstETHETHPool;
+        IAavePM.UniswapV3Pool[] uniswapV3Pools;
         uint256 initialHealthFactorTarget;
     }
 
@@ -61,13 +61,17 @@ contract HelperConfig is Script {
         tokenAddresses[1] = IAavePM.TokenAddress("wstETH", wstETHAddress);
         tokenAddresses[2] = IAavePM.TokenAddress("USDC", usdcAddress);
 
+        // UniswapV3 pools
+        IAavePM.UniswapV3Pool[] memory uniswapV3Pools = new IAavePM.UniswapV3Pool[](2);
+        uniswapV3Pools[0] = IAavePM.UniswapV3Pool(
+            "wstETHETH", uniswapV3WstETHETHPoolAddress, uint24(vm.envUint("INITIAL_UNISWAP_V3_WSTETH_POOL_FEE"))
+        );
+        // TODO: Add USDC pool here
+
         activeNetworkConfig = NetworkConfig({
             contractAddresses: contractAddresses,
             tokenAddresses: tokenAddresses,
-            uniswapV3WstETHETHPool: IAavePM.UniswapV3Pool({
-                poolAddress: uniswapV3WstETHETHPoolAddress,
-                fee: uint24(vm.envUint("INITIAL_UNISWAP_V3_WSTETH_POOL_FEE"))
-            }),
+            uniswapV3Pools: uniswapV3Pools,
             initialHealthFactorTarget: vm.envUint("INITIAL_HEALTH_FACTOR_TARGET")
         });
 

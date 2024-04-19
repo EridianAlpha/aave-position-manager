@@ -28,7 +28,7 @@ contract AavePMTestSetup is Test {
 
     mapping(string => address) s_contractAddresses;
     mapping(string => address) s_tokenAddresses;
-    IAavePM.UniswapV3Pool uniswapV3WstETHETHPool;
+    mapping(string => IAavePM.UniswapV3Pool) private s_uniswapV3Pools;
     uint256 initialHealthFactorTarget;
 
     string constant INITIAL_VERSION = "0.0.1";
@@ -54,7 +54,7 @@ contract AavePMTestSetup is Test {
 
         IAavePM.ContractAddress[] memory contractAddresses = config.contractAddresses;
         IAavePM.TokenAddress[] memory tokenAddresses = config.tokenAddresses;
-        uniswapV3WstETHETHPool = config.uniswapV3WstETHETHPool;
+        IAavePM.UniswapV3Pool[] memory uniswapV3Pools = config.uniswapV3Pools;
         initialHealthFactorTarget = config.initialHealthFactorTarget;
 
         // Convert the contractAddresses array to a mapping
@@ -65,6 +65,13 @@ contract AavePMTestSetup is Test {
         // Convert the tokenAddresses array to a mapping
         for (uint256 i = 0; i < tokenAddresses.length; i++) {
             s_tokenAddresses[tokenAddresses[i].identifier] = tokenAddresses[i].tokenAddress;
+        }
+
+        // Convert the uniswapV3Pools array to a mapping.
+        for (uint256 i = 0; i < uniswapV3Pools.length; i++) {
+            s_uniswapV3Pools[uniswapV3Pools[i].identifier] = IAavePM.UniswapV3Pool(
+                uniswapV3Pools[i].identifier, uniswapV3Pools[i].poolAddress, uniswapV3Pools[i].fee
+            );
         }
 
         // Add the owner1 user as the new owner and manager

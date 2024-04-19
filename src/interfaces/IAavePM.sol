@@ -27,6 +27,7 @@ interface IAavePM {
     }
 
     struct UniswapV3Pool {
+        string identifier;
         address poolAddress;
         uint24 fee;
     }
@@ -50,7 +51,7 @@ interface IAavePM {
         address owner,
         ContractAddress[] memory contractAddresses,
         TokenAddress[] memory tokenAddresses,
-        UniswapV3Pool memory uniswapV3WstETHETHPool,
+        UniswapV3Pool[] memory uniswapV3Pools,
         uint256 initialHealthFactorTarget
     ) external;
 

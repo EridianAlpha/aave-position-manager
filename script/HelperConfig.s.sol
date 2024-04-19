@@ -2,6 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Script} from "forge-std/Script.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 import {IAavePM} from "../src/interfaces/IAavePM.sol";
 
@@ -41,7 +42,7 @@ contract HelperConfig is Script {
             wstETHAddress = vm.envAddress("BASE_ADDRESS_WSTETH");
             usdcAddress = vm.envAddress("BASE_ADDRESS_USDC");
         } else {
-            revert("Chain not supported");
+            revert(string(abi.encodePacked("Chain not supported: ", Strings.toString(block.chainid))));
         }
     }
 

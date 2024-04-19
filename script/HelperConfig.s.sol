@@ -17,8 +17,7 @@ contract HelperConfig is Script {
     struct NetworkConfig {
         IAavePM.ContractAddress[] contractAddresses;
         IAavePM.TokenAddress[] tokenAddresses;
-        address uniswapV3WstETHETHPoolAddress;
-        uint24 uniswapV3WstETHETHPoolFee;
+        IAavePM.UniswapV3Pool uniswapV3WstETHETHPool;
         uint256 initialHealthFactorTarget;
     }
 
@@ -52,7 +51,7 @@ contract HelperConfig is Script {
         getChainVariables();
 
         // Contract addresses
-        IAavePM.ContractAddress[] memory contractAddresses = new IAavePM.ContractAddress[](3);
+        IAavePM.ContractAddress[] memory contractAddresses = new IAavePM.ContractAddress[](2);
         contractAddresses[0] = IAavePM.ContractAddress("aave", aaveAddress);
         contractAddresses[1] = IAavePM.ContractAddress("uniswapV3Router", uniswapV3RouterAddress);
 
@@ -65,8 +64,10 @@ contract HelperConfig is Script {
         activeNetworkConfig = NetworkConfig({
             contractAddresses: contractAddresses,
             tokenAddresses: tokenAddresses,
-            uniswapV3WstETHETHPoolAddress: uniswapV3WstETHETHPoolAddress,
-            uniswapV3WstETHETHPoolFee: uint24(vm.envUint("INITIAL_UNISWAP_V3_WSTETH_POOL_FEE")),
+            uniswapV3WstETHETHPool: IAavePM.UniswapV3Pool({
+                poolAddress: uniswapV3WstETHETHPoolAddress,
+                fee: uint24(vm.envUint("INITIAL_UNISWAP_V3_WSTETH_POOL_FEE"))
+            }),
             initialHealthFactorTarget: vm.envUint("INITIAL_HEALTH_FACTOR_TARGET")
         });
 

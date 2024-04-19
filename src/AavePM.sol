@@ -78,15 +78,13 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @param owner The address of the owner of the contract.
     /// @param contractAddresses An array of `ContractAddress` structures containing addresses of related contracts.
     /// @param tokenAddresses An array of `TokenAddress` structures containing addresses of relevant ERC-20 tokens.
-    /// @param uniswapV3WstETHETHPoolAddress The address of the Uniswap V3 WSTETH-ETH pool.
-    /// @param uniswapV3WstETHETHPoolFee The fee tier of the Uniswap V3 WSTETH-ETH pool.
+    /// @param uniswapV3WstETHETHPool Struct containing the address and fee of the Uniswap V3 pool for wstETH/ETH.
     /// @param initialHealthFactorTarget The initial target health factor, used to manage risk.
     function initialize(
         address owner,
         ContractAddress[] memory contractAddresses,
         TokenAddress[] memory tokenAddresses,
-        address uniswapV3WstETHETHPoolAddress,
-        uint24 uniswapV3WstETHETHPoolFee,
+        UniswapV3Pool memory uniswapV3WstETHETHPool,
         uint256 initialHealthFactorTarget
     ) public initializer {
         __AccessControl_init();
@@ -100,8 +98,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         _grantRole(MANAGER_ROLE, owner);
         _setRoleAdmin(MANAGER_ROLE, OWNER_ROLE);
 
-        s_uniswapV3WstETHETHPool =
-            UniswapV3Pool({poolAddress: uniswapV3WstETHETHPoolAddress, fee: uniswapV3WstETHETHPoolFee});
+        s_uniswapV3WstETHETHPool = uniswapV3WstETHETHPool;
 
         // Convert the contractAddresses array to a mapping.
         for (uint256 i = 0; i < contractAddresses.length; i++) {
@@ -280,10 +277,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         return s_healthFactorTarget;
     }
 
-    /// @notice Getter function to get the Health Factor minimum.
-    /// @dev Public function to allow anyone to view the Health Factor minimum value.
-    /// @return healthFactorMinimum The Health Factor minimum value.
-    function getHealthFactorMinimum() public pure returns (uint256 healthFactorMinimum) {
+    /// @notice Getter function to get the Health Factor Target minimum.
+    /// @dev Public function to allow anyone to view the Health Factor Target minimum value.
+    /// @return healthFactorTargetMinimum The Health Factor Target minimum value.
+    function getHealthFactorTargetMinimum() public pure returns (uint256 healthFactorTargetMinimum) {
         return HEALTH_FACTOR_TARGET_MINIMUM;
     }
 

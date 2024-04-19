@@ -51,8 +51,7 @@ interface IAavePM {
         address owner,
         ContractAddress[] memory contractAddresses,
         TokenAddress[] memory tokenAddresses,
-        address uniswapV3WstETHETHPoolAddress,
-        uint24 uniswapV3WstETHETHPoolFee,
+        UniswapV3Pool memory uniswapV3WstETHETHPool,
         uint256 initialHealthFactorTarget
     ) external;
 
@@ -77,12 +76,12 @@ interface IAavePM {
     // ================================================================
     // │                       FUNCTIONS - GETTERS                    │
     // ================================================================
-    function getCreator() external view returns (address);
-    function getVersion() external pure returns (string memory);
-    function getRoleHash(string memory) external pure returns (bytes32);
-    function getContractAddress(string memory) external view returns (address);
-    function getTokenAddress(string memory) external view returns (address);
-    function getHealthFactorTarget() external view returns (uint256);
-    function getHealthFactorMinimum() external view returns (uint256);
-    function getRescueEthBalance() external view returns (uint256);
+    function getCreator() external view returns (address creator);
+    function getVersion() external pure returns (string memory version);
+    function getRoleHash(string memory) external pure returns (bytes32 roleHash);
+    function getContractAddress(string memory) external view returns (address contractAddress);
+    function getTokenAddress(string memory) external view returns (address tokenAddress);
+    function getHealthFactorTarget() external view returns (uint256 healthFactorTarget);
+    function getHealthFactorTargetMinimum() external view returns (uint256 healthFactorTargetMinimum);
+    function getRescueEthBalance() external view returns (uint256 rescueEthBalance);
 }

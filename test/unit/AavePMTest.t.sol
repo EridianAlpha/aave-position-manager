@@ -28,8 +28,7 @@ contract AavePMTestSetup is Test {
 
     mapping(string => address) s_contractAddresses;
     mapping(string => address) s_tokenAddresses;
-    address uniswapV3WstETHETHPoolAddress;
-    uint24 uniswapV3WstETHETHPoolFee;
+    IAavePM.UniswapV3Pool uniswapV3WstETHETHPool;
     uint256 initialHealthFactorTarget;
 
     string constant INITIAL_VERSION = "0.0.1";
@@ -37,7 +36,7 @@ contract AavePMTestSetup is Test {
     uint256 constant GAS_PRICE = 1;
     uint256 constant SEND_VALUE = 1 ether;
     uint256 constant STARTING_BALANCE = 10 ether;
-    uint256 constant INITIAL_HEALTH_FACTOR_MINIMUM = 2;
+    uint256 constant INITIAL_HEALTH_FACTOR_TARGET_MINIMUM = 2;
 
     // Create users
     address owner1 = makeAddr("owner1");
@@ -55,8 +54,7 @@ contract AavePMTestSetup is Test {
 
         IAavePM.ContractAddress[] memory contractAddresses = config.contractAddresses;
         IAavePM.TokenAddress[] memory tokenAddresses = config.tokenAddresses;
-        uniswapV3WstETHETHPoolAddress = config.uniswapV3WstETHETHPoolAddress;
-        uniswapV3WstETHETHPoolFee = config.uniswapV3WstETHETHPoolFee;
+        uniswapV3WstETHETHPool = config.uniswapV3WstETHETHPool;
         initialHealthFactorTarget = config.initialHealthFactorTarget;
 
         // Convert the contractAddresses array to a mapping
@@ -204,7 +202,7 @@ contract AavePMUpdateTests is AavePMTestSetup {
     }
 
     function test_UpdateHealthFactorTargetBelowMinimum() public {
-        uint256 newHealthFactorTarget = aavePM.getHealthFactorMinimum() - 1;
+        uint256 newHealthFactorTarget = aavePM.getHealthFactorTargetMinimum() - 1;
 
         vm.expectRevert(IAavePM.AavePM__HealthFactorBelowMinimum.selector);
         vm.prank(owner1);
@@ -340,8 +338,8 @@ contract AavePMGetterTests is AavePMTestSetup {
         assertEq(aavePM.getHealthFactorTarget(), initialHealthFactorTarget);
     }
 
-    function test_getHealthFactorMinimum() public {
-        assertEq(aavePM.getHealthFactorMinimum(), INITIAL_HEALTH_FACTOR_MINIMUM);
+    function test_getHealthFactorTargetMinimum() public {
+        assertEq(aavePM.getHealthFactorTargetMinimum(), INITIAL_HEALTH_FACTOR_TARGET_MINIMUM);
     }
 
     function test_GetRescueEthBalance() public {

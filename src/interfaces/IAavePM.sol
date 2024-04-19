@@ -27,7 +27,6 @@ interface IAavePM {
     }
 
     struct UniswapV3Pool {
-        // string identifier;
         address poolAddress;
         uint24 fee;
     }

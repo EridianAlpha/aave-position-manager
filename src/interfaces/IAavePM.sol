@@ -36,13 +36,12 @@ interface IAavePM {
     // ================================================================
 
     event EthRescued(address indexed to, uint256 amount);
-    event AaveUpdated(address indexed previousAaveAddress, address indexed newAaveAddress);
-    event UniswapV3RouterUpdated(
-        address indexed previousUniswapV3RouterAddress, address indexed newUniswapV3RouterAddress
+    event ContractAddressUpdated(
+        string indexed identifier, address indexed previousContractAddress, address indexed newContractAddress
     );
-    event WETH9Updated(address indexed previousWETH9Address, address indexed newWETH9Address);
-    event WstETHUpdated(address indexed previousWstETHAddress, address indexed newWstETHAddress);
-    event USDCUpdated(address indexed previousUSDCAddress, address indexed newUSDCAddress);
+    event TokenAddressUpdated(
+        string indexed identifier, address indexed previousTokenAddress, address indexed newTokenAddress
+    );
     event HealthFactorTargetUpdated(uint256 previousHealthFactorTarget, uint256 newHealthFactorTarget);
 
     // ================================================================
@@ -60,11 +59,8 @@ interface IAavePM {
     // ================================================================
     // │                     FUNCTIONS - UPDATES                     │
     // ================================================================
-    function updateAave(address _aave) external;
-    function updateUniswapV3Router(address _uniswapV3Router) external;
-    function updateWETH9(address _WETH9) external;
-    function updateWstETH(address _wstETH) external;
-    function updateUSDC(address _USDC) external;
+    function updateContractAddress(string memory identifier, address _newContractAddress) external;
+    function updateTokenAddress(string memory identifier, address _newTokenAddress) external;
     function updateHealthFactorTarget(uint256 _healthFactorTarget) external;
 
     // ================================================================

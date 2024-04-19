@@ -119,56 +119,34 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // │                   FUNCTIONS - UUPS UPGRADES                  │
     // ================================================================
     /// @notice Internal function to authorize an upgrade.
-    /// @dev Only callable by the owner role.
+    /// @dev Only callable by `OWNER_ROLE` role.
     /// @param _newImplementation Address of the new contract implementation.
     function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE) {}
 
     // ================================================================
     // │                      FUNCTIONS - UPDATES                     │
     // ================================================================
-    /// @notice Update the Aave contract address.
-    /// @dev Only the contract owner can call this function.
-    ///      Emits an `AaveUpdated` event.
-    /// @param _aave The new Aave contract address.
-    function updateAave(address _aave) external onlyRole(OWNER_ROLE) {
-        emit AaveUpdated(s_contractAddresses["aave"], _aave);
-        s_contractAddresses["aave"] = _aave;
+    /// @notice Generic update function to set the contract address for a given identifier.
+    /// @dev Only callable by `OWNER_ROLE` role.
+    ///      Emits a `ContractAddressUpdated` event.
+    /// @param identifier The identifier for the contract address.
+    /// @param _newContractAddress The new contract address.
+    function updateContractAddress(string memory identifier, address _newContractAddress)
+        external
+        onlyRole(OWNER_ROLE)
+    {
+        emit ContractAddressUpdated(identifier, s_contractAddresses[identifier], _newContractAddress);
+        s_contractAddresses[identifier] = _newContractAddress;
     }
 
-    /// @notice Update the UniswapV3Router contract address.
-    /// @dev Only the contract owner can call this function.
-    ///      Emits a `UniswapV3RouterUpdated` event.
-    /// @param _uniswapV3Router The new UniswapV3Router contract address.
-    function updateUniswapV3Router(address _uniswapV3Router) external onlyRole(OWNER_ROLE) {
-        emit UniswapV3RouterUpdated(s_contractAddresses["uniswapV3Router"], _uniswapV3Router);
-        s_contractAddresses["uniswapV3Router"] = _uniswapV3Router;
-    }
-
-    /// @notice Update the WETH9 contract address.
-    /// @dev Only the contract owner can call this function.
-    ///      Emits a `WETH9Updated` event.
-    /// @param _WETH9 The new WETH9 contract address.
-    function updateWETH9(address _WETH9) external onlyRole(OWNER_ROLE) {
-        emit WETH9Updated(s_tokenAddresses["WETH9"], _WETH9);
-        s_tokenAddresses["WETH9"] = _WETH9;
-    }
-
-    /// @notice Update the wstETH contract address.
-    /// @dev Only the contract owner can call this function.
-    ///      Emits a `WstETHUpdated` event.
-    /// @param _wstETH The new wstETH contract address.
-    function updateWstETH(address _wstETH) external onlyRole(OWNER_ROLE) {
-        emit WstETHUpdated(s_tokenAddresses["wstETH"], _wstETH);
-        s_tokenAddresses["wstETH"] = _wstETH;
-    }
-
-    /// @notice Update the USDC contract address.
-    /// @dev Only the contract owner can call this function.
-    ///      Emits a `USDCUpdated` event.
-    /// @param _USDC The new USDC contract address.
-    function updateUSDC(address _USDC) external onlyRole(OWNER_ROLE) {
-        emit USDCUpdated(s_tokenAddresses["USDC"], _USDC);
-        s_tokenAddresses["USDC"] = _USDC;
+    /// @notice Generic update function to set the token address for a given identifier.
+    /// @dev Only callable by `OWNER_ROLE` role.
+    ///      Emits a `TokenAddressUpdated` event.
+    /// @param identifier The identifier for the token address.
+    /// @param _newTokenAddress The new token address.
+    function updateTokenAddress(string memory identifier, address _newTokenAddress) external onlyRole(OWNER_ROLE) {
+        emit TokenAddressUpdated(identifier, s_tokenAddresses[identifier], _newTokenAddress);
+        s_tokenAddresses[identifier] = _newTokenAddress;
     }
 
     /// @notice Update the Health Factor target.

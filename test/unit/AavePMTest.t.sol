@@ -153,79 +153,34 @@ contract AavePMUpgradeTests is AavePMTestSetup {
 // │                         UPDATE TESTS                         │
 // ================================================================
 contract AavePMUpdateTests is AavePMTestSetup {
-    function test_UpdateAave() public {
-        address newAave = makeAddr("newAaveAddress");
+    function test_UpdateContractAddress() public {
+        address newContractAddress = makeAddr("newContractAddress");
 
         vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
         vm.prank(attacker1);
-        aavePM.updateAave(newAave);
+        aavePM.updateContractAddress("aave", newContractAddress);
 
         vm.expectEmit();
-        emit IAavePM.AaveUpdated(aavePM.getContractAddress("aave"), newAave);
+        emit IAavePM.ContractAddressUpdated("aave", aavePM.getContractAddress("aave"), newContractAddress);
 
         vm.prank(owner1);
-        aavePM.updateAave(newAave);
-        assertEq(aavePM.getContractAddress("aave"), newAave);
+        aavePM.updateContractAddress("aave", newContractAddress);
+        assertEq(aavePM.getContractAddress("aave"), newContractAddress);
     }
 
-    function test_UpdateUniswapV3Router() public {
-        address newUniswapV3Router = makeAddr("newUniswapV3RouterAddress");
+    function test_UpdateTokenAddress() public {
+        address newTokenAddress = makeAddr("newTokenAddress");
 
         vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
         vm.prank(attacker1);
-        aavePM.updateUniswapV3Router(newUniswapV3Router);
+        aavePM.updateTokenAddress("USDC", newTokenAddress);
 
         vm.expectEmit();
-        emit IAavePM.UniswapV3RouterUpdated(aavePM.getContractAddress("uniswapV3Router"), newUniswapV3Router);
+        emit IAavePM.TokenAddressUpdated("USDC", aavePM.getTokenAddress("USDC"), newTokenAddress);
 
         vm.prank(owner1);
-        aavePM.updateUniswapV3Router(newUniswapV3Router);
-        assertEq(aavePM.getContractAddress("uniswapV3Router"), newUniswapV3Router);
-    }
-
-    function test_UpdateWETH9() public {
-        address newWETH9 = makeAddr("newWETH9Address");
-
-        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
-        vm.prank(attacker1);
-        aavePM.updateWETH9(newWETH9);
-
-        vm.expectEmit();
-        emit IAavePM.WETH9Updated(aavePM.getTokenAddress("WETH9"), newWETH9);
-
-        vm.prank(owner1);
-        aavePM.updateWETH9(newWETH9);
-        assertEq(aavePM.getTokenAddress("WETH9"), newWETH9);
-    }
-
-    function test_UpdateWstETH() public {
-        address newWstETH = makeAddr("newWstETHAddress");
-
-        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
-        vm.prank(attacker1);
-        aavePM.updateWstETH(newWstETH);
-
-        vm.expectEmit();
-        emit IAavePM.WstETHUpdated(aavePM.getTokenAddress("wstETH"), newWstETH);
-
-        vm.prank(owner1);
-        aavePM.updateWstETH(newWstETH);
-        assertEq(aavePM.getTokenAddress("wstETH"), newWstETH);
-    }
-
-    function test_UpdateUSDC() public {
-        address newUSDC = makeAddr("newUSDCAddress");
-
-        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
-        vm.prank(attacker1);
-        aavePM.updateUSDC(newUSDC);
-
-        vm.expectEmit();
-        emit IAavePM.USDCUpdated(aavePM.getTokenAddress("USDC"), newUSDC);
-
-        vm.prank(owner1);
-        aavePM.updateUSDC(newUSDC);
-        assertEq(aavePM.getTokenAddress("USDC"), newUSDC);
+        aavePM.updateTokenAddress("USDC", newTokenAddress);
+        assertEq(aavePM.getTokenAddress("USDC"), newTokenAddress);
     }
 
     function test_UpdateHealthFactorTarget() public {

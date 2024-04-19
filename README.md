@@ -84,7 +84,6 @@ make ethernal
 ### Tests
 
 ```bash
-make test
 make test-fork-mainnet
 make test-fork-mainnet-v
 make test-fork-mainnet-summary

@@ -119,7 +119,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // │                   FUNCTIONS - UUPS UPGRADES                  │
     // ================================================================
     /// @notice Internal function to authorize an upgrade.
-    /// @dev Only callable by `OWNER_ROLE` role.
+    /// @dev Caller must have `OWNER_ROLE`.
     /// @param _newImplementation Address of the new contract implementation.
     function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE) {}
 
@@ -127,7 +127,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // │                      FUNCTIONS - UPDATES                     │
     // ================================================================
     /// @notice Generic update function to set the contract address for a given identifier.
-    /// @dev Only callable by `OWNER_ROLE` role.
+    /// @dev Caller must have `OWNER_ROLE`.
     ///      Emits a `ContractAddressUpdated` event.
     /// @param identifier The identifier for the contract address.
     /// @param _newContractAddress The new contract address.
@@ -140,7 +140,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     }
 
     /// @notice Generic update function to set the token address for a given identifier.
-    /// @dev Only callable by `OWNER_ROLE` role.
+    /// @dev Caller must have `OWNER_ROLE`.
     ///      Emits a `TokenAddressUpdated` event.
     /// @param identifier The identifier for the token address.
     /// @param _newTokenAddress The new token address.
@@ -150,7 +150,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     }
 
     /// @notice Update the Health Factor target.
-    /// @dev Only the contract owner can call this function.
+    /// @dev Caller must have `OWNER_ROLE`.
     ///      Emits a `HealthFactorTargetUpdated` event.
     /// @param _healthFactorTarget The new Health Factor target.
     function updateHealthFactorTarget(uint256 _healthFactorTarget) external onlyRole(OWNER_ROLE) {
@@ -175,7 +175,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     ///      In normal operation, the contract shouldn't hold ETH,
     ///      as it is used to swap for wstETH.
     ///      It can be called without an argument to rescue the entire balance.
-    ///      Caller must have the `OWNER_ROLE` role.
+    ///      Caller must have `OWNER_ROLE`.
     ///      The use of nonReentrant isn't required due to the `OWNER_ROLE` restriction and it drains 100% of the ETH balance anyway.
     ///      Throws `AavePM__RescueEthFailed` if the ETH transfer fails.
     ///      Emits a `RescueEth` event.
@@ -196,8 +196,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // │                     FUNCTIONS - TOKEN SWAPS                  │
     // ================================================================
     /// @notice Swaps the contract's entire ETH balance for wstETH using a Uniswap V3 pool.
-    /// @dev This function requires the caller to have the `MANAGER_ROLE`.
-    ///      It calculates the minimum amount of wstETH that should be received based on the current pool's price ratio and a predefined slippage tolerance.
+    /// @dev Caller must have `MANAGER_ROLE`.
+    ///      Calculates the minimum amount of wstETH that should be received based on the current pool's price ratio and a predefined slippage tolerance.
     ///      Reverts if there is no ETH in the contract or if the transaction doesn't meet the `amountOutMinimum` criteria due to price movements.
     /// @return amountOut The amount of wstETH received from the swap.
     // TODO: Public for testing, but will be internal once called by rebalance function

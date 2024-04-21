@@ -63,7 +63,11 @@ test-fork-mainnet-summary:; forge test --fork-url ${MAINNET_RPC_URL} --summary
 # │                CONTRACT SPECIFIC CONFIGURATION               │
 # ================================================================
 coverage:
-	@forge coverage | awk '!/script\/HelperFunctions.s.sol/ && !/test\// && !/src\/testHelperContracts\// && !/Total/'
+	@forge coverage --fork-url ${MAINNET_RPC_URL} | awk '!/script\/HelperFunctions.s.sol/ && !/test\// && !/src\/testHelperContracts\// && !/Total/'
+	@echo
+
+coverage-report:
+	@forge coverage --fork-url ${MAINNET_RPC_URL} --report lcov
 	@echo
 
 install:

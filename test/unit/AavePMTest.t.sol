@@ -294,7 +294,7 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 // ================================================================
 contract AavePMTokenSwapTests is AavePMTestSetup {
     function test_GenericSwapETHToWstETH() public {
-        IERC20 token = IERC20(aavePM.getTokenAddress("wstETH"));
+        IERC20 wstETH = IERC20(aavePM.getTokenAddress("wstETH"));
 
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
@@ -304,10 +304,31 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
         (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
 
         // Check the wstETH balance of the contract
-        uint256 wstETHbalance = token.balanceOf(address(aavePM));
+        uint256 wstETHbalance = wstETH.balanceOf(address(aavePM));
 
         assertEq(tokenOutIdentifier, "wstETH");
         assertEq(amountOut, wstETHbalance);
+    }
+
+    function test_GenericSwapWstETHToETH() public {
+        IERC20 WETH9 = IERC20(aavePM.getTokenAddress("WETH9"));
+
+        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
+        require(success, "Failed to send ETH to AavePM contract");
+
+        // Call the swapTokens function to get wstETH
+        vm.prank(manager1);
+        aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
+
+        // Call the swapTokens function to convert wstETH back to WETH
+        vm.prank(manager1);
+        (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("wstETH/ETH", "wstETH", "WETH9");
+
+        // Check the WETH9 balance of the contract
+        uint256 WETH9balance = WETH9.balanceOf(address(aavePM));
+
+        assertEq(tokenOutIdentifier, "WETH9");
+        assertEq(amountOut, WETH9balance);
     }
 }
 
@@ -359,8 +380,22 @@ contract AavePMGetterTests is AavePMTestSetup {
         assertEq(aavePM.getHealthFactorTargetMinimum(), INITIAL_HEALTH_FACTOR_TARGET_MINIMUM);
     }
 
-    function test_GetRescueEthBalance() public {
+    function test_GetContractBalanceETH() public {
         assertEq(aavePM.getContractBalance("ETH"), address(aavePM).balance);
+    }
+
+    function test_GetContractBalanceWstETH() public {
+        // Send some ETH to the contract
+        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
+        require(success, "Failed to send ETH to AavePM contract");
+
+        // Call the swapTokens function to get wstETH
+        vm.prank(manager1);
+        aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
+
+        // Check the wstETH balance of the contract
+        IERC20 wstETH = IERC20(aavePM.getTokenAddress("wstETH"));
+        assertEq(aavePM.getContractBalance("wstETH"), wstETH.balanceOf(address(aavePM)));
     }
 }
 

@@ -175,9 +175,6 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                        FUNCTIONS - ETH                       │
     // ================================================================
-    //TODO: Remove for production. Only used in development for testing.
-    function receiveEth() external payable {}
-
     /// @notice Rescue all ETH from the contract.
     /// @dev This function is intended for emergency use.
     ///      In normal operation, the contract shouldn't hold ETH,
@@ -240,7 +237,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         if (keccak256(abi.encodePacked(_tokenInIdentifier)) == keccak256(abi.encodePacked("ETH"))) {
             amountOut = swapRouter.exactInputSingle{value: currentBalance}(params);
         } else {
-            TransferHelper.safeTransfer(s_tokenAddresses[_tokenInIdentifier], address(swapRouter), currentBalance);
+            TransferHelper.safeApprove(s_tokenAddresses[_tokenInIdentifier], address(swapRouter), currentBalance);
             amountOut = swapRouter.exactInputSingle(params);
         }
         return (_tokenOutIdentifier, amountOut);

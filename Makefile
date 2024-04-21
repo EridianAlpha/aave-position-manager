@@ -12,7 +12,6 @@ help:
 clean 		:; forge clean
 update 		:; forge update
 build 		:; forge build
-test 		:; forge test
 snapshot 	:; forge snapshot
 format 		:; forge fmt
 
@@ -53,23 +52,23 @@ ethernal:
 	ETHERNAL_API_TOKEN=${ETHERNAL_API_TOKEN} ethernal listen --astUpload true
 
 # ================================================================
-# │                         FORK TESTING                         │
+# │                   FORK TESTING AND COVERAGE                   │
 # ================================================================
 test-fork-mainnet:; forge test --fork-url ${MAINNET_RPC_URL}
 test-fork-mainnet-v:; forge test --fork-url ${MAINNET_RPC_URL} -vvvv
 test-fork-mainnet-summary:; forge test --fork-url ${MAINNET_RPC_URL} --summary
 
-# ================================================================
-# │                CONTRACT SPECIFIC CONFIGURATION               │
-# ================================================================
 coverage:
-	@forge coverage --fork-url ${MAINNET_RPC_URL}
+	@forge coverage --fork-url ${MAINNET_RPC_URL} --report lcov --report summary
 	@echo
 
 coverage-report:
-	@forge coverage --fork-url ${MAINNET_RPC_URL} --report lcov
-	@echo
+	@forge coverage --fork-url ${MAINNET_RPC_URL} --report debug > coverage-report.txt
+	@echo Output saved to coverage-report.txt
 
+# ================================================================
+# │                CONTRACT SPECIFIC CONFIGURATION               │
+# ================================================================
 install:
 	forge install foundry-rs/forge-std@v1.7.6 --no-commit && \
 	forge install Cyfrin/foundry-devops@0.1.0 --no-commit && \

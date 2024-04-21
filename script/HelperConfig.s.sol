@@ -32,7 +32,7 @@ contract HelperConfig is Script {
             aaveAddress = vm.envAddress("MAINNET_ADDRESS_AAVE");
             uniswapV3RouterAddress = vm.envAddress("MAINNET_ADDRESS_UNISWAP_V3_ROUTER");
             uniswapV3WstETHETHPoolAddress = vm.envAddress("MAINNET_ADDRESS_UNISWAP_V3_WSTETH_ETH_POOL");
-            wethAddress = vm.envAddress("MAINNET_ADDRESS_WETH");
+            wethAddress = vm.envAddress("MAINNET_ADDRESS_WETH9");
             wstETHAddress = vm.envAddress("MAINNET_ADDRESS_WSTETH");
             usdcAddress = vm.envAddress("MAINNET_ADDRESS_USDC");
         } else if (chainId == 8453) {
@@ -40,7 +40,7 @@ contract HelperConfig is Script {
             aaveAddress = vm.envAddress("BASE_ADDRESS_AAVE");
             uniswapV3RouterAddress = vm.envAddress("BASE_ADDRESS_UNISWAP_V3_ROUTER");
             uniswapV3WstETHETHPoolAddress = vm.envAddress("BASE_ADDRESS_UNISWAP_V3_WSTETH_ETH_POOL");
-            wethAddress = vm.envAddress("BASE_ADDRESS_WETH");
+            wethAddress = vm.envAddress("BASE_ADDRESS_WETH9");
             wstETHAddress = vm.envAddress("BASE_ADDRESS_WSTETH");
             usdcAddress = vm.envAddress("BASE_ADDRESS_USDC");
         } else {

@@ -66,7 +66,6 @@ interface IAavePM {
     // ================================================================
     // │                        FUNCTIONS - ETH                       │
     // ================================================================
-    function receiveEth() external payable; //TODO: Remove for production. Only used in development for testing.
     function rescueEth(address rescueAddress) external;
 
     // ================================================================

@@ -78,6 +78,9 @@ contract AavePMTestSetup is Test {
         aavePM.grantRole(aavePM.getRoleHash("OWNER_ROLE"), owner1);
         aavePM.grantRole(aavePM.getRoleHash("MANAGER_ROLE"), owner1);
 
+        // Add the manager1 user as a manager
+        aavePM.grantRole(aavePM.getRoleHash("MANAGER_ROLE"), manager1);
+
         // Remove the test contract as a manager and then an owner
         // Order matters as you can't remove the manager role if you're not an owner
         aavePM.revokeRole(aavePM.getRoleHash("MANAGER_ROLE"), address(this));
@@ -284,19 +287,20 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 // │                       TOKEN SWAP TESTS                       │
 // ================================================================
 contract AavePMTokenSwapTests is AavePMTestSetup {
-    function test_SwapETHToWstETH() public {
+    function test_GenericSwapETHToWstETH() public {
         IERC20 token = IERC20(aavePM.getTokenAddress("wstETH"));
 
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
 
-        // Call the swapETHToWstETH function
-        vm.prank(owner1);
-        uint256 amountOut = aavePM.swapETHToWstETH();
+        // Call the swapTokens function
+        vm.prank(manager1);
+        (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
 
         // Check the wstETH balance of the contract
         uint256 wstETHbalance = token.balanceOf(address(aavePM));
 
+        assertEq(tokenOutIdentifier, "wstETH");
         assertEq(amountOut, wstETHbalance);
     }
 }
@@ -350,7 +354,7 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetRescueEthBalance() public {
-        assertEq(aavePM.getRescueEthBalance(), address(aavePM).balance);
+        assertEq(aavePM.getContractBalance("ETH"), address(aavePM).balance);
     }
 }
 

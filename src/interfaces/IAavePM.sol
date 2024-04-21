@@ -12,6 +12,7 @@ interface IAavePM {
     error AavePM__RescueAddressNotAnOwner();
     error AavePM__HealthFactorUnchanged();
     error AavePM__HealthFactorBelowMinimum();
+    error AavePM__NotEnoughTokensForSwap(string tokenInIdentifier);
 
     // ================================================================
     // │                           STRUCTS                            │
@@ -71,7 +72,11 @@ interface IAavePM {
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │
     // ================================================================
-    function swapETHToWstETH() external returns (uint256 amountOut);
+    function swapTokens(
+        string memory _uniswapV3PoolIdentifier,
+        string memory _tokenInIdentifier,
+        string memory _tokenOutIdentifier
+    ) external returns (string memory tokenOutIdentifier, uint256 amountOut);
 
     // ================================================================
     // │                       FUNCTIONS - GETTERS                    │
@@ -83,5 +88,9 @@ interface IAavePM {
     function getTokenAddress(string memory) external view returns (address tokenAddress);
     function getHealthFactorTarget() external view returns (uint256 healthFactorTarget);
     function getHealthFactorTargetMinimum() external view returns (uint256 healthFactorTargetMinimum);
-    function getRescueEthBalance() external view returns (uint256 rescueEthBalance);
+    function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
+    function uniswapV3CalculateMinOut(uint256 _currentBalance, string memory _uniswapV3PoolIdentifier)
+        external
+        view
+        returns (uint256 minOut);
 }

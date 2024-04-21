@@ -4,6 +4,7 @@ pragma solidity 0.8.24;
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
@@ -194,48 +195,72 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         // ************************
         // ***** TRANSFER ETH *****
         // ************************
-        emit EthRescued(rescueAddress, getRescueEthBalance());
-        (bool callSuccess,) = rescueAddress.call{value: getRescueEthBalance()}("");
+        emit EthRescued(rescueAddress, getContractBalance("ETH"));
+        (bool callSuccess,) = rescueAddress.call{value: getContractBalance("ETH")}("");
         if (!callSuccess) revert AavePM__RescueEthFailed();
     }
 
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │
     // ================================================================
-    /// @notice Swaps the contract's entire ETH balance for wstETH using a Uniswap V3 pool.
+    /// @notice Swaps the contract's entire specified token balance using a UniswapV3 pool.
     /// @dev Caller must have `MANAGER_ROLE`.
-    ///      Calculates the minimum amount of wstETH that should be received based on the current pool's price ratio and a predefined slippage tolerance.
-    ///      Reverts if there is no ETH in the contract or if the transaction doesn't meet the `amountOutMinimum` criteria due to price movements.
-    /// @return amountOut The amount of wstETH received from the swap.
+    ///      Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
+    ///      Reverts if there are no tokens in the contract or if the transaction doesn't meet the `amountOutMinimum` criteria due to price movements.
+    /// @return tokenOutIdentifier The identifier of the token received from the swap.
+    /// @return amountOut The amount tokens received from the swap.
     // TODO: Public for testing, but will be internal once called by rebalance function
-    function swapETHToWstETH() public onlyRole(MANAGER_ROLE) returns (uint256 amountOut) {
+    function swapTokens(
+        string memory _uniswapV3PoolIdentifier,
+        string memory _tokenInIdentifier,
+        string memory _tokenOutIdentifier
+    ) public onlyRole(MANAGER_ROLE) returns (string memory tokenOutIdentifier, uint256 amountOut) {
         ISwapRouter swapRouter = ISwapRouter(s_contractAddresses["uniswapV3Router"]);
 
-        uint256 ethAmount = address(this).balance;
-        require(ethAmount > 0, "No ETH available");
+        uint256 currentBalance = getContractBalance(_tokenInIdentifier);
+        if (currentBalance == 0) revert AavePM__NotEnoughTokensForSwap(_tokenInIdentifier);
 
-        // Calculate minimum output amount for the wstETH/ETH pool
-        IUniswapV3Pool pool = IUniswapV3Pool(s_uniswapV3Pools["wstETHETH"].poolAddress);
-        (uint160 sqrtRatioX96,,,,,,) = pool.slot0(); // Fetch current ratio from the pool
-        uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (1e18) >> (96 * 2);
-        uint256 expectedOut = (ethAmount * 1e18) / currentRatio;
-        uint256 slippageTolerance = expectedOut / UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE;
-        uint256 minOut = expectedOut - slippageTolerance;
-
+        uint256 minOut = uniswapV3CalculateMinOut(currentBalance, _uniswapV3PoolIdentifier);
         uint160 priceLimit = /* TODO: Calculate price limit */ 0;
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
-            tokenIn: s_tokenAddresses["WETH9"],
-            tokenOut: s_tokenAddresses["wstETH"],
-            fee: s_uniswapV3Pools["wstETHETH"].fee,
+            tokenIn: (keccak256(abi.encodePacked(_tokenInIdentifier)) == keccak256(abi.encodePacked("ETH")))
+                ? s_tokenAddresses["WETH9"]
+                : s_tokenAddresses[_tokenInIdentifier],
+            tokenOut: s_tokenAddresses[_tokenOutIdentifier],
+            fee: s_uniswapV3Pools[_uniswapV3PoolIdentifier].fee,
             recipient: address(this),
             deadline: block.timestamp,
-            amountIn: ethAmount,
+            amountIn: currentBalance,
             amountOutMinimum: minOut,
             sqrtPriceLimitX96: priceLimit
         });
 
-        return amountOut = swapRouter.exactInputSingle{value: ethAmount}(params);
+        // If it's ETH being swapped, then use the value parameter, else use the token transfer
+        if (keccak256(abi.encodePacked(_tokenInIdentifier)) == keccak256(abi.encodePacked("ETH"))) {
+            amountOut = swapRouter.exactInputSingle{value: currentBalance}(params);
+        } else {
+            TransferHelper.safeTransfer(s_tokenAddresses[_tokenInIdentifier], address(swapRouter), currentBalance);
+            amountOut = swapRouter.exactInputSingle(params);
+        }
+        return (_tokenOutIdentifier, amountOut);
+    }
+
+    // ================================================================
+    // │                   FUNCTIONS - CALCULATIONS                   │
+    // ================================================================
+    function uniswapV3CalculateMinOut(uint256 _currentBalance, string memory _uniswapV3PoolIdentifier)
+        public
+        view
+        returns (uint256 minOut)
+    {
+        // TODO: Account for different token decimals. Will need to be stored in the struct.
+        IUniswapV3Pool pool = IUniswapV3Pool(s_uniswapV3Pools[_uniswapV3PoolIdentifier].poolAddress);
+        (uint160 sqrtRatioX96,,,,,,) = pool.slot0(); // Fetch current ratio from the pool
+        uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (1e18) >> (96 * 2);
+        uint256 expectedOut = (_currentBalance * 1e18) / currentRatio;
+        uint256 slippageTolerance = expectedOut / UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE;
+        return minOut = expectedOut - slippageTolerance;
     }
 
     // ================================================================
@@ -292,10 +317,15 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         return HEALTH_FACTOR_TARGET_MINIMUM;
     }
 
-    /// @notice Getter function to get the contract's ETH balance.
-    /// @dev Public function to allow anyone to view the contract's ETH balance.
-    /// @return rescueEthBalance The contract's ETH balance in wei.
-    function getRescueEthBalance() public view returns (uint256 rescueEthBalance) {
-        return address(this).balance;
+    /// @notice Getter function to get the contract's balance.
+    /// @dev Public function to allow anyone to view the contract's balance.
+    /// @param _identifier The identifier for the token address.
+    /// @return contractBalance The contract's balance of the specified token identifier.
+    function getContractBalance(string memory _identifier) public view returns (uint256 contractBalance) {
+        if (keccak256(abi.encodePacked(_identifier)) == keccak256(abi.encodePacked("ETH"))) {
+            return contractBalance = address(this).balance;
+        } else {
+            return contractBalance = IERC20(s_tokenAddresses[_identifier]).balanceOf(address(this));
+        }
     }
 }

@@ -64,7 +64,7 @@ contract HelperConfig is Script {
         // UniswapV3 pools
         IAavePM.UniswapV3Pool[] memory uniswapV3Pools = new IAavePM.UniswapV3Pool[](2);
         uniswapV3Pools[0] = IAavePM.UniswapV3Pool(
-            "wstETHETH", uniswapV3WstETHETHPoolAddress, uint24(vm.envUint("INITIAL_UNISWAP_V3_WSTETH_POOL_FEE"))
+            "wstETH/ETH", uniswapV3WstETHETHPoolAddress, uint24(vm.envUint("INITIAL_UNISWAP_V3_WSTETH_POOL_FEE"))
         );
         // TODO: Add USDC pool here
 

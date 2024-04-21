@@ -6,7 +6,7 @@ import "../../src/AavePM.sol";
 /// @notice This contract is used to test the .call functions failing in AavePM.sol
 /// @dev The test is found in AavePMTest.t.sol:
 ///      - "test_RescueEthCallFailureThrowsError()"
-///      The reason this contract causes the .call to fail is because it doesn't have a receive()
+///      This contract causes the .call to fail as it doesn't have a receive()
 ///      or fallback() function so the ETH can't be accepted.
 contract InvalidOwner {
     AavePM aavePM;

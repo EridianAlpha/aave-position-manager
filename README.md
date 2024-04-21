@@ -93,6 +93,7 @@ make test-fork-mainnet-summary
 
 ```bash
 make coverage
+make coverage-report
 ```
 
 ## Deployment

@@ -7,10 +7,7 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 
 import {IAavePM} from "../../src/interfaces/IAavePM.sol";
 
-/// @title AavePM - Aave Position Manager
-/// @author EridianAlpha
-/// @notice A contract to manage positions on Aave.
-
+/// @notice //TODO Add comment.
 contract AavePMUpgradeExample is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
     string private constant VERSION = "0.0.2";

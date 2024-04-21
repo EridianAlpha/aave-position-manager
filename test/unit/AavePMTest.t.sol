@@ -23,6 +23,9 @@ import {DeployAavePM} from "../../script/DeployAavePM.s.sol";
 // │                 COMMON SETUP AND CONSTRUCTOR                 │
 // ================================================================
 contract AavePMTestSetup is Test {
+    // Added to remove this whole testing file from coverage report.
+    function test() public {}
+
     AavePM aavePM;
     HelperConfig helperConfig;
 
@@ -146,6 +149,9 @@ contract AavePMUpgradeTests is AavePMTestSetup {
     function test_InvalidUpgrade() public {
         // Deploy InvalidUpgrade contract
         InvalidUpgrade invalidUpgrade = new InvalidUpgrade();
+
+        // Check version of the invalid contract before upgrade
+        assertEq(invalidUpgrade.getVersion(), "INVALID_UPGRADE_VERSION");
 
         bytes memory encodedRevert_ERC1967InvalidImplementation =
             abi.encodeWithSelector(ERC1967Utils.ERC1967InvalidImplementation.selector, address(invalidUpgrade));

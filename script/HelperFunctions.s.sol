@@ -10,6 +10,9 @@ import {Script, console} from "forge-std/Script.sol";
 // even though it doesn't need to.
 // Import into other scripts to use with: import {DevOpsTools} from "./HelperFunctions.s.sol";
 contract DevOpsTools {
+    // Added to remove this whole contract from coverage report.
+    function test() public {}
+
     Vm public constant devOpsVm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
 
     string public constant RELATIVE_BROADCAST_PATH = "./broadcast";
@@ -89,6 +92,9 @@ contract DevOpsTools {
 }
 
 contract HelperFunctions is Script {
+    // Added to remove this whole contract from coverage report.
+    function test() public {}
+
     function parseHexString(string memory _a) internal pure returns (address _parsedAddress) {
         bytes memory tmp = bytes(_a);
         uint160 iaddr = 0;

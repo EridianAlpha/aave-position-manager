@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/cb91521c48984a08da90a0da494743ce235a1506/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/a360fece5af018ecfc0cdf00612ee0a0d2d73616/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -186,8 +186,7 @@
     address owner,
     ContractAddress[] memory contractAddresses,
     TokenAddress[] memory tokenAddresses,
-    address uniswapV3WstETHETHPoolAddress,
-    uint24 uniswapV3WstETHETHPoolFee,
+    UniswapV3Pool[] memory uniswapV3Pools,
     uint256 initialHealthFactorTarget
 ) external;
 </code></pre>
@@ -206,32 +205,42 @@
 <h3 id="rescueeth"><a class="header" href="#rescueeth">rescueEth</a></h3>
 <pre><code class="language-solidity">function rescueEth(address rescueAddress) external;
 </code></pre>
-<h3 id="swapethtowsteth"><a class="header" href="#swapethtowsteth">swapETHToWstETH</a></h3>
-<pre><code class="language-solidity">function swapETHToWstETH() external returns (uint256 amountOut);
+<h3 id="swaptokens"><a class="header" href="#swaptokens">swapTokens</a></h3>
+<pre><code class="language-solidity">function swapTokens(
+    string memory _uniswapV3PoolIdentifier,
+    string memory _tokenInIdentifier,
+    string memory _tokenOutIdentifier
+) external returns (string memory tokenOutIdentifier, uint256 amountOut);
 </code></pre>
 <h3 id="getcreator"><a class="header" href="#getcreator">getCreator</a></h3>
-<pre><code class="language-solidity">function getCreator() external view returns (address);
+<pre><code class="language-solidity">function getCreator() external view returns (address creator);
 </code></pre>
 <h3 id="getversion"><a class="header" href="#getversion">getVersion</a></h3>
-<pre><code class="language-solidity">function getVersion() external pure returns (string memory);
+<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
 </code></pre>
 <h3 id="getrolehash"><a class="header" href="#getrolehash">getRoleHash</a></h3>
-<pre><code class="language-solidity">function getRoleHash(string memory) external pure returns (bytes32);
+<pre><code class="language-solidity">function getRoleHash(string memory) external pure returns (bytes32 roleHash);
 </code></pre>
 <h3 id="getcontractaddress"><a class="header" href="#getcontractaddress">getContractAddress</a></h3>
-<pre><code class="language-solidity">function getContractAddress(string memory) external view returns (address);
+<pre><code class="language-solidity">function getContractAddress(string memory) external view returns (address contractAddress);
 </code></pre>
 <h3 id="gettokenaddress"><a class="header" href="#gettokenaddress">getTokenAddress</a></h3>
-<pre><code class="language-solidity">function getTokenAddress(string memory) external view returns (address);
+<pre><code class="language-solidity">function getTokenAddress(string memory) external view returns (address tokenAddress);
 </code></pre>
 <h3 id="gethealthfactortarget"><a class="header" href="#gethealthfactortarget">getHealthFactorTarget</a></h3>
-<pre><code class="language-solidity">function getHealthFactorTarget() external view returns (uint256);
+<pre><code class="language-solidity">function getHealthFactorTarget() external view returns (uint256 healthFactorTarget);
 </code></pre>
-<h3 id="gethealthfactorminimum"><a class="header" href="#gethealthfactorminimum">getHealthFactorMinimum</a></h3>
-<pre><code class="language-solidity">function getHealthFactorMinimum() external view returns (uint256);
+<h3 id="gethealthfactortargetminimum"><a class="header" href="#gethealthfactortargetminimum">getHealthFactorTargetMinimum</a></h3>
+<pre><code class="language-solidity">function getHealthFactorTargetMinimum() external view returns (uint256 healthFactorTargetMinimum);
 </code></pre>
-<h3 id="getrescueethbalance"><a class="header" href="#getrescueethbalance">getRescueEthBalance</a></h3>
-<pre><code class="language-solidity">function getRescueEthBalance() external view returns (uint256);
+<h3 id="getcontractbalance"><a class="header" href="#getcontractbalance">getContractBalance</a></h3>
+<pre><code class="language-solidity">function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
+</code></pre>
+<h3 id="uniswapv3calculateminout"><a class="header" href="#uniswapv3calculateminout">uniswapV3CalculateMinOut</a></h3>
+<pre><code class="language-solidity">function uniswapV3CalculateMinOut(uint256 _currentBalance, string memory _uniswapV3PoolIdentifier)
+    external
+    view
+    returns (uint256 minOut);
 </code></pre>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
 <h3 id="ethrescued"><a class="header" href="#ethrescued">EthRescued</a></h3>
@@ -266,6 +275,9 @@
 <h3 id="aavepm__healthfactorbelowminimum"><a class="header" href="#aavepm__healthfactorbelowminimum">AavePM__HealthFactorBelowMinimum</a></h3>
 <pre><code class="language-solidity">error AavePM__HealthFactorBelowMinimum();
 </code></pre>
+<h3 id="aavepm__notenoughtokensforswap"><a class="header" href="#aavepm__notenoughtokensforswap">AavePM__NotEnoughTokensForSwap</a></h3>
+<pre><code class="language-solidity">error AavePM__NotEnoughTokensForSwap(string tokenInIdentifier);
+</code></pre>
 <h2 id="structs"><a class="header" href="#structs">Structs</a></h2>
 <h3 id="contractaddress"><a class="header" href="#contractaddress">ContractAddress</a></h3>
 <pre><code class="language-solidity">struct ContractAddress {
@@ -281,6 +293,7 @@
 </code></pre>
 <h3 id="uniswapv3pool"><a class="header" href="#uniswapv3pool">UniswapV3Pool</a></h3>
 <pre><code class="language-solidity">struct UniswapV3Pool {
+    string identifier;
     address poolAddress;
     uint24 fee;
 }

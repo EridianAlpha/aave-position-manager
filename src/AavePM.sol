@@ -244,6 +244,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         _tokenInIdentifier = renameIdentifierFromETHToWETHIfNeeded(_tokenInIdentifier);
         _tokenOutIdentifier = renameIdentifierFromETHToWETHIfNeeded(_tokenOutIdentifier);
 
+        // Check if the contract has enough tokens to swap
         uint256 currentBalance = getContractBalance(_tokenInIdentifier);
         if (currentBalance == 0) revert AavePM__NotEnoughTokensForSwap(_tokenInIdentifier);
 
@@ -260,6 +261,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
             sqrtPriceLimitX96: 0 // TODO: Calculate price limit
         });
 
+        // Approve the swapRouter to spend the tokenIn and swap the tokens
         TransferHelper.safeApprove(s_tokenAddresses[_tokenInIdentifier], address(swapRouter), currentBalance);
         amountOut = swapRouter.exactInputSingle(params);
         return (_tokenOutIdentifier, amountOut);

@@ -21,7 +21,7 @@ contract HelperConfig is Script {
         IAavePM.ContractAddress[] contractAddresses;
         IAavePM.TokenAddress[] tokenAddresses;
         IAavePM.UniswapV3Pool[] uniswapV3Pools;
-        uint256 initialHealthFactorTarget;
+        uint16 initialHealthFactorTarget;
     }
 
     function getChainVariables() public {
@@ -75,7 +75,7 @@ contract HelperConfig is Script {
             contractAddresses: contractAddresses,
             tokenAddresses: tokenAddresses,
             uniswapV3Pools: uniswapV3Pools,
-            initialHealthFactorTarget: vm.envUint("INITIAL_HEALTH_FACTOR_TARGET")
+            initialHealthFactorTarget: uint16(vm.envUint("INITIAL_HEALTH_FACTOR_TARGET"))
         });
 
         return activeNetworkConfig;

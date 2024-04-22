@@ -7,9 +7,11 @@ import {AavePM} from "src/AavePM.sol";
 
 contract Setup is Script {
     address public aavePMAddressProxy;
+    AavePM public aavePM;
 
     constructor() {
         aavePMAddressProxy = getAavePMAddressProxy();
+        aavePM = AavePM(payable(aavePMAddressProxy));
     }
 
     function getAavePMAddressProxy() internal view returns (address) {
@@ -24,6 +26,14 @@ contract FundAavePM is Script, Setup {
         vm.startBroadcast();
         (bool callSuccess,) = aavePMAddressProxy.call{value: value}("");
         if (!callSuccess) revert("Failed to send ETH to AavePM");
+        vm.stopBroadcast();
+    }
+}
+
+contract UpdateHFTAavePM is Script, Setup {
+    function run(uint16 value) public {
+        vm.startBroadcast();
+        aavePM.updateHealthFactorTarget(value);
         vm.stopBroadcast();
     }
 }

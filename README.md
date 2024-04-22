@@ -21,7 +21,7 @@
 - [6. Upgrades](#6-upgrades)
 - [7. Interactions](#7-interactions)
   - [7.1. Fund proxy with ETH](#71-fund-proxy-with-eth)
-  - [7.2. Set Health Factor](#72-set-health-factor)
+  - [7.2. Update Health Factor Target](#72-update-health-factor-target)
 - [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
 - [9. License](#9-license)
 
@@ -110,6 +110,8 @@ Under development 🏗️
 
 ## 7. Interactions
 
+Interactions are defined in [Interactions.s.sol](./script/Interactions.s.sol).
+
 ### 7.1. Fund proxy with ETH
 
 Input value in ETH.
@@ -119,14 +121,14 @@ Input value in ETH.
 | Anvil | `make send-ETH-anvil` |
 | Base  | `make send-ETH-base`  |
 
-### 7.2. Set Health Factor
+### 7.2. Update Health Factor Target
 
-Input value to 2 decimal places e.g. 1.25.
+Input value to 2 decimal places e.g. 125.
 
-| Chain | Command                |
-| ----- | ---------------------- |
-| Anvil | `make update-hf-anvil` |
-| Base  | `make update-hf-base`  |
+| Chain | Command                 |
+| ----- | ----------------------- |
+| Anvil | `make update-hft-anvil` |
+| Base  | `make update-hft-base`  |
 
 ## 8. Build and Deploy Documentation
 

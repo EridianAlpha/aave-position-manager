@@ -32,14 +32,16 @@ contract AavePMTestSetup is Test {
     mapping(string => address) s_contractAddresses;
     mapping(string => address) s_tokenAddresses;
     mapping(string => IAavePM.UniswapV3Pool) private s_uniswapV3Pools;
-    uint256 initialHealthFactorTarget;
+    uint16 initialHealthFactorTarget;
 
     string constant INITIAL_VERSION = "0.0.1";
     string constant UPGRADE_EXAMPLE_VERSION = "0.0.2";
     uint256 constant GAS_PRICE = 1;
     uint256 constant SEND_VALUE = 1 ether;
     uint256 constant STARTING_BALANCE = 10 ether;
-    uint256 constant INITIAL_HEALTH_FACTOR_TARGET_MINIMUM = 2;
+    uint16 constant INITIAL_HEALTH_FACTOR_TARGET_MINIMUM = 200;
+    uint16 constant UPDATED_HEALTH_FACTOR_TARGET_MINIMUM = 250;
+    uint24 constant UPDATED_UNISWAPV3_POOL_FEE = 200;
 
     // Create users
     address owner1 = makeAddr("owner1");
@@ -199,7 +201,7 @@ contract AavePMUpdateTests is AavePMTestSetup {
 
     function test_UpdateUniswapV3Pool() public {
         address newUniswapV3PoolAddress = makeAddr("newUniswapV3Pool");
-        uint24 newUniswapV3PoolFee = 200;
+        uint24 newUniswapV3PoolFee = UPDATED_UNISWAPV3_POOL_FEE;
 
         vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
         vm.prank(attacker1);
@@ -217,8 +219,8 @@ contract AavePMUpdateTests is AavePMTestSetup {
     }
 
     function test_UpdateHealthFactorTarget() public {
-        uint256 newHealthFactorTarget = 3;
-        uint256 previousHealthFactorTarget = aavePM.getHealthFactorTarget();
+        uint16 newHealthFactorTarget = UPDATED_HEALTH_FACTOR_TARGET_MINIMUM;
+        uint16 previousHealthFactorTarget = aavePM.getHealthFactorTarget();
 
         vm.expectEmit();
         emit IAavePM.HealthFactorTargetUpdated(previousHealthFactorTarget, newHealthFactorTarget);
@@ -229,7 +231,7 @@ contract AavePMUpdateTests is AavePMTestSetup {
     }
 
     function test_UpdateHealthFactorTargetUnchanged() public {
-        uint256 previousHealthFactorTarget = aavePM.getHealthFactorTarget();
+        uint16 previousHealthFactorTarget = aavePM.getHealthFactorTarget();
 
         vm.expectRevert(IAavePM.AavePM__HealthFactorUnchanged.selector);
         vm.prank(owner1);
@@ -237,7 +239,7 @@ contract AavePMUpdateTests is AavePMTestSetup {
     }
 
     function test_UpdateHealthFactorTargetBelowMinimum() public {
-        uint256 newHealthFactorTarget = aavePM.getHealthFactorTargetMinimum() - 1;
+        uint16 newHealthFactorTarget = aavePM.getHealthFactorTargetMinimum() - 1;
 
         vm.expectRevert(IAavePM.AavePM__HealthFactorBelowMinimum.selector);
         vm.prank(owner1);

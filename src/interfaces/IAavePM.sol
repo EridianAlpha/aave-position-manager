@@ -46,7 +46,7 @@ interface IAavePM {
     event UniswapV3PoolUpdated(
         string indexed identifier, address indexed newUniswapV3PoolAddress, uint24 indexed newUniswapV3PoolFee
     );
-    event HealthFactorTargetUpdated(uint256 previousHealthFactorTarget, uint256 newHealthFactorTarget);
+    event HealthFactorTargetUpdated(uint16 previousHealthFactorTarget, uint16 newHealthFactorTarget);
 
     // ================================================================
     // │                    FUNCTIONS - INITIALIZER                   │
@@ -56,7 +56,7 @@ interface IAavePM {
         ContractAddress[] memory contractAddresses,
         TokenAddress[] memory tokenAddresses,
         UniswapV3Pool[] memory uniswapV3Pools,
-        uint256 initialHealthFactorTarget
+        uint16 initialHealthFactorTarget
     ) external;
 
     // ================================================================
@@ -69,7 +69,7 @@ interface IAavePM {
         address _newUniswapV3PoolAddress,
         uint24 _newUniswapV3PoolFee
     ) external;
-    function updateHealthFactorTarget(uint256 _healthFactorTarget) external;
+    function updateHealthFactorTarget(uint16 _healthFactorTarget) external;
 
     // ================================================================
     // │                        FUNCTIONS - ETH                       │
@@ -97,8 +97,8 @@ interface IAavePM {
         external
         view
         returns (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee);
-    function getHealthFactorTarget() external view returns (uint256 healthFactorTarget);
-    function getHealthFactorTargetMinimum() external view returns (uint256 healthFactorTargetMinimum);
+    function getHealthFactorTarget() external view returns (uint16 healthFactorTarget);
+    function getHealthFactorTargetMinimum() external view returns (uint16 healthFactorTargetMinimum);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function uniswapV3CalculateMinOut(uint256 _currentBalance, string memory _uniswapV3PoolIdentifier)
         external

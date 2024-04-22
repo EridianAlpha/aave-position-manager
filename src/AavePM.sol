@@ -27,7 +27,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     mapping(string => UniswapV3Pool) private s_uniswapV3Pools;
 
     // Values
-    uint256 private s_healthFactorTarget;
+    uint16 private s_healthFactorTarget;
 
     // ================================================================
     // │                           CONSTANTS                          │
@@ -48,7 +48,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @notice The minimum Health Factor target.
     /// @dev The value is hardcoded in the contract to prevent the position from being liquidated due to a low target.
     ///      A contract upgrade is required to change this value.
-    uint256 private constant HEALTH_FACTOR_TARGET_MINIMUM = 2;
+    uint16 private constant HEALTH_FACTOR_TARGET_MINIMUM = 200;
 
     // ================================================================
     // │                           MODIFIERS                          │
@@ -89,7 +89,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         ContractAddress[] memory contractAddresses,
         TokenAddress[] memory tokenAddresses,
         UniswapV3Pool[] memory uniswapV3Pools,
-        uint256 initialHealthFactorTarget
+        uint16 initialHealthFactorTarget
     ) public initializer {
         __AccessControl_init();
         __UUPSUpgradeable_init();
@@ -173,7 +173,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @dev Caller must have `OWNER_ROLE`.
     ///      Emits a `HealthFactorTargetUpdated` event.
     /// @param _healthFactorTarget The new Health Factor target.
-    function updateHealthFactorTarget(uint256 _healthFactorTarget) external onlyRole(OWNER_ROLE) {
+    function updateHealthFactorTarget(uint16 _healthFactorTarget) external onlyRole(OWNER_ROLE) {
         // Should be different from the current healthFactorTarget
         if (s_healthFactorTarget == _healthFactorTarget) revert AavePM__HealthFactorUnchanged();
 
@@ -330,14 +330,14 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @notice Getter function to get the Health Factor target.
     /// @dev Public function to allow anyone to view the Health Factor target value.
     /// @return healthFactorTarget The Health Factor target.
-    function getHealthFactorTarget() public view returns (uint256 healthFactorTarget) {
+    function getHealthFactorTarget() public view returns (uint16 healthFactorTarget) {
         return s_healthFactorTarget;
     }
 
     /// @notice Getter function to get the Health Factor Target minimum.
     /// @dev Public function to allow anyone to view the Health Factor Target minimum value.
     /// @return healthFactorTargetMinimum The Health Factor Target minimum value.
-    function getHealthFactorTargetMinimum() public pure returns (uint256 healthFactorTargetMinimum) {
+    function getHealthFactorTargetMinimum() public pure returns (uint16 healthFactorTargetMinimum) {
         return HEALTH_FACTOR_TARGET_MINIMUM;
     }
 

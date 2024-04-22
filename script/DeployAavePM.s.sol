@@ -16,7 +16,7 @@ contract DeployAavePM is Script {
         IAavePM.ContractAddress[] memory contractAddresses = config.contractAddresses;
         IAavePM.TokenAddress[] memory tokenAddresses = config.tokenAddresses;
         IAavePM.UniswapV3Pool[] memory uniswapV3Pools = config.uniswapV3Pools;
-        uint256 initialHealthFactorTarget = config.initialHealthFactorTarget;
+        uint16 initialHealthFactorTarget = config.initialHealthFactorTarget;
 
         vm.startBroadcast();
         // Deploy the implementation contract

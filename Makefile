@@ -47,9 +47,9 @@ anvil-network:
 # ================================================================
 # │            ETHERNAL BLOCK EXPLORER CONFIGURATION             │
 # ================================================================
-# https://app.tryethernal.com
 ethernal:
 	ETHERNAL_API_TOKEN=${ETHERNAL_API_TOKEN} ethernal listen --astUpload true
+# https://app.tryethernal.com
 
 # ================================================================
 # │                   FORK TESTING AND COVERAGE                  │
@@ -106,10 +106,14 @@ deploy-script:
 send-ETH-script: 
 	@forge script script/Interactions.s.sol:FundAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint256)" ${MAKE_CLI_INPUT_VALUE}
 
+update-hft-script:
+	@forge script script/Interactions.s.sol:UpdateHFTAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint16)" ${MAKE_CLI_INPUT_VALUE}
+
 # ================================================================
 # │                       COMBINED COMMANDS                      │
 # ================================================================
 send-ETH: ask-for-value convert-value-to-wei store-value send-ETH-script remove-value
+update-hft: ask-for-value store-value update-hft-script remove-value
 
 # ================================================================
 # │                         RUN COMMANDS                         │
@@ -119,3 +123,6 @@ deploy-anvil: anvil-network deploy-script
 
 send-ETH-anvil: anvil-network send-ETH
 #send-ETH-holesky: holesky-network send-ETH
+
+update-hft-anvil: anvil-network update-hft
+#update-hft-holesky: holesky-network update-hft

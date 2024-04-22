@@ -293,7 +293,16 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 // │                       TOKEN SWAP TESTS                       │
 // ================================================================
 contract AavePMTokenSwapTests is AavePMTestSetup {
-    function test_GenericSwapETHToWstETH() public {
+    function test_SwapFailsNotEnoughTokens() public {
+        bytes memory encodedRevert_NotEnoughTokensForSwap =
+            abi.encodeWithSelector(IAavePM.AavePM__NotEnoughTokensForSwap.selector, "wstETH");
+
+        vm.expectRevert(encodedRevert_NotEnoughTokensForSwap);
+        vm.prank(manager1);
+        aavePM.swapTokens("wstETH/ETH", "wstETH", "WETH9");
+    }
+
+    function test_SwapETHToWstETH() public {
         IERC20 wstETH = IERC20(aavePM.getTokenAddress("wstETH"));
 
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
@@ -310,7 +319,7 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
         assertEq(amountOut, wstETHbalance);
     }
 
-    function test_GenericSwapWstETHToETH() public {
+    function test_SwapWstETHToETH() public {
         IERC20 WETH9 = IERC20(aavePM.getTokenAddress("WETH9"));
 
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");

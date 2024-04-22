@@ -59,7 +59,7 @@ test-fork-mainnet-v:; forge test --fork-url ${MAINNET_RPC_URL} -vvvv
 test-fork-mainnet-summary:; forge test --fork-url ${MAINNET_RPC_URL} --summary
 
 coverage:
-	@forge coverage --fork-url ${MAINNET_RPC_URL} --report lcov --report summary
+	@forge coverage --fork-url ${MAINNET_RPC_URL} --report summary --report lcov 
 	@echo
 
 coverage-report:
@@ -71,7 +71,7 @@ coverage-report:
 # ================================================================
 install:
 	forge install foundry-rs/forge-std@v1.7.6 --no-commit && \
-	forge install Cyfrin/foundry-devops@0.1.0 --no-commit && \
+	forge install EridianAlpha/foundry-devops@404761e --no-commit && \
 	forge install openzeppelin/openzeppelin-contracts@v5.0.1 --no-commit && \
 	forge install openzeppelin/openzeppelin-contracts-upgradeable@v5.0.1 --no-commit && \
 	forge install uniswap/v3-core --no-commit && \
@@ -80,9 +80,8 @@ install:
 deploy:
 	@forge script script/DeployAavePM.s.sol:DeployAavePM ${NETWORK_ARGS} -vvvv
 
-deposit-wstEth: 
-	@forge script script/Interactions.s.sol:DepositWstEth ${NETWORK_ARGS} -vvvv
-
+send-ETH: 
+	@forge script script/Interactions.s.sol:FundAavePM ${NETWORK_ARGS} -vvvv
 
 # ================================================================
 # │                         RUN COMMANDS                         │
@@ -90,5 +89,4 @@ deposit-wstEth:
 deploy-anvil: anvil-network deploy
 deploy-holesky: holesky-network deploy
 
-anvil-deposit-wstEth: anvil-network deposit-wstEth
-holesky-deposit-wstEth: holesky-network deposit-wstEth
+send-ETH-anvil: anvil-network send-ETH

@@ -114,19 +114,19 @@ Under development 🏗️
 
 Input value in ETH.
 
-| Chain   | Command               |
-| ------- | --------------------- |
-| Anvil   | `make send-ETH-anvil` |
-| Holesky | `make send-ETH-base`  |
+| Chain | Command               |
+| ----- | --------------------- |
+| Anvil | `make send-ETH-anvil` |
+| Base  | `make send-ETH-base`  |
 
 ### 7.2. Set Health Factor
 
 Input value to 2 decimal places e.g. 1.25.
 
-| Chain   | Command                |
-| ------- | ---------------------- |
-| Anvil   | `make update-hf-anvil` |
-| Holesky | `make update-hf-base`  |
+| Chain | Command                |
+| ----- | ---------------------- |
+| Anvil | `make update-hf-anvil` |
+| Base  | `make update-hf-base`  |
 
 ## 8. Build and Deploy Documentation
 

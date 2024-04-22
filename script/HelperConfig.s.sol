@@ -13,6 +13,9 @@ contract HelperConfig is Script {
     address public aaveAddress;
     address public uniswapV3RouterAddress;
     address public uniswapV3WstETHETHPoolAddress;
+    uint24 public uniswapV3WstETHETHPoolFee;
+    address public uniswapV3USDCETHPoolAddress;
+    uint24 public uniswapV3USDCETHPoolFee;
     address public wethAddress;
     address public wstETHAddress;
     address public usdcAddress;
@@ -22,6 +25,7 @@ contract HelperConfig is Script {
         IAavePM.TokenAddress[] tokenAddresses;
         IAavePM.UniswapV3Pool[] uniswapV3Pools;
         uint16 initialHealthFactorTarget;
+        uint16 initialSlippageTolerance;
     }
 
     function getChainVariables() public {
@@ -32,6 +36,9 @@ contract HelperConfig is Script {
             aaveAddress = vm.envAddress("MAINNET_ADDRESS_AAVE");
             uniswapV3RouterAddress = vm.envAddress("MAINNET_ADDRESS_UNISWAP_V3_ROUTER");
             uniswapV3WstETHETHPoolAddress = vm.envAddress("MAINNET_ADDRESS_UNISWAP_V3_WSTETH_ETH_POOL");
+            uniswapV3WstETHETHPoolFee = uint24(vm.envUint("MAINNET_FEE_UNISWAP_V3_WSTETH_ETH_POOL"));
+            uniswapV3USDCETHPoolAddress = vm.envAddress("MAINNET_ADDRESS_UNISWAP_V3_USDC_ETH_POOL");
+            uniswapV3USDCETHPoolFee = uint24(vm.envUint("MAINNET_FEE_UNISWAP_V3_USDC_ETH_POOL"));
             wethAddress = vm.envAddress("MAINNET_ADDRESS_WETH9");
             wstETHAddress = vm.envAddress("MAINNET_ADDRESS_WSTETH");
             usdcAddress = vm.envAddress("MAINNET_ADDRESS_USDC");
@@ -40,6 +47,9 @@ contract HelperConfig is Script {
             aaveAddress = vm.envAddress("BASE_ADDRESS_AAVE");
             uniswapV3RouterAddress = vm.envAddress("BASE_ADDRESS_UNISWAP_V3_ROUTER");
             uniswapV3WstETHETHPoolAddress = vm.envAddress("BASE_ADDRESS_UNISWAP_V3_WSTETH_ETH_POOL");
+            uniswapV3WstETHETHPoolFee = uint24(vm.envUint("BASE_FEE_UNISWAP_V3_WSTETH_ETH_POOL"));
+            uniswapV3USDCETHPoolAddress = vm.envAddress("BASE_ADDRESS_UNISWAP_V3_USDC_ETH_POOL");
+            uniswapV3USDCETHPoolFee = uint24(vm.envUint("BASE_FEE_UNISWAP_V3_USDC_ETH_POOL"));
             wethAddress = vm.envAddress("BASE_ADDRESS_WETH9");
             wstETHAddress = vm.envAddress("BASE_ADDRESS_WSTETH");
             usdcAddress = vm.envAddress("BASE_ADDRESS_USDC");
@@ -66,16 +76,16 @@ contract HelperConfig is Script {
 
         // UniswapV3 pools
         IAavePM.UniswapV3Pool[] memory uniswapV3Pools = new IAavePM.UniswapV3Pool[](2);
-        uniswapV3Pools[0] = IAavePM.UniswapV3Pool(
-            "wstETH/ETH", uniswapV3WstETHETHPoolAddress, uint24(vm.envUint("INITIAL_UNISWAP_V3_WSTETH_POOL_FEE"))
-        );
-        // TODO: Add USDC pool here
+        uniswapV3Pools[0] =
+            IAavePM.UniswapV3Pool("wstETH/ETH", uniswapV3WstETHETHPoolAddress, uniswapV3WstETHETHPoolFee);
+        uniswapV3Pools[1] = IAavePM.UniswapV3Pool("USDC/ETH", uniswapV3USDCETHPoolAddress, uniswapV3USDCETHPoolFee);
 
         activeNetworkConfig = NetworkConfig({
             contractAddresses: contractAddresses,
             tokenAddresses: tokenAddresses,
             uniswapV3Pools: uniswapV3Pools,
-            initialHealthFactorTarget: uint16(vm.envUint("INITIAL_HEALTH_FACTOR_TARGET"))
+            initialHealthFactorTarget: uint16(vm.envUint("INITIAL_HEALTH_FACTOR_TARGET")),
+            initialSlippageTolerance: uint16(vm.envUint("INITIAL_SLIPPAGE_TOLERANCE"))
         });
 
         return activeNetworkConfig;

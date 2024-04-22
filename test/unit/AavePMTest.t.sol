@@ -340,7 +340,7 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
         assertEq(amountOut, wstETHbalance);
     }
 
-    function test_SwapWstETHToETH() public {
+    function test_SwapWstETHToWETH9() public {
         IERC20 WETH9 = IERC20(aavePM.getTokenAddress("WETH9"));
 
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
@@ -350,9 +350,47 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
         vm.prank(manager1);
         aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
 
-        // Call the swapTokens function to convert wstETH back to WETH
+        // Call the swapTokens function again to convert wstETH back to WETH9
         vm.prank(manager1);
         (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("wstETH/ETH", "wstETH", "WETH9");
+
+        // Check the WETH9 balance of the contract
+        uint256 WETH9balance = WETH9.balanceOf(address(aavePM));
+
+        assertEq(tokenOutIdentifier, "WETH9");
+        assertEq(amountOut, WETH9balance);
+    }
+
+    function test_SwapETHToUSDC() public {
+        IERC20 USDC = IERC20(aavePM.getTokenAddress("USDC"));
+
+        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
+        require(success, "Failed to send ETH to AavePM contract");
+
+        // Call the swapTokens function to convert ETH to USDC
+        vm.prank(manager1);
+        (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("USDC/ETH", "ETH", "USDC");
+
+        // Check the USDC balance of the contract
+        uint256 USDCbalance = USDC.balanceOf(address(aavePM));
+
+        assertEq(tokenOutIdentifier, "USDC");
+        assertEq(amountOut, USDCbalance);
+    }
+
+    function test_SwapUSDCToWETH9() public {
+        IERC20 WETH9 = IERC20(aavePM.getTokenAddress("WETH9"));
+
+        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
+        require(success, "Failed to send ETH to AavePM contract");
+
+        // Call the swapTokens function to convert ETH to USDC
+        vm.prank(manager1);
+        aavePM.swapTokens("USDC/ETH", "ETH", "USDC");
+
+        // Call the swapTokens function again to convert USDC back to WETH9
+        vm.prank(manager1);
+        (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("USDC/ETH", "USDC", "WETH9");
 
         // Check the WETH9 balance of the contract
         uint256 WETH9balance = WETH9.balanceOf(address(aavePM));

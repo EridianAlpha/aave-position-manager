@@ -56,7 +56,8 @@ interface IAavePM {
         ContractAddress[] memory contractAddresses,
         TokenAddress[] memory tokenAddresses,
         UniswapV3Pool[] memory uniswapV3Pools,
-        uint16 initialHealthFactorTarget
+        uint16 initialHealthFactorTarget,
+        uint16 initialSlippageTolerance
     ) external;
 
     // ================================================================
@@ -86,6 +87,16 @@ interface IAavePM {
     ) external returns (string memory tokenOutIdentifier, uint256 amountOut);
 
     // ================================================================
+    // │                    FUNCTIONS - CALCULATIONS                  │
+    // ================================================================
+    function uniswapV3CalculateMinOut(
+        uint256 _currentBalance,
+        string memory _uniswapV3PoolIdentifier,
+        string memory _tokenInIdentifier,
+        string memory _tokenOutIdentifier
+    ) external view returns (uint256 minOut);
+
+    // ================================================================
     // │                       FUNCTIONS - GETTERS                    │
     // ================================================================
     function getCreator() external view returns (address creator);
@@ -100,8 +111,4 @@ interface IAavePM {
     function getHealthFactorTarget() external view returns (uint16 healthFactorTarget);
     function getHealthFactorTargetMinimum() external view returns (uint16 healthFactorTargetMinimum);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
-    function uniswapV3CalculateMinOut(uint256 _currentBalance, string memory _uniswapV3PoolIdentifier)
-        external
-        view
-        returns (uint256 minOut);
 }

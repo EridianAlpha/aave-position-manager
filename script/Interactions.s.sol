@@ -30,6 +30,18 @@ contract FundAavePM is Script, Setup {
     }
 }
 
+contract SwapTokensAavePM is Script, Setup {
+    function run(
+        string memory _uniswapV3PoolIdentifier,
+        string memory _tokenInIdentifier,
+        string memory _tokenOutIdentifier
+    ) public {
+        vm.startBroadcast();
+        aavePM.swapTokens(_uniswapV3PoolIdentifier, _tokenInIdentifier, _tokenOutIdentifier);
+        vm.stopBroadcast();
+    }
+}
+
 contract UpdateHFTAavePM is Script, Setup {
     function run(uint16 value) public {
         vm.startBroadcast();

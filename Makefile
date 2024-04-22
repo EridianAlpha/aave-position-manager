@@ -106,6 +106,12 @@ deploy-script:
 send-ETH-script: 
 	@forge script script/Interactions.s.sol:FundAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint256)" ${MAKE_CLI_INPUT_VALUE}
 
+swap-ETH-USDC-script:
+	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "USDC/ETH" "ETH" "USDC"
+
+swap-USDC-WETH9-script:
+	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "USDC/ETH" "USDC" "WETH9"
+
 update-hft-script:
 	@forge script script/Interactions.s.sol:UpdateHFTAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint16)" ${MAKE_CLI_INPUT_VALUE}
 
@@ -123,6 +129,12 @@ deploy-anvil: anvil-network deploy-script
 
 send-ETH-anvil: anvil-network send-ETH
 #send-ETH-holesky: holesky-network send-ETH
+
+swap-ETH-USDC-anvil: anvil-network swap-ETH-USDC-script
+#swap-tokens-holesky: holesky-network swap-tokens
+
+swap-USDC-WETH9-anvil: anvil-network swap-USDC-WETH9-script
+#swap-tokens-holesky: holesky-network swap-tokens
 
 update-hft-anvil: anvil-network update-hft
 #update-hft-holesky: holesky-network update-hft

@@ -11,6 +11,7 @@ import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRoute
 import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
 import {IAavePM} from "./interfaces/IAavePM.sol";
+import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha
@@ -28,6 +29,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
 
     // Values
     uint16 private s_healthFactorTarget;
+    uint16 private s_slippageTolerance;
 
     // ================================================================
     // │                           CONSTANTS                          │
@@ -42,11 +44,9 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
     bytes32 private constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
-    // TODO: Make this a calldata parameter
-    uint256 private constant UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE = 200; // 0.5%
-
     /// @notice The minimum Health Factor target.
-    /// @dev The value is hardcoded in the contract to prevent the position from being liquidated due to a low target.
+    /// @dev The value is hardcoded in the contract to prevent the position from
+    ///      being liquidated cause by accidentally setting a low target.
     ///      A contract upgrade is required to change this value.
     uint16 private constant HEALTH_FACTOR_TARGET_MINIMUM = 200;
 
@@ -89,7 +89,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         ContractAddress[] memory contractAddresses,
         TokenAddress[] memory tokenAddresses,
         UniswapV3Pool[] memory uniswapV3Pools,
-        uint16 initialHealthFactorTarget
+        uint16 initialHealthFactorTarget,
+        uint16 initialSlippageTolerance
     ) public initializer {
         __AccessControl_init();
         __UUPSUpgradeable_init();
@@ -119,6 +120,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         }
 
         s_healthFactorTarget = initialHealthFactorTarget;
+        s_slippageTolerance = initialSlippageTolerance;
     }
 
     // ================================================================
@@ -217,9 +219,11 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
     ///      Reverts if there are no tokens in the contract or if the transaction doesn't meet the `amountOutMinimum` criteria due to price movements.
+    /// @param _uniswapV3PoolIdentifier The identifier of the UniswapV3 pool to use for the swap.
+    /// @param _tokenInIdentifier The identifier of the token to swap.
+    /// @param _tokenOutIdentifier The identifier of the token to receive from the swap.
     /// @return tokenOutIdentifier The identifier of the token received from the swap.
     /// @return amountOut The amount tokens received from the swap.
-    // TODO: Public for testing, but will be internal once called by rebalance function
     function swapTokens(
         string memory _uniswapV3PoolIdentifier,
         string memory _tokenInIdentifier,
@@ -230,24 +234,25 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         uint256 currentBalance = getContractBalance(_tokenInIdentifier);
         if (currentBalance == 0) revert AavePM__NotEnoughTokensForSwap(_tokenInIdentifier);
 
-        uint256 minOut = uniswapV3CalculateMinOut(currentBalance, _uniswapV3PoolIdentifier);
-        uint160 priceLimit = /* TODO: Calculate price limit */ 0;
+        // If the tokenIn is ETH, continue calculations with WETH9 address
+        bool isInputETH = (keccak256(abi.encodePacked(_tokenInIdentifier)) == keccak256(abi.encodePacked("ETH")));
+        _tokenInIdentifier = isInputETH ? "WETH9" : _tokenInIdentifier;
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
-            tokenIn: (keccak256(abi.encodePacked(_tokenInIdentifier)) == keccak256(abi.encodePacked("ETH")))
-                ? s_tokenAddresses["WETH9"]
-                : s_tokenAddresses[_tokenInIdentifier],
+            tokenIn: s_tokenAddresses[_tokenInIdentifier],
             tokenOut: s_tokenAddresses[_tokenOutIdentifier],
             fee: s_uniswapV3Pools[_uniswapV3PoolIdentifier].fee,
             recipient: address(this),
             deadline: block.timestamp,
             amountIn: currentBalance,
-            amountOutMinimum: minOut,
-            sqrtPriceLimitX96: priceLimit
+            amountOutMinimum: uniswapV3CalculateMinOut(
+                currentBalance, _uniswapV3PoolIdentifier, _tokenInIdentifier, _tokenOutIdentifier
+            ),
+            sqrtPriceLimitX96: 0 // TODO: Calculate price limit
         });
 
-        // If it's ETH being swapped, then use the value parameter, else leave the value parameter empty
-        if (keccak256(abi.encodePacked(_tokenInIdentifier)) == keccak256(abi.encodePacked("ETH"))) {
+        // If it's ETH being swapped, then use the value parameter to send ETH, else swap the tokens directly.
+        if (isInputETH) {
             amountOut = swapRouter.exactInputSingle{value: currentBalance}(params);
         } else {
             TransferHelper.safeApprove(s_tokenAddresses[_tokenInIdentifier], address(swapRouter), currentBalance);
@@ -259,17 +264,30 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                   FUNCTIONS - CALCULATIONS                   │
     // ================================================================
-    function uniswapV3CalculateMinOut(uint256 _currentBalance, string memory _uniswapV3PoolIdentifier)
-        public
-        view
-        returns (uint256 minOut)
-    {
-        // TODO: Account for different token decimals. Will need to be stored in the struct.
+    function uniswapV3CalculateMinOut(
+        uint256 _currentBalance,
+        string memory _uniswapV3PoolIdentifier,
+        string memory _tokenInIdentifier,
+        string memory _tokenOutIdentifier
+    ) public view returns (uint256 minOut) {
         IUniswapV3Pool pool = IUniswapV3Pool(s_uniswapV3Pools[_uniswapV3PoolIdentifier].poolAddress);
-        (uint160 sqrtRatioX96,,,,,,) = pool.slot0(); // Fetch current ratio from the pool
-        uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (1e18) >> (96 * 2);
-        uint256 expectedOut = (_currentBalance * 1e18) / currentRatio;
-        uint256 slippageTolerance = expectedOut / UNISWAPV3_WSTETH_ETH_POOL_SLIPPAGE;
+
+        // sqrtRatioX96 calculates the price of token1 in units of token0 (token1/token0)
+        // so only token0 decimals are needed to calculate minOut.
+        uint256 _token0Decimals = IERC20Extended(
+            s_tokenAddresses[s_tokenAddresses[_tokenInIdentifier] == pool.token0()
+                ? _tokenInIdentifier
+                : _tokenOutIdentifier]
+        ).decimals();
+
+        // Fetch current ratio from the pool
+        (uint160 sqrtRatioX96,,,,,,) = pool.slot0();
+
+        // Calculate the current ratio
+        uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (10 ** _token0Decimals) >> (96 * 2);
+
+        uint256 expectedOut = (_currentBalance * (10 ** _token0Decimals)) / currentRatio;
+        uint256 slippageTolerance = expectedOut / s_slippageTolerance;
         return minOut = expectedOut - slippageTolerance;
     }
 

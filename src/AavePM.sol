@@ -234,9 +234,9 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         uint256 currentBalance = getContractBalance(_tokenInIdentifier);
         if (currentBalance == 0) revert AavePM__NotEnoughTokensForSwap(_tokenInIdentifier);
 
-        // If the tokenIn is ETH, continue calculations with WETH9 address
+        // If the tokenIn is ETH, continue calculations with WETH address
         bool isInputETH = (keccak256(abi.encodePacked(_tokenInIdentifier)) == keccak256(abi.encodePacked("ETH")));
-        _tokenInIdentifier = isInputETH ? "WETH9" : _tokenInIdentifier;
+        _tokenInIdentifier = isInputETH ? "WETH" : _tokenInIdentifier;
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
             tokenIn: s_tokenAddresses[_tokenInIdentifier],

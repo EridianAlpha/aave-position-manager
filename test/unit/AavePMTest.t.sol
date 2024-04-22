@@ -320,7 +320,7 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
 
         vm.expectRevert(encodedRevert_NotEnoughTokensForSwap);
         vm.prank(manager1);
-        aavePM.swapTokens("wstETH/ETH", "wstETH", "WETH9");
+        aavePM.swapTokens("wstETH/ETH", "wstETH", "WETH");
     }
 
     function test_SwapETHToWstETH() public {
@@ -340,8 +340,8 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
         assertEq(amountOut, wstETHbalance);
     }
 
-    function test_SwapWstETHToWETH9() public {
-        IERC20 WETH9 = IERC20(aavePM.getTokenAddress("WETH9"));
+    function test_SwapWstETHToWETH() public {
+        IERC20 WETH = IERC20(aavePM.getTokenAddress("WETH"));
 
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
@@ -350,15 +350,15 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
         vm.prank(manager1);
         aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
 
-        // Call the swapTokens function again to convert wstETH back to WETH9
+        // Call the swapTokens function again to convert wstETH back to WETH
         vm.prank(manager1);
-        (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("wstETH/ETH", "wstETH", "WETH9");
+        (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("wstETH/ETH", "wstETH", "WETH");
 
-        // Check the WETH9 balance of the contract
-        uint256 WETH9balance = WETH9.balanceOf(address(aavePM));
+        // Check the WETH balance of the contract
+        uint256 WETHbalance = WETH.balanceOf(address(aavePM));
 
-        assertEq(tokenOutIdentifier, "WETH9");
-        assertEq(amountOut, WETH9balance);
+        assertEq(tokenOutIdentifier, "WETH");
+        assertEq(amountOut, WETHbalance);
     }
 
     function test_SwapETHToUSDC() public {
@@ -378,8 +378,8 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
         assertEq(amountOut, USDCbalance);
     }
 
-    function test_SwapUSDCToWETH9() public {
-        IERC20 WETH9 = IERC20(aavePM.getTokenAddress("WETH9"));
+    function test_SwapUSDCToWETH() public {
+        IERC20 WETH = IERC20(aavePM.getTokenAddress("WETH"));
 
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
@@ -388,15 +388,15 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
         vm.prank(manager1);
         aavePM.swapTokens("USDC/ETH", "ETH", "USDC");
 
-        // Call the swapTokens function again to convert USDC back to WETH9
+        // Call the swapTokens function again to convert USDC back to WETH
         vm.prank(manager1);
-        (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("USDC/ETH", "USDC", "WETH9");
+        (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("USDC/ETH", "USDC", "WETH");
 
-        // Check the WETH9 balance of the contract
-        uint256 WETH9balance = WETH9.balanceOf(address(aavePM));
+        // Check the WETH balance of the contract
+        uint256 WETHbalance = WETH.balanceOf(address(aavePM));
 
-        assertEq(tokenOutIdentifier, "WETH9");
-        assertEq(amountOut, WETH9balance);
+        assertEq(tokenOutIdentifier, "WETH");
+        assertEq(amountOut, WETHbalance);
     }
 }
 
@@ -428,8 +428,8 @@ contract AavePMGetterTests is AavePMTestSetup {
         assertEq(aavePM.getContractAddress("uniswapV3Router"), s_contractAddresses["uniswapV3Router"]);
     }
 
-    function test_GetWETH9() public {
-        assertEq(aavePM.getTokenAddress("WETH9"), s_tokenAddresses["WETH9"]);
+    function test_GetWETH() public {
+        assertEq(aavePM.getTokenAddress("WETH"), s_tokenAddresses["WETH"]);
     }
 
     function test_GetWstETH() public {

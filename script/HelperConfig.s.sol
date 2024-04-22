@@ -39,7 +39,7 @@ contract HelperConfig is Script {
             uniswapV3WstETHETHPoolFee = uint24(vm.envUint("MAINNET_FEE_UNISWAP_V3_WSTETH_ETH_POOL"));
             uniswapV3USDCETHPoolAddress = vm.envAddress("MAINNET_ADDRESS_UNISWAP_V3_USDC_ETH_POOL");
             uniswapV3USDCETHPoolFee = uint24(vm.envUint("MAINNET_FEE_UNISWAP_V3_USDC_ETH_POOL"));
-            wethAddress = vm.envAddress("MAINNET_ADDRESS_WETH9");
+            wethAddress = vm.envAddress("MAINNET_ADDRESS_WETH");
             wstETHAddress = vm.envAddress("MAINNET_ADDRESS_WSTETH");
             usdcAddress = vm.envAddress("MAINNET_ADDRESS_USDC");
         } else if (chainId == 8453) {
@@ -50,7 +50,7 @@ contract HelperConfig is Script {
             uniswapV3WstETHETHPoolFee = uint24(vm.envUint("BASE_FEE_UNISWAP_V3_WSTETH_ETH_POOL"));
             uniswapV3USDCETHPoolAddress = vm.envAddress("BASE_ADDRESS_UNISWAP_V3_USDC_ETH_POOL");
             uniswapV3USDCETHPoolFee = uint24(vm.envUint("BASE_FEE_UNISWAP_V3_USDC_ETH_POOL"));
-            wethAddress = vm.envAddress("BASE_ADDRESS_WETH9");
+            wethAddress = vm.envAddress("BASE_ADDRESS_WETH");
             wstETHAddress = vm.envAddress("BASE_ADDRESS_WSTETH");
             usdcAddress = vm.envAddress("BASE_ADDRESS_USDC");
         } else {
@@ -70,7 +70,7 @@ contract HelperConfig is Script {
 
         // Token addresses
         IAavePM.TokenAddress[] memory tokenAddresses = new IAavePM.TokenAddress[](3);
-        tokenAddresses[0] = IAavePM.TokenAddress("WETH9", wethAddress);
+        tokenAddresses[0] = IAavePM.TokenAddress("WETH", wethAddress);
         tokenAddresses[1] = IAavePM.TokenAddress("wstETH", wstETHAddress);
         tokenAddresses[2] = IAavePM.TokenAddress("USDC", usdcAddress);
 

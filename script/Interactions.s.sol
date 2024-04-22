@@ -20,16 +20,10 @@ contract Setup is Script {
 }
 
 contract FundAavePM is Script, Setup {
-    uint256 SEND_VALUE = 0.1 ether;
-
-    function fundAavePM(address aavePMAddressProxy) public {
+    function run(uint256 value) public {
         vm.startBroadcast();
-        (bool callSuccess,) = aavePMAddressProxy.call{value: SEND_VALUE}("");
-        if (!callSuccess) revert("Failed to send ether to AavePM");
+        (bool callSuccess,) = aavePMAddressProxy.call{value: value}("");
+        if (!callSuccess) revert("Failed to send ETH to AavePM");
         vm.stopBroadcast();
-    }
-
-    function run() public {
-        fundAavePM(aavePMAddressProxy);
     }
 }

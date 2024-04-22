@@ -6,23 +6,22 @@
 >
 > ---
 
-- [Overview](#overview)
-  - [Key Functions](#key-functions)
-- [WebApp](#webapp)
-- [Installation](#installation)
-  - [Clone repository](#clone-repository)
-  - [Install Dependencies](#install-dependencies)
-  - [Create `.env` file](#create-env-file)
-  - [Configure Ethernal (optional)](#configure-ethernal-optional)
-- [Testing](#testing)
-  - [Tests](#tests)
-  - [Coverage](#coverage)
-- [Deployment](#deployment)
-- [Upgrades](#upgrades)
-- [Interactions](#interactions)
-  - [Deposit](#deposit)
-- [Build and Deploy Documentation](#build-and-deploy-documentation)
-- [License](#license)
+* [Overview](#overview)
+  * [Key Functions](#key-functions)
+* [WebApp](#webapp)
+* [Installation](#installation)
+  * [Clone repository](#clone-repository)
+  * [Install Dependencies](#install-dependencies)
+  * [Create `.env` file](#create-env-file)
+  * [Configure Ethernal (optional)](#configure-ethernal-optional)
+* [Testing](#testing)
+  * [Tests](#tests)
+  * [Coverage](#coverage)
+* [Deployment](#deployment)
+* [Upgrades](#upgrades)
+* [Interactions](#interactions)
+* [Build and Deploy Documentation](#build-and-deploy-documentation)
+* [License](#license)
 
 ## Overview
 
@@ -101,7 +100,7 @@ make coverage-report
 | Chain   | Command                |
 | ------- | ---------------------- |
 | Anvil   | `make deploy-anvil`    |
-| Holesky | `make deploy-holesky`  |
+| Holesky | `#make deploy-holesky` |
 | Mainnet | `#make deploy-mainnet` |
 | Base    | `#make deploy-base`    |
 
@@ -111,9 +110,10 @@ Under development 🏗️
 
 ## Interactions
 
-### Deposit
-
-Under development 🏗️
+| Action                                                        | Anvil                  | Base                  |
+| ------------------------------------------------------------- | ---------------------- | --------------------- |
+| Fund proxy with ETH (Input value in ETH)                      | `make send-ETH-anvil`  | `make send-ETH-base`  |
+| Set Health Factor (Input value to 2 decimal places e.g. 1.25) | `make update-hf-anvil` | `make update-hf-base` |
 
 ## Build and Deploy Documentation
 

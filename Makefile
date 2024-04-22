@@ -3,7 +3,7 @@
 # ================================================================
 -include .env
 
-.PHONY: test clean help install snapshot format anvil ethernal
+.PHONY: clean help install snapshot format anvil ethernal
 
 help:
 	@echo "Usage:"
@@ -26,14 +26,14 @@ anvil-network:
 						--private-key ${ANVIL_PRIVATE_KEY} \
 	)
 
-holesky-network: 
-	$(eval \
-		NETWORK_ARGS := --broadcast \
-			--rpc-url ${HOLESKY_RPC_URL} \
-			--private-key ${HOLESKY_PRIVATE_KEY} \
-			--verify \
-			--etherscan-api-key ${ETHERSCAN_API_KEY} \
-	)
+# holesky-network: 
+# 	$(eval \
+# 		NETWORK_ARGS := --broadcast \
+# 			--rpc-url ${HOLESKY_RPC_URL} \
+# 			--private-key ${HOLESKY_PRIVATE_KEY} \
+# 			--verify \
+# 			--etherscan-api-key ${ETHERSCAN_API_KEY} \
+# 	)
 
 # mainnet-network: 
 # 	$(eval \
@@ -52,7 +52,7 @@ ethernal:
 	ETHERNAL_API_TOKEN=${ETHERNAL_API_TOKEN} ethernal listen --astUpload true
 
 # ================================================================
-# │                   FORK TESTING AND COVERAGE                   │
+# │                   FORK TESTING AND COVERAGE                  │
 # ================================================================
 test-fork-mainnet:; forge test --fork-url ${MAINNET_RPC_URL}
 test-fork-mainnet-v:; forge test --fork-url ${MAINNET_RPC_URL} -vvvv
@@ -67,6 +67,26 @@ coverage-report:
 	@echo Output saved to coverage-report.txt
 
 # ================================================================
+# │                   USER INPUT - ASK FOR VALUE                 │
+# ================================================================
+ask-for-value:
+	@echo "Enter value: "
+	@read value; \
+	echo $$value > MAKE_CLI_INPUT_VALUE.tmp;
+
+convert-value-to-wei:
+	@value=$$(cat MAKE_CLI_INPUT_VALUE.tmp); \
+	wei_value=$$(echo "$$value * 10^18 / 1" | bc); \
+	echo $$wei_value > MAKE_CLI_INPUT_VALUE.tmp;
+
+store-value:
+	$(eval \
+		MAKE_CLI_INPUT_VALUE := $(shell cat MAKE_CLI_INPUT_VALUE.tmp) \
+	)
+remove-value:
+	@rm -f MAKE_CLI_INPUT_VALUE.tmp
+
+# ================================================================
 # │                CONTRACT SPECIFIC CONFIGURATION               │
 # ================================================================
 install:
@@ -77,16 +97,25 @@ install:
 	forge install uniswap/v3-core --no-commit && \
 	forge install uniswap/v3-periphery --no-commit \
 
-deploy:
+# ================================================================
+# │                           SCRIPTS                            │
+# ================================================================
+deploy-script:
 	@forge script script/DeployAavePM.s.sol:DeployAavePM ${NETWORK_ARGS} -vvvv
 
-send-ETH: 
-	@forge script script/Interactions.s.sol:FundAavePM ${NETWORK_ARGS} -vvvv
+send-ETH-script: 
+	@forge script script/Interactions.s.sol:FundAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint256)" ${MAKE_CLI_INPUT_VALUE}
+
+# ================================================================
+# │                       COMBINED COMMANDS                      │
+# ================================================================
+send-ETH: ask-for-value convert-value-to-wei store-value send-ETH-script remove-value
 
 # ================================================================
 # │                         RUN COMMANDS                         │
 # ================================================================
-deploy-anvil: anvil-network deploy
-deploy-holesky: holesky-network deploy
+deploy-anvil: anvil-network deploy-script
+#deploy-holesky: holesky-network deploy-script
 
 send-ETH-anvil: anvil-network send-ETH
+#send-ETH-holesky: holesky-network send-ETH

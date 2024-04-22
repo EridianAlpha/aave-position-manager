@@ -270,6 +270,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                   FUNCTIONS - CALCULATIONS                   │
     // ================================================================
+
+    /// @notice // TODO: Add comment
     function uniswapV3CalculateMinOut(
         uint256 _currentBalance,
         string memory _uniswapV3PoolIdentifier,
@@ -297,6 +299,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         return minOut = expectedOut - slippageTolerance;
     }
 
+    /// @notice // TODO: Add comment
     function renameIdentifierFromETHToWETHIfNeeded(string memory tokenIdentifier)
         private
         pure

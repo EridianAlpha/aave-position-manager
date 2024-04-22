@@ -233,7 +233,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
             sqrtPriceLimitX96: priceLimit
         });
 
-        // If it's ETH being swapped, then use the value parameter, else use the token transfer
+        // If it's ETH being swapped, then use the value parameter, else leave the value parameter empty
         if (keccak256(abi.encodePacked(_tokenInIdentifier)) == keccak256(abi.encodePacked("ETH"))) {
             amountOut = swapRouter.exactInputSingle{value: currentBalance}(params);
         } else {

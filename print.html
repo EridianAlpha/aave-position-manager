@@ -207,11 +207,7 @@
 </li>
 <li><a href="index.html#deployment">Deployment</a></li>
 <li><a href="index.html#upgrades">Upgrades</a></li>
-<li><a href="index.html#interactions">Interactions</a>
-<ul>
-<li><a href="index.html#deposit">Deposit</a></li>
-</ul>
-</li>
+<li><a href="index.html#interactions">Interactions</a></li>
 <li><a href="index.html#build-and-deploy-documentation">Build and Deploy Documentation</a></li>
 <li><a href="index.html#license">License</a></li>
 </ul>
@@ -265,7 +261,7 @@ make coverage-report
 <h2 id="deployment"><a class="header" href="#deployment">Deployment</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make deploy-anvil</code></td></tr>
-<tr><td>Holesky</td><td><code>make deploy-holesky</code></td></tr>
+<tr><td>Holesky</td><td><code>#make deploy-holesky</code></td></tr>
 <tr><td>Mainnet</td><td><code>#make deploy-mainnet</code></td></tr>
 <tr><td>Base</td><td><code>#make deploy-base</code></td></tr>
 </tbody></table>
@@ -273,8 +269,11 @@ make coverage-report
 <h2 id="upgrades"><a class="header" href="#upgrades">Upgrades</a></h2>
 <p>Under development 🏗️</p>
 <h2 id="interactions"><a class="header" href="#interactions">Interactions</a></h2>
-<h3 id="deposit"><a class="header" href="#deposit">Deposit</a></h3>
-<p>Under development 🏗️</p>
+<div class="table-wrapper"><table><thead><tr><th>Action</th><th>Anvil</th><th>Base</th></tr></thead><tbody>
+<tr><td>Fund proxy with ETH (Input value in ETH)</td><td><code>make send-ETH-anvil</code></td><td><code>make send-ETH-base</code></td></tr>
+<tr><td>Set Health Factor (Input value to 2 decimal places e.g. 1.25)</td><td><code>make update-hf-anvil</code></td><td><code>make update-hf-base</code></td></tr>
+</tbody></table>
+</div>
 <h2 id="build-and-deploy-documentation"><a class="header" href="#build-and-deploy-documentation">Build and Deploy Documentation</a></h2>
 <p>Instructions on how to build and deploy the documentation book are detailed here: <a href="https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages">https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages</a></p>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
@@ -284,7 +283,7 @@ make coverage-report
 <li><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/9b416a67e10a21b290320e3c0ee0302cad16453c/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/1a6478737be82a974a33dfac5529b6c1546f8a8a/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -304,9 +303,6 @@ make coverage-report
 </code></pre>
 <h3 id="updatehealthfactortarget"><a class="header" href="#updatehealthfactortarget">updateHealthFactorTarget</a></h3>
 <pre><code class="language-solidity">function updateHealthFactorTarget(uint256 _healthFactorTarget) external;
-</code></pre>
-<h3 id="receiveeth"><a class="header" href="#receiveeth">receiveEth</a></h3>
-<pre><code class="language-solidity">function receiveEth() external payable;
 </code></pre>
 <h3 id="rescueeth"><a class="header" href="#rescueeth">rescueEth</a></h3>
 <pre><code class="language-solidity">function rescueEth(address rescueAddress) external;
@@ -405,7 +401,7 @@ make coverage-report
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/9b416a67e10a21b290320e3c0ee0302cad16453c/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/1a6478737be82a974a33dfac5529b6c1546f8a8a/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AavePM.sol//src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, Initializable, AccessControlUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -528,13 +524,10 @@ Emits a <code>HealthFactorTargetUpdated</code> event.</em></p>
 <tr><td><code>_healthFactorTarget</code></td><td><code>uint256</code></td><td>The new Health Factor target.</td></tr>
 </tbody></table>
 </div>
-<h3 id="receiveeth-1"><a class="header" href="#receiveeth-1">receiveEth</a></h3>
-<p>Update UniSwapV3 pool details.</p>
-<p><em>Caller must have <code>OWNER_ROLE</code>.</em></p>
-<pre><code class="language-solidity">function receiveEth() external payable;
-</code></pre>
 <h3 id="rescueeth-1"><a class="header" href="#rescueeth-1">rescueEth</a></h3>
+<p>Update UniSwapV3 pool details.</p>
 <p>Rescue all ETH from the contract.</p>
+<p><em>Caller must have <code>OWNER_ROLE</code>.</em></p>
 <p><em>This function is intended for emergency use.
 In normal operation, the contract shouldn't hold ETH,
 as it is used to swap for wstETH.

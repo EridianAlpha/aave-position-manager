@@ -21,10 +21,9 @@
 - [6. Upgrades](#6-upgrades)
 - [7. Interactions](#7-interactions)
   - [7.1. Fund contract with ETH](#71-fund-contract-with-eth)
-  - [7.2. Wrap ETH to WETH](#72-wrap-eth-to-weth)
-  - [7.2. Unwrap WETH to ETH](#72-unwrap-weth-to-eth)
+  - [7.2. Wrap/Unwrap WETH](#72-wrapunwrap-weth)
   - [7.3. Swap Tokens](#73-swap-tokens)
-  - [7.3. Update Health Factor Target](#73-update-health-factor-target)
+  - [7.4. Update Health Factor Target](#74-update-health-factor-target)
 - [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
 - [9. License](#9-license)
 
@@ -122,23 +121,16 @@ Input value in ETH e.g. `0.15`.
 | ----- | --------------------- |
 | Anvil | `make send-ETH-anvil` |
 
-### 7.2. Wrap ETH to WETH
+### 7.2. Wrap/Unwrap WETH
 
-Wraps all the ETH in the contract to WETH.
-
-| Chain | Command                    |
-| ----- | -------------------------- |
-| Anvil | `make wrap-ETH-WETH-anvil` |
-
-### 7.3. Unwrap WETH to ETH
-
-Unwraps all the WETH in the contract to ETH.
+Wrap or unwrap all WETH to/from ETH.
 
 | Chain | Command                      |
 | ----- | ---------------------------- |
+| Anvil | `make wrap-ETH-WETH-anvil`   |
 | Anvil | `make unwrap-WETH-ETH-anvil` |
 
-### 7.4. Swap Tokens
+### 7.3. Swap Tokens
 
 Swap tokens using UniswapV3.
 
@@ -149,7 +141,7 @@ Swap tokens using UniswapV3.
 | Anvil | `make swap-ETH-wstETH-anvil` |
 | Anvil | `make swap-wstETH-ETH-anvil` |
 
-### 7.5. Update Health Factor Target
+### 7.4. Update Health Factor Target
 
 Input value to 2 decimal places e.g. `225`.
 

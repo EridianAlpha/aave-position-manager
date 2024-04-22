@@ -11,6 +11,7 @@ import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRoute
 import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
 import {IAavePM} from "./interfaces/IAavePM.sol";
+import {IWETH9} from "./interfaces/IWETH9.sol";
 import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 
 /// @title AavePM - Aave Position Manager
@@ -188,7 +189,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     }
 
     // ================================================================
-    // │                        FUNCTIONS - ETH                       │
+    // │                    FUNCTIONS - ETH / WETH                    │
     // ================================================================
 
     /// @notice Rescue all ETH from the contract.
@@ -211,6 +212,14 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         if (!callSuccess) revert AavePM__RescueEthFailed();
     }
 
+    function wrapETHToWETH() public payable {
+        IWETH9(s_tokenAddresses["WETH"]).deposit{value: address(this).balance}();
+    }
+
+    function unwrapWETHToETH() public {
+        IWETH9(s_tokenAddresses["WETH"]).withdraw(getContractBalance("WETH"));
+    }
+
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │
     // ================================================================
@@ -231,12 +240,12 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     ) public onlyRole(MANAGER_ROLE) returns (string memory tokenOutIdentifier, uint256 amountOut) {
         ISwapRouter swapRouter = ISwapRouter(s_contractAddresses["uniswapV3Router"]);
 
+        // If ETH is input or output, convert the identifier to WETH.
+        _tokenInIdentifier = renameIdentifierFromETHToWETHIfNeeded(_tokenInIdentifier);
+        _tokenOutIdentifier = renameIdentifierFromETHToWETHIfNeeded(_tokenOutIdentifier);
+
         uint256 currentBalance = getContractBalance(_tokenInIdentifier);
         if (currentBalance == 0) revert AavePM__NotEnoughTokensForSwap(_tokenInIdentifier);
-
-        // If the tokenIn is ETH, continue calculations with WETH address
-        bool isInputETH = (keccak256(abi.encodePacked(_tokenInIdentifier)) == keccak256(abi.encodePacked("ETH")));
-        _tokenInIdentifier = isInputETH ? "WETH" : _tokenInIdentifier;
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
             tokenIn: s_tokenAddresses[_tokenInIdentifier],
@@ -251,13 +260,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
             sqrtPriceLimitX96: 0 // TODO: Calculate price limit
         });
 
-        // If it's ETH being swapped, then use the value parameter to send ETH, else swap the tokens directly.
-        if (isInputETH) {
-            amountOut = swapRouter.exactInputSingle{value: currentBalance}(params);
-        } else {
-            TransferHelper.safeApprove(s_tokenAddresses[_tokenInIdentifier], address(swapRouter), currentBalance);
-            amountOut = swapRouter.exactInputSingle(params);
-        }
+        TransferHelper.safeApprove(s_tokenAddresses[_tokenInIdentifier], address(swapRouter), currentBalance);
+        amountOut = swapRouter.exactInputSingle(params);
         return (_tokenOutIdentifier, amountOut);
     }
 
@@ -289,6 +293,16 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         uint256 expectedOut = (_currentBalance * (10 ** _token0Decimals)) / currentRatio;
         uint256 slippageTolerance = expectedOut / s_slippageTolerance;
         return minOut = expectedOut - slippageTolerance;
+    }
+
+    function renameIdentifierFromETHToWETHIfNeeded(string memory tokenIdentifier)
+        private
+        pure
+        returns (string memory)
+    {
+        return (keccak256(abi.encodePacked(tokenIdentifier)) == keccak256(abi.encodePacked("ETH")))
+            ? "WETH"
+            : tokenIdentifier;
     }
 
     // ================================================================

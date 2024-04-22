@@ -73,9 +73,11 @@ interface IAavePM {
     function updateHealthFactorTarget(uint16 _healthFactorTarget) external;
 
     // ================================================================
-    // │                        FUNCTIONS - ETH                       │
+    // │                    FUNCTIONS - ETH / WETH                    │
     // ================================================================
     function rescueEth(address rescueAddress) external;
+    function wrapETHToWETH() external payable;
+    function unwrapWETHToETH() external;
 
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │

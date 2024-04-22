@@ -6,24 +6,26 @@
 >
 > ---
 
-* [Overview](#overview)
-  * [Key Functions](#key-functions)
-* [WebApp](#webapp)
-* [Installation](#installation)
-  * [Clone repository](#clone-repository)
-  * [Install Dependencies](#install-dependencies)
-  * [Create `.env` file](#create-env-file)
-  * [Configure Ethernal (optional)](#configure-ethernal-optional)
-* [Testing](#testing)
-  * [Tests](#tests)
-  * [Coverage](#coverage)
-* [Deployment](#deployment)
-* [Upgrades](#upgrades)
-* [Interactions](#interactions)
-* [Build and Deploy Documentation](#build-and-deploy-documentation)
-* [License](#license)
+- [1. Overview](#1-overview)
+  - [1.1. Key Functions](#11-key-functions)
+- [2. WebApp](#2-webapp)
+- [3. Installation](#3-installation)
+  - [3.1. Clone repository](#31-clone-repository)
+  - [3.2. Install Dependencies](#32-install-dependencies)
+  - [3.3. Create `.env` file](#33-create-env-file)
+  - [3.4. Configure Ethernal (optional)](#34-configure-ethernal-optional)
+- [4. Testing](#4-testing)
+  - [4.1. Tests](#41-tests)
+  - [4.2. Coverage](#42-coverage)
+- [5. Deployment](#5-deployment)
+- [6. Upgrades](#6-upgrades)
+- [7. Interactions](#7-interactions)
+  - [7.1. Fund proxy with ETH](#71-fund-proxy-with-eth)
+  - [7.2. Set Health Factor](#72-set-health-factor)
+- [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
+- [9. License](#9-license)
 
-## Overview
+## 1. Overview
 
 > Docs Site: [https://eridianalpha.github.io/aave-position-manager](https://eridianalpha.github.io/aave-position-manager)
 
@@ -33,7 +35,7 @@ A smart contract manager for Aave positions.
 2. Deposit assets (ETH or wstETH) into the position.
 3. Rebalance the position to maintain the desired Health Factor, either manually or with a bot.
 
-### Key Functions
+### 1.1. Key Functions
 
 | Function          | Restrictions   | Description                                               |
 | ----------------- | -------------- | --------------------------------------------------------- |
@@ -42,19 +44,19 @@ A smart contract manager for Aave positions.
 | setHealthFactor() | `OWNER_ROLE`   | Set the desired Health Factor.                            |
 | withdraw()        | `OWNER_ROLE`   | Withdraw wstETH while maintaining desired Health Factor.  |
 
-## WebApp
+## 2. WebApp
 
 A WebApp is being developed to allow easy interaction with the smart contract and will be linked here when ready.
 
-## Installation
+## 3. Installation
 
-### Clone repository
+### 3.1. Clone repository
 
 ```bash
 git clone https://github.com/EridianAlpha/aave-position-manager.git
 ```
 
-### Install Dependencies
+### 3.2. Install Dependencies
 
 This should happen automatically when first running a command, but the installation can be manually triggered with the following commands:
 
@@ -64,11 +66,11 @@ git submodule update
 make install
 ```
 
-### Create `.env` file
+### 3.3. Create `.env` file
 
 Use the `.env.example` file as a template to create a `.env` file.
 
-### Configure Ethernal (optional)
+### 3.4. Configure Ethernal (optional)
 
 Configure an Ethernal account to interact with the smart contract through a UI (like Etherscan but for a local network).
 
@@ -78,9 +80,9 @@ Configure an Ethernal account to interact with the smart contract through a UI (
 make ethernal
 ```
 
-## Testing
+## 4. Testing
 
-### Tests
+### 4.1. Tests
 
 ```bash
 make test-fork-mainnet
@@ -88,37 +90,48 @@ make test-fork-mainnet-v
 make test-fork-mainnet-summary
 ```
 
-### Coverage
+### 4.2. Coverage
 
 ```bash
 make coverage
 make coverage-report
 ```
 
-## Deployment
+## 5. Deployment
 
-| Chain   | Command                |
-| ------- | ---------------------- |
-| Anvil   | `make deploy-anvil`    |
-| Holesky | `#make deploy-holesky` |
-| Mainnet | `#make deploy-mainnet` |
-| Base    | `#make deploy-base`    |
+| Chain | Command             |
+| ----- | ------------------- |
+| Anvil | `make deploy-anvil` |
+| Base  | `make deploy-base`  |
 
-## Upgrades
+## 6. Upgrades
 
 Under development 🏗️
 
-## Interactions
+## 7. Interactions
 
-| Action                                                        | Anvil                  | Base                  |
-| ------------------------------------------------------------- | ---------------------- | --------------------- |
-| Fund proxy with ETH (Input value in ETH)                      | `make send-ETH-anvil`  | `make send-ETH-base`  |
-| Set Health Factor (Input value to 2 decimal places e.g. 1.25) | `make update-hf-anvil` | `make update-hf-base` |
+### 7.1. Fund proxy with ETH
 
-## Build and Deploy Documentation
+Input value in ETH.
+
+| Chain   | Command               |
+| ------- | --------------------- |
+| Anvil   | `make send-ETH-anvil` |
+| Holesky | `make send-ETH-base`  |
+
+### 7.2. Set Health Factor
+
+Input value to 2 decimal places e.g. 1.25.
+
+| Chain   | Command                |
+| ------- | ---------------------- |
+| Anvil   | `make update-hf-anvil` |
+| Holesky | `make update-hf-base`  |
+
+## 8. Build and Deploy Documentation
 
 Instructions on how to build and deploy the documentation book are detailed here: [https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages](https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages)
 
-## License
+## 9. License
 
 [MIT](https://choosealicense.com/licenses/mit/)

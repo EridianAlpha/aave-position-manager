@@ -197,6 +197,25 @@ contract AavePMUpdateTests is AavePMTestSetup {
         assertEq(aavePM.getTokenAddress("USDC"), newTokenAddress);
     }
 
+    function test_UpdateUniswapV3Pool() public {
+        address newUniswapV3PoolAddress = makeAddr("newUniswapV3Pool");
+        uint24 newUniswapV3PoolFee = 200;
+
+        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
+        vm.prank(attacker1);
+        aavePM.updateUniswapV3Pool("wstETH/ETH", newUniswapV3PoolAddress, newUniswapV3PoolFee);
+
+        vm.expectEmit();
+        emit IAavePM.UniswapV3PoolUpdated("wstETH/ETH", newUniswapV3PoolAddress, newUniswapV3PoolFee);
+
+        vm.prank(owner1);
+        aavePM.updateUniswapV3Pool("wstETH/ETH", newUniswapV3PoolAddress, newUniswapV3PoolFee);
+
+        (address returnedAddress, uint24 returnedFee) = aavePM.getUniswapV3Pool("wstETH/ETH");
+        assertEq(returnedAddress, newUniswapV3PoolAddress);
+        assertEq(returnedFee, newUniswapV3PoolFee);
+    }
+
     function test_UpdateHealthFactorTarget() public {
         uint256 newHealthFactorTarget = 3;
         uint256 previousHealthFactorTarget = aavePM.getHealthFactorTarget();

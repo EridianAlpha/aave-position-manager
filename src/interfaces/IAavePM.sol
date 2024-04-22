@@ -43,6 +43,9 @@ interface IAavePM {
     event TokenAddressUpdated(
         string indexed identifier, address indexed previousTokenAddress, address indexed newTokenAddress
     );
+    event UniswapV3PoolUpdated(
+        string indexed identifier, address indexed newUniswapV3PoolAddress, uint24 indexed newUniswapV3PoolFee
+    );
     event HealthFactorTargetUpdated(uint256 previousHealthFactorTarget, uint256 newHealthFactorTarget);
 
     // ================================================================
@@ -61,6 +64,11 @@ interface IAavePM {
     // ================================================================
     function updateContractAddress(string memory identifier, address _newContractAddress) external;
     function updateTokenAddress(string memory identifier, address _newTokenAddress) external;
+    function updateUniswapV3Pool(
+        string memory _identifier,
+        address _newUniswapV3PoolAddress,
+        uint24 _newUniswapV3PoolFee
+    ) external;
     function updateHealthFactorTarget(uint256 _healthFactorTarget) external;
 
     // ================================================================
@@ -85,6 +93,10 @@ interface IAavePM {
     function getRoleHash(string memory) external pure returns (bytes32 roleHash);
     function getContractAddress(string memory) external view returns (address contractAddress);
     function getTokenAddress(string memory) external view returns (address tokenAddress);
+    function getUniswapV3Pool(string memory)
+        external
+        view
+        returns (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee);
     function getHealthFactorTarget() external view returns (uint256 healthFactorTarget);
     function getHealthFactorTargetMinimum() external view returns (uint256 healthFactorTargetMinimum);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);

@@ -15,11 +15,11 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha
 /// @notice A contract to manage positions on Aave.
-
 contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     // ================================================================
     // │                        STATE VARIABLES                       │
     // ================================================================
+
     // Addresses
     address private s_creator; // Creator of the contract
     mapping(string => address) private s_contractAddresses;
@@ -32,6 +32,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                           CONSTANTS                          │
     // ================================================================
+
     /// @notice The version of the contract.
     /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
     string private constant VERSION = "0.0.1";
@@ -54,8 +55,9 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
 
     // ================================================================
-    // │                           FUNCTIONS                          │
+    // │           FUNCTIONS - CONSTRUCTOR, RECEIVE, FALLBACK         │
     // ================================================================
+
     /// @notice Constructor implemented but unused.
     /// @dev Contract is upgradeable and therefore the constructor is not used.
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -74,6 +76,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                    FUNCTIONS - INITIALIZER                   │
     // ================================================================
+
     /// @notice Initializes contract with the owner and relevant addresses and parameters for operation.
     /// @dev This function sets up all necessary state variables for the contract and can only be called once due to the `initializer` modifier.
     /// @param owner The address of the owner of the contract.
@@ -121,6 +124,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                   FUNCTIONS - UUPS UPGRADES                  │
     // ================================================================
+
     /// @notice Internal function to authorize an upgrade.
     /// @dev Caller must have `OWNER_ROLE`.
     /// @param _newImplementation Address of the new contract implementation.
@@ -129,6 +133,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                      FUNCTIONS - UPDATES                     │
     // ================================================================
+
     /// @notice Generic update function to set the contract address for a given identifier.
     /// @dev Caller must have `OWNER_ROLE`.
     ///      Emits a `ContractAddressUpdated` event.
@@ -152,6 +157,18 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         s_tokenAddresses[_identifier] = _newTokenAddress;
     }
 
+    /// @notice Update UniSwapV3 pool details.
+    /// @dev Caller must have `OWNER_ROLE`.
+    ///      Emits a `UniswapV3PoolUpdated` event.
+    function updateUniswapV3Pool(
+        string memory _identifier,
+        address _newUniswapV3PoolAddress,
+        uint24 _newUniswapV3PoolFee
+    ) external onlyRole(OWNER_ROLE) {
+        emit UniswapV3PoolUpdated(_identifier, _newUniswapV3PoolAddress, _newUniswapV3PoolFee);
+        s_uniswapV3Pools[_identifier] = UniswapV3Pool(_identifier, _newUniswapV3PoolAddress, _newUniswapV3PoolFee);
+    }
+
     /// @notice Update the Health Factor target.
     /// @dev Caller must have `OWNER_ROLE`.
     ///      Emits a `HealthFactorTargetUpdated` event.
@@ -168,13 +185,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         s_healthFactorTarget = _healthFactorTarget;
     }
 
-    /// @notice Update UniSwapV3 pool details.
-    /// @dev Caller must have `OWNER_ROLE`.
-    // function updateUniswapV3WstETHETHPool(string memory _identifier, address _) external onlyRole(OWNER_ROLE) {}
-
     // ================================================================
     // │                        FUNCTIONS - ETH                       │
     // ================================================================
+
     /// @notice Rescue all ETH from the contract.
     /// @dev This function is intended for emergency use.
     ///      In normal operation, the contract shouldn't hold ETH,
@@ -189,9 +203,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         // Check if the rescueAddress is an owner
         if (!hasRole(OWNER_ROLE, rescueAddress)) revert AavePM__RescueAddressNotAnOwner();
 
-        // ************************
-        // ***** TRANSFER ETH *****
-        // ************************
+        // * TRANSFER ETH *
         emit EthRescued(rescueAddress, getContractBalance("ETH"));
         (bool callSuccess,) = rescueAddress.call{value: getContractBalance("ETH")}("");
         if (!callSuccess) revert AavePM__RescueEthFailed();
@@ -200,6 +212,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │
     // ================================================================
+
     /// @notice Swaps the contract's entire specified token balance using a UniswapV3 pool.
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
@@ -263,6 +276,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                       FUNCTIONS - GETTERS                    │
     // ================================================================
+
     /// @notice Getter function to get the i_creator address.
     /// @dev Public function to allow anyone to view the contract creator.
     /// @return creator The address of the creator.
@@ -298,6 +312,19 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @return tokenAddress The token address corresponding to the given identifier.
     function getTokenAddress(string memory _identifier) public view returns (address tokenAddress) {
         return s_tokenAddresses[_identifier];
+    }
+
+    /// @notice Getter function to get the UniswapV3 pool address and fee.
+    /// @dev Public function to allow anyone to view the UniswapV3 pool address and fee.
+    /// @param _identifier The identifier for the UniswapV3 pool.
+    /// @return uniswapV3PoolAddress The UniswapV3 pool address.
+    /// @return uniswapV3PoolFee The UniswapV3 pool fee.
+    function getUniswapV3Pool(string memory _identifier)
+        public
+        view
+        returns (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee)
+    {
+        return (s_uniswapV3Pools[_identifier].poolAddress, s_uniswapV3Pools[_identifier].fee);
     }
 
     /// @notice Getter function to get the Health Factor target.

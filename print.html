@@ -185,33 +185,38 @@
 <hr />
 </blockquote>
 <ul>
-<li><a href="index.html#overview">Overview</a>
+<li><a href="index.html#1-overview">1. Overview</a>
 <ul>
-<li><a href="index.html#key-functions">Key Functions</a></li>
+<li><a href="index.html#11-key-functions">1.1. Key Functions</a></li>
 </ul>
 </li>
-<li><a href="index.html#webapp">WebApp</a></li>
-<li><a href="index.html#installation">Installation</a>
+<li><a href="index.html#2-webapp">2. WebApp</a></li>
+<li><a href="index.html#3-installation">3. Installation</a>
 <ul>
-<li><a href="index.html#clone-repository">Clone repository</a></li>
-<li><a href="index.html#install-dependencies">Install Dependencies</a></li>
-<li><a href="index.html#create-env-file">Create <code>.env</code> file</a></li>
-<li><a href="index.html#configure-ethernal-optional">Configure Ethernal (optional)</a></li>
+<li><a href="index.html#31-clone-repository">3.1. Clone repository</a></li>
+<li><a href="index.html#32-install-dependencies">3.2. Install Dependencies</a></li>
+<li><a href="index.html#33-create-env-file">3.3. Create <code>.env</code> file</a></li>
+<li><a href="index.html#34-configure-ethernal-optional">3.4. Configure Ethernal (optional)</a></li>
 </ul>
 </li>
-<li><a href="index.html#testing">Testing</a>
+<li><a href="index.html#4-testing">4. Testing</a>
 <ul>
-<li><a href="index.html#tests">Tests</a></li>
-<li><a href="index.html#coverage">Coverage</a></li>
+<li><a href="index.html#41-tests">4.1. Tests</a></li>
+<li><a href="index.html#42-coverage">4.2. Coverage</a></li>
 </ul>
 </li>
-<li><a href="index.html#deployment">Deployment</a></li>
-<li><a href="index.html#upgrades">Upgrades</a></li>
-<li><a href="index.html#interactions">Interactions</a></li>
-<li><a href="index.html#build-and-deploy-documentation">Build and Deploy Documentation</a></li>
-<li><a href="index.html#license">License</a></li>
+<li><a href="index.html#5-deployment">5. Deployment</a></li>
+<li><a href="index.html#6-upgrades">6. Upgrades</a></li>
+<li><a href="index.html#7-interactions">7. Interactions</a>
+<ul>
+<li><a href="index.html#71-fund-proxy-with-eth">7.1. Fund proxy with ETH</a></li>
+<li><a href="index.html#72-set-health-factor">7.2. Set Health Factor</a></li>
 </ul>
-<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+</li>
+<li><a href="index.html#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></li>
+<li><a href="index.html#9-license">9. License</a></li>
+</ul>
+<h2 id="1-overview"><a class="header" href="#1-overview">1. Overview</a></h2>
 <blockquote>
 <p>Docs Site: <a href="https://eridianalpha.github.io/aave-position-manager">https://eridianalpha.github.io/aave-position-manager</a></p>
 </blockquote>
@@ -221,7 +226,7 @@
 <li>Deposit assets (ETH or wstETH) into the position.</li>
 <li>Rebalance the position to maintain the desired Health Factor, either manually or with a bot.</li>
 </ol>
-<h3 id="key-functions"><a class="header" href="#key-functions">Key Functions</a></h3>
+<h3 id="11-key-functions"><a class="header" href="#11-key-functions">1.1. Key Functions</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Function</th><th>Restrictions</th><th>Description</th></tr></thead><tbody>
 <tr><td>deposit()</td><td><code>MANAGER_ROLE</code></td><td>Deposit ETH or wstETH.</td></tr>
 <tr><td>rebalance()</td><td><code>MANAGER_ROLE</code></td><td>Rebalance the Aave position to the desired Health Factor.</td></tr>
@@ -229,61 +234,68 @@
 <tr><td>withdraw()</td><td><code>OWNER_ROLE</code></td><td>Withdraw wstETH while maintaining desired Health Factor.</td></tr>
 </tbody></table>
 </div>
-<h2 id="webapp"><a class="header" href="#webapp">WebApp</a></h2>
+<h2 id="2-webapp"><a class="header" href="#2-webapp">2. WebApp</a></h2>
 <p>A WebApp is being developed to allow easy interaction with the smart contract and will be linked here when ready.</p>
-<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
-<h3 id="clone-repository"><a class="header" href="#clone-repository">Clone repository</a></h3>
+<h2 id="3-installation"><a class="header" href="#3-installation">3. Installation</a></h2>
+<h3 id="31-clone-repository"><a class="header" href="#31-clone-repository">3.1. Clone repository</a></h3>
 <pre><code class="language-bash">git clone https://github.com/EridianAlpha/aave-position-manager.git
 </code></pre>
-<h3 id="install-dependencies"><a class="header" href="#install-dependencies">Install Dependencies</a></h3>
+<h3 id="32-install-dependencies"><a class="header" href="#32-install-dependencies">3.2. Install Dependencies</a></h3>
 <p>This should happen automatically when first running a command, but the installation can be manually triggered with the following commands:</p>
 <pre><code class="language-bash">git submodule init
 git submodule update
 make install
 </code></pre>
-<h3 id="create-env-file"><a class="header" href="#create-env-file">Create <code>.env</code> file</a></h3>
+<h3 id="33-create-env-file"><a class="header" href="#33-create-env-file">3.3. Create <code>.env</code> file</a></h3>
 <p>Use the <code>.env.example</code> file as a template to create a <code>.env</code> file.</p>
-<h3 id="configure-ethernal-optional"><a class="header" href="#configure-ethernal-optional">Configure Ethernal (optional)</a></h3>
+<h3 id="34-configure-ethernal-optional"><a class="header" href="#34-configure-ethernal-optional">3.4. Configure Ethernal (optional)</a></h3>
 <p>Configure an Ethernal account to interact with the smart contract through a UI (like Etherscan but for a local network).</p>
 <p><a href="https://docs.eridianalpha.com/ethereum-dev/useful-tools/ethernal">https://docs.eridianalpha.com/ethereum-dev/useful-tools/ethernal</a></p>
 <pre><code class="language-bash">make ethernal
 </code></pre>
-<h2 id="testing"><a class="header" href="#testing">Testing</a></h2>
-<h3 id="tests"><a class="header" href="#tests">Tests</a></h3>
+<h2 id="4-testing"><a class="header" href="#4-testing">4. Testing</a></h2>
+<h3 id="41-tests"><a class="header" href="#41-tests">4.1. Tests</a></h3>
 <pre><code class="language-bash">make test-fork-mainnet
 make test-fork-mainnet-v
 make test-fork-mainnet-summary
 </code></pre>
-<h3 id="coverage"><a class="header" href="#coverage">Coverage</a></h3>
+<h3 id="42-coverage"><a class="header" href="#42-coverage">4.2. Coverage</a></h3>
 <pre><code class="language-bash">make coverage
 make coverage-report
 </code></pre>
-<h2 id="deployment"><a class="header" href="#deployment">Deployment</a></h2>
+<h2 id="5-deployment"><a class="header" href="#5-deployment">5. Deployment</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make deploy-anvil</code></td></tr>
-<tr><td>Holesky</td><td><code>#make deploy-holesky</code></td></tr>
-<tr><td>Mainnet</td><td><code>#make deploy-mainnet</code></td></tr>
-<tr><td>Base</td><td><code>#make deploy-base</code></td></tr>
+<tr><td>Base</td><td><code>make deploy-base</code></td></tr>
 </tbody></table>
 </div>
-<h2 id="upgrades"><a class="header" href="#upgrades">Upgrades</a></h2>
+<h2 id="6-upgrades"><a class="header" href="#6-upgrades">6. Upgrades</a></h2>
 <p>Under development 🏗️</p>
-<h2 id="interactions"><a class="header" href="#interactions">Interactions</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Action</th><th>Anvil</th><th>Base</th></tr></thead><tbody>
-<tr><td>Fund proxy with ETH (Input value in ETH)</td><td><code>make send-ETH-anvil</code></td><td><code>make send-ETH-base</code></td></tr>
-<tr><td>Set Health Factor (Input value to 2 decimal places e.g. 1.25)</td><td><code>make update-hf-anvil</code></td><td><code>make update-hf-base</code></td></tr>
+<h2 id="7-interactions"><a class="header" href="#7-interactions">7. Interactions</a></h2>
+<h3 id="71-fund-proxy-with-eth"><a class="header" href="#71-fund-proxy-with-eth">7.1. Fund proxy with ETH</a></h3>
+<p>Input value in ETH.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make send-ETH-anvil</code></td></tr>
+<tr><td>Holesky</td><td><code>make send-ETH-base</code></td></tr>
 </tbody></table>
 </div>
-<h2 id="build-and-deploy-documentation"><a class="header" href="#build-and-deploy-documentation">Build and Deploy Documentation</a></h2>
+<h3 id="72-set-health-factor"><a class="header" href="#72-set-health-factor">7.2. Set Health Factor</a></h3>
+<p>Input value to 2 decimal places e.g. 1.25.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make update-hf-anvil</code></td></tr>
+<tr><td>Holesky</td><td><code>make update-hf-base</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="8-build-and-deploy-documentation"><a class="header" href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></h2>
 <p>Instructions on how to build and deploy the documentation book are detailed here: <a href="https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages">https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages</a></p>
-<h2 id="license"><a class="header" href="#license">License</a></h2>
+<h2 id="9-license"><a class="header" href="#9-license">9. License</a></h2>
 <p><a href="https://choosealicense.com/licenses/mit/">MIT</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="contents"><a class="header" href="#contents">Contents</a></h1>
 <ul>
 <li><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/1a6478737be82a974a33dfac5529b6c1546f8a8a/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/748756aef2351bcf89917e29e49ac39bbb10e08f/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -300,6 +312,10 @@ make coverage-report
 </code></pre>
 <h3 id="updatetokenaddress"><a class="header" href="#updatetokenaddress">updateTokenAddress</a></h3>
 <pre><code class="language-solidity">function updateTokenAddress(string memory identifier, address _newTokenAddress) external;
+</code></pre>
+<h3 id="updateuniswapv3pool"><a class="header" href="#updateuniswapv3pool">updateUniswapV3Pool</a></h3>
+<pre><code class="language-solidity">function updateUniswapV3Pool(string memory _identifier, address _newUniswapV3PoolAddress, uint24 _newUniswapV3PoolFee)
+    external;
 </code></pre>
 <h3 id="updatehealthfactortarget"><a class="header" href="#updatehealthfactortarget">updateHealthFactorTarget</a></h3>
 <pre><code class="language-solidity">function updateHealthFactorTarget(uint256 _healthFactorTarget) external;
@@ -329,6 +345,12 @@ make coverage-report
 <h3 id="gettokenaddress"><a class="header" href="#gettokenaddress">getTokenAddress</a></h3>
 <pre><code class="language-solidity">function getTokenAddress(string memory) external view returns (address tokenAddress);
 </code></pre>
+<h3 id="getuniswapv3pool"><a class="header" href="#getuniswapv3pool">getUniswapV3Pool</a></h3>
+<pre><code class="language-solidity">function getUniswapV3Pool(string memory)
+    external
+    view
+    returns (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee);
+</code></pre>
 <h3 id="gethealthfactortarget"><a class="header" href="#gethealthfactortarget">getHealthFactorTarget</a></h3>
 <pre><code class="language-solidity">function getHealthFactorTarget() external view returns (uint256 healthFactorTarget);
 </code></pre>
@@ -356,6 +378,11 @@ make coverage-report
 <h3 id="tokenaddressupdated"><a class="header" href="#tokenaddressupdated">TokenAddressUpdated</a></h3>
 <pre><code class="language-solidity">event TokenAddressUpdated(
     string indexed identifier, address indexed previousTokenAddress, address indexed newTokenAddress
+);
+</code></pre>
+<h3 id="uniswapv3poolupdated"><a class="header" href="#uniswapv3poolupdated">UniswapV3PoolUpdated</a></h3>
+<pre><code class="language-solidity">event UniswapV3PoolUpdated(
+    string indexed identifier, address indexed newUniswapV3PoolAddress, uint24 indexed newUniswapV3PoolFee
 );
 </code></pre>
 <h3 id="healthfactortargetupdated"><a class="header" href="#healthfactortargetupdated">HealthFactorTargetUpdated</a></h3>
@@ -401,7 +428,7 @@ make coverage-report
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/1a6478737be82a974a33dfac5529b6c1546f8a8a/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/748756aef2351bcf89917e29e49ac39bbb10e08f/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AavePM.sol//src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, Initializable, AccessControlUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -513,6 +540,14 @@ Emits a <code>TokenAddressUpdated</code> event.</em></p>
 <tr><td><code>_newTokenAddress</code></td><td><code>address</code></td><td>The new token address.</td></tr>
 </tbody></table>
 </div>
+<h3 id="updateuniswapv3pool-1"><a class="header" href="#updateuniswapv3pool-1">updateUniswapV3Pool</a></h3>
+<p>Update UniSwapV3 pool details.</p>
+<p><em>Caller must have <code>OWNER_ROLE</code>.
+Emits a <code>UniswapV3PoolUpdated</code> event.</em></p>
+<pre><code class="language-solidity">function updateUniswapV3Pool(string memory _identifier, address _newUniswapV3PoolAddress, uint24 _newUniswapV3PoolFee)
+    external
+    onlyRole(OWNER_ROLE);
+</code></pre>
 <h3 id="updatehealthfactortarget-1"><a class="header" href="#updatehealthfactortarget-1">updateHealthFactorTarget</a></h3>
 <p>Update the Health Factor target.</p>
 <p><em>Caller must have <code>OWNER_ROLE</code>.
@@ -525,9 +560,7 @@ Emits a <code>HealthFactorTargetUpdated</code> event.</em></p>
 </tbody></table>
 </div>
 <h3 id="rescueeth-1"><a class="header" href="#rescueeth-1">rescueEth</a></h3>
-<p>Update UniSwapV3 pool details.</p>
 <p>Rescue all ETH from the contract.</p>
-<p><em>Caller must have <code>OWNER_ROLE</code>.</em></p>
 <p><em>This function is intended for emergency use.
 In normal operation, the contract shouldn't hold ETH,
 as it is used to swap for wstETH.
@@ -624,6 +657,25 @@ Reverts if there are no tokens in the contract or if the transaction doesn't mee
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The token address corresponding to the given identifier.</td></tr>
+</tbody></table>
+</div>
+<h3 id="getuniswapv3pool-1"><a class="header" href="#getuniswapv3pool-1">getUniswapV3Pool</a></h3>
+<p>Getter function to get the UniswapV3 pool address and fee.</p>
+<p><em>Public function to allow anyone to view the UniswapV3 pool address and fee.</em></p>
+<pre><code class="language-solidity">function getUniswapV3Pool(string memory _identifier)
+    public
+    view
+    returns (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_identifier</code></td><td><code>string</code></td><td>The identifier for the UniswapV3 pool.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>uniswapV3PoolAddress</code></td><td><code>address</code></td><td>The UniswapV3 pool address.</td></tr>
+<tr><td><code>uniswapV3PoolFee</code></td><td><code>uint24</code></td><td>The UniswapV3 pool fee.</td></tr>
 </tbody></table>
 </div>
 <h3 id="gethealthfactortarget-1"><a class="header" href="#gethealthfactortarget-1">getHealthFactorTarget</a></h3>

@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/1a6478737be82a974a33dfac5529b6c1546f8a8a/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/748756aef2351bcf89917e29e49ac39bbb10e08f/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -195,6 +195,10 @@
 </code></pre>
 <h3 id="updatetokenaddress"><a class="header" href="#updatetokenaddress">updateTokenAddress</a></h3>
 <pre><code class="language-solidity">function updateTokenAddress(string memory identifier, address _newTokenAddress) external;
+</code></pre>
+<h3 id="updateuniswapv3pool"><a class="header" href="#updateuniswapv3pool">updateUniswapV3Pool</a></h3>
+<pre><code class="language-solidity">function updateUniswapV3Pool(string memory _identifier, address _newUniswapV3PoolAddress, uint24 _newUniswapV3PoolFee)
+    external;
 </code></pre>
 <h3 id="updatehealthfactortarget"><a class="header" href="#updatehealthfactortarget">updateHealthFactorTarget</a></h3>
 <pre><code class="language-solidity">function updateHealthFactorTarget(uint256 _healthFactorTarget) external;
@@ -224,6 +228,12 @@
 <h3 id="gettokenaddress"><a class="header" href="#gettokenaddress">getTokenAddress</a></h3>
 <pre><code class="language-solidity">function getTokenAddress(string memory) external view returns (address tokenAddress);
 </code></pre>
+<h3 id="getuniswapv3pool"><a class="header" href="#getuniswapv3pool">getUniswapV3Pool</a></h3>
+<pre><code class="language-solidity">function getUniswapV3Pool(string memory)
+    external
+    view
+    returns (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee);
+</code></pre>
 <h3 id="gethealthfactortarget"><a class="header" href="#gethealthfactortarget">getHealthFactorTarget</a></h3>
 <pre><code class="language-solidity">function getHealthFactorTarget() external view returns (uint256 healthFactorTarget);
 </code></pre>
@@ -251,6 +261,11 @@
 <h3 id="tokenaddressupdated"><a class="header" href="#tokenaddressupdated">TokenAddressUpdated</a></h3>
 <pre><code class="language-solidity">event TokenAddressUpdated(
     string indexed identifier, address indexed previousTokenAddress, address indexed newTokenAddress
+);
+</code></pre>
+<h3 id="uniswapv3poolupdated"><a class="header" href="#uniswapv3poolupdated">UniswapV3PoolUpdated</a></h3>
+<pre><code class="language-solidity">event UniswapV3PoolUpdated(
+    string indexed identifier, address indexed newUniswapV3PoolAddress, uint24 indexed newUniswapV3PoolFee
 );
 </code></pre>
 <h3 id="healthfactortargetupdated"><a class="header" href="#healthfactortargetupdated">HealthFactorTargetUpdated</a></h3>

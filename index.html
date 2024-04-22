@@ -184,33 +184,38 @@
 <hr />
 </blockquote>
 <ul>
-<li><a href="#overview">Overview</a>
+<li><a href="#1-overview">1. Overview</a>
 <ul>
-<li><a href="#key-functions">Key Functions</a></li>
+<li><a href="#11-key-functions">1.1. Key Functions</a></li>
 </ul>
 </li>
-<li><a href="#webapp">WebApp</a></li>
-<li><a href="#installation">Installation</a>
+<li><a href="#2-webapp">2. WebApp</a></li>
+<li><a href="#3-installation">3. Installation</a>
 <ul>
-<li><a href="#clone-repository">Clone repository</a></li>
-<li><a href="#install-dependencies">Install Dependencies</a></li>
-<li><a href="#create-env-file">Create <code>.env</code> file</a></li>
-<li><a href="#configure-ethernal-optional">Configure Ethernal (optional)</a></li>
+<li><a href="#31-clone-repository">3.1. Clone repository</a></li>
+<li><a href="#32-install-dependencies">3.2. Install Dependencies</a></li>
+<li><a href="#33-create-env-file">3.3. Create <code>.env</code> file</a></li>
+<li><a href="#34-configure-ethernal-optional">3.4. Configure Ethernal (optional)</a></li>
 </ul>
 </li>
-<li><a href="#testing">Testing</a>
+<li><a href="#4-testing">4. Testing</a>
 <ul>
-<li><a href="#tests">Tests</a></li>
-<li><a href="#coverage">Coverage</a></li>
+<li><a href="#41-tests">4.1. Tests</a></li>
+<li><a href="#42-coverage">4.2. Coverage</a></li>
 </ul>
 </li>
-<li><a href="#deployment">Deployment</a></li>
-<li><a href="#upgrades">Upgrades</a></li>
-<li><a href="#interactions">Interactions</a></li>
-<li><a href="#build-and-deploy-documentation">Build and Deploy Documentation</a></li>
-<li><a href="#license">License</a></li>
+<li><a href="#5-deployment">5. Deployment</a></li>
+<li><a href="#6-upgrades">6. Upgrades</a></li>
+<li><a href="#7-interactions">7. Interactions</a>
+<ul>
+<li><a href="#71-fund-proxy-with-eth">7.1. Fund proxy with ETH</a></li>
+<li><a href="#72-set-health-factor">7.2. Set Health Factor</a></li>
 </ul>
-<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+</li>
+<li><a href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></li>
+<li><a href="#9-license">9. License</a></li>
+</ul>
+<h2 id="1-overview"><a class="header" href="#1-overview">1. Overview</a></h2>
 <blockquote>
 <p>Docs Site: <a href="https://eridianalpha.github.io/aave-position-manager">https://eridianalpha.github.io/aave-position-manager</a></p>
 </blockquote>
@@ -220,7 +225,7 @@
 <li>Deposit assets (ETH or wstETH) into the position.</li>
 <li>Rebalance the position to maintain the desired Health Factor, either manually or with a bot.</li>
 </ol>
-<h3 id="key-functions"><a class="header" href="#key-functions">Key Functions</a></h3>
+<h3 id="11-key-functions"><a class="header" href="#11-key-functions">1.1. Key Functions</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Function</th><th>Restrictions</th><th>Description</th></tr></thead><tbody>
 <tr><td>deposit()</td><td><code>MANAGER_ROLE</code></td><td>Deposit ETH or wstETH.</td></tr>
 <tr><td>rebalance()</td><td><code>MANAGER_ROLE</code></td><td>Rebalance the Aave position to the desired Health Factor.</td></tr>
@@ -228,54 +233,61 @@
 <tr><td>withdraw()</td><td><code>OWNER_ROLE</code></td><td>Withdraw wstETH while maintaining desired Health Factor.</td></tr>
 </tbody></table>
 </div>
-<h2 id="webapp"><a class="header" href="#webapp">WebApp</a></h2>
+<h2 id="2-webapp"><a class="header" href="#2-webapp">2. WebApp</a></h2>
 <p>A WebApp is being developed to allow easy interaction with the smart contract and will be linked here when ready.</p>
-<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
-<h3 id="clone-repository"><a class="header" href="#clone-repository">Clone repository</a></h3>
+<h2 id="3-installation"><a class="header" href="#3-installation">3. Installation</a></h2>
+<h3 id="31-clone-repository"><a class="header" href="#31-clone-repository">3.1. Clone repository</a></h3>
 <pre><code class="language-bash">git clone https://github.com/EridianAlpha/aave-position-manager.git
 </code></pre>
-<h3 id="install-dependencies"><a class="header" href="#install-dependencies">Install Dependencies</a></h3>
+<h3 id="32-install-dependencies"><a class="header" href="#32-install-dependencies">3.2. Install Dependencies</a></h3>
 <p>This should happen automatically when first running a command, but the installation can be manually triggered with the following commands:</p>
 <pre><code class="language-bash">git submodule init
 git submodule update
 make install
 </code></pre>
-<h3 id="create-env-file"><a class="header" href="#create-env-file">Create <code>.env</code> file</a></h3>
+<h3 id="33-create-env-file"><a class="header" href="#33-create-env-file">3.3. Create <code>.env</code> file</a></h3>
 <p>Use the <code>.env.example</code> file as a template to create a <code>.env</code> file.</p>
-<h3 id="configure-ethernal-optional"><a class="header" href="#configure-ethernal-optional">Configure Ethernal (optional)</a></h3>
+<h3 id="34-configure-ethernal-optional"><a class="header" href="#34-configure-ethernal-optional">3.4. Configure Ethernal (optional)</a></h3>
 <p>Configure an Ethernal account to interact with the smart contract through a UI (like Etherscan but for a local network).</p>
 <p><a href="https://docs.eridianalpha.com/ethereum-dev/useful-tools/ethernal">https://docs.eridianalpha.com/ethereum-dev/useful-tools/ethernal</a></p>
 <pre><code class="language-bash">make ethernal
 </code></pre>
-<h2 id="testing"><a class="header" href="#testing">Testing</a></h2>
-<h3 id="tests"><a class="header" href="#tests">Tests</a></h3>
+<h2 id="4-testing"><a class="header" href="#4-testing">4. Testing</a></h2>
+<h3 id="41-tests"><a class="header" href="#41-tests">4.1. Tests</a></h3>
 <pre><code class="language-bash">make test-fork-mainnet
 make test-fork-mainnet-v
 make test-fork-mainnet-summary
 </code></pre>
-<h3 id="coverage"><a class="header" href="#coverage">Coverage</a></h3>
+<h3 id="42-coverage"><a class="header" href="#42-coverage">4.2. Coverage</a></h3>
 <pre><code class="language-bash">make coverage
 make coverage-report
 </code></pre>
-<h2 id="deployment"><a class="header" href="#deployment">Deployment</a></h2>
+<h2 id="5-deployment"><a class="header" href="#5-deployment">5. Deployment</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make deploy-anvil</code></td></tr>
-<tr><td>Holesky</td><td><code>#make deploy-holesky</code></td></tr>
-<tr><td>Mainnet</td><td><code>#make deploy-mainnet</code></td></tr>
-<tr><td>Base</td><td><code>#make deploy-base</code></td></tr>
+<tr><td>Base</td><td><code>make deploy-base</code></td></tr>
 </tbody></table>
 </div>
-<h2 id="upgrades"><a class="header" href="#upgrades">Upgrades</a></h2>
+<h2 id="6-upgrades"><a class="header" href="#6-upgrades">6. Upgrades</a></h2>
 <p>Under development 🏗️</p>
-<h2 id="interactions"><a class="header" href="#interactions">Interactions</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Action</th><th>Anvil</th><th>Base</th></tr></thead><tbody>
-<tr><td>Fund proxy with ETH (Input value in ETH)</td><td><code>make send-ETH-anvil</code></td><td><code>make send-ETH-base</code></td></tr>
-<tr><td>Set Health Factor (Input value to 2 decimal places e.g. 1.25)</td><td><code>make update-hf-anvil</code></td><td><code>make update-hf-base</code></td></tr>
+<h2 id="7-interactions"><a class="header" href="#7-interactions">7. Interactions</a></h2>
+<h3 id="71-fund-proxy-with-eth"><a class="header" href="#71-fund-proxy-with-eth">7.1. Fund proxy with ETH</a></h3>
+<p>Input value in ETH.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make send-ETH-anvil</code></td></tr>
+<tr><td>Holesky</td><td><code>make send-ETH-base</code></td></tr>
 </tbody></table>
 </div>
-<h2 id="build-and-deploy-documentation"><a class="header" href="#build-and-deploy-documentation">Build and Deploy Documentation</a></h2>
+<h3 id="72-set-health-factor"><a class="header" href="#72-set-health-factor">7.2. Set Health Factor</a></h3>
+<p>Input value to 2 decimal places e.g. 1.25.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make update-hf-anvil</code></td></tr>
+<tr><td>Holesky</td><td><code>make update-hf-base</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="8-build-and-deploy-documentation"><a class="header" href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></h2>
 <p>Instructions on how to build and deploy the documentation book are detailed here: <a href="https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages">https://docs.eridianalpha.com/ethereum-dev/foundry-notes/docs-and-github-pages</a></p>
-<h2 id="license"><a class="header" href="#license">License</a></h2>
+<h2 id="9-license"><a class="header" href="#9-license">9. License</a></h2>
 <p><a href="https://choosealicense.com/licenses/mit/">MIT</a></p>
 
                     </main>

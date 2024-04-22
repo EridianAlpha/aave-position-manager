@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html" class="active">README</a></li><li class="chapter-item expanded "><a href="src/interfaces/index.html"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.1.</strong> IAavePM</a></li></ol></li><li class="chapter-item expanded "><a href="src/AavePM.sol/contract.AavePM.html"><strong aria-hidden="true">2.</strong> AavePM</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html" class="active">README</a></li><li class="chapter-item expanded "><a href="src/interfaces/index.html"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.1.</strong> IAavePM</a></li><li class="chapter-item expanded "><a href="src/interfaces/IERC20Extended.sol/interface.IERC20Extended.html"><strong aria-hidden="true">1.2.</strong> IERC20Extended</a></li><li class="chapter-item expanded "><a href="src/interfaces/IWETH9.sol/interface.IWETH9.html"><strong aria-hidden="true">1.3.</strong> IWETH9</a></li></ol></li><li class="chapter-item expanded "><a href="src/AavePM.sol/contract.AavePM.html"><strong aria-hidden="true">2.</strong> AavePM</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -208,8 +208,10 @@
 <li><a href="#6-upgrades">6. Upgrades</a></li>
 <li><a href="#7-interactions">7. Interactions</a>
 <ul>
-<li><a href="#71-fund-proxy-with-eth">7.1. Fund proxy with ETH</a></li>
-<li><a href="#72-update-health-factor-target">7.2. Update Health Factor Target</a></li>
+<li><a href="#71-fund-contract-with-eth">7.1. Fund contract with ETH</a></li>
+<li><a href="#72-wrapunwrap-weth">7.2. Wrap/Unwrap WETH</a></li>
+<li><a href="#73-swap-tokens">7.3. Swap Tokens</a></li>
+<li><a href="#74-update-health-factor-target">7.4. Update Health Factor Target</a></li>
 </ul>
 </li>
 <li><a href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></li>
@@ -265,25 +267,38 @@ make coverage-report
 <h2 id="5-deployment"><a class="header" href="#5-deployment">5. Deployment</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make deploy-anvil</code></td></tr>
-<tr><td>Base</td><td><code>make deploy-base</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="6-upgrades"><a class="header" href="#6-upgrades">6. Upgrades</a></h2>
 <p>Under development 🏗️</p>
 <h2 id="7-interactions"><a class="header" href="#7-interactions">7. Interactions</a></h2>
 <p>Interactions are defined in <a href="./script/Interactions.s.sol">Interactions.s.sol</a>.</p>
-<h3 id="71-fund-proxy-with-eth"><a class="header" href="#71-fund-proxy-with-eth">7.1. Fund proxy with ETH</a></h3>
-<p>Input value in ETH.</p>
+<h3 id="71-fund-contract-with-eth"><a class="header" href="#71-fund-contract-with-eth">7.1. Fund contract with ETH</a></h3>
+<p>Input value in ETH e.g. <code>0.15</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make send-ETH-anvil</code></td></tr>
-<tr><td>Base</td><td><code>make send-ETH-base</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="72-update-health-factor-target"><a class="header" href="#72-update-health-factor-target">7.2. Update Health Factor Target</a></h3>
-<p>Input value to 2 decimal places e.g. 125.</p>
+<h3 id="72-wrapunwrap-weth"><a class="header" href="#72-wrapunwrap-weth">7.2. Wrap/Unwrap WETH</a></h3>
+<p>Wrap or unwrap all WETH to/from ETH.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make wrap-ETH-WETH-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make unwrap-WETH-ETH-anvil</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="73-swap-tokens"><a class="header" href="#73-swap-tokens">7.3. Swap Tokens</a></h3>
+<p>Swap tokens using UniswapV3.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make swap-ETH-USDC-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make swap-USDC-WETH-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make swap-ETH-wstETH-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make swap-wstETH-ETH-anvil</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="74-update-health-factor-target"><a class="header" href="#74-update-health-factor-target">7.4. Update Health Factor Target</a></h3>
+<p>Input value to 2 decimal places e.g. <code>225</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make update-hft-anvil</code></td></tr>
-<tr><td>Base</td><td><code>make update-hft-base</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="8-build-and-deploy-documentation"><a class="header" href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></h2>

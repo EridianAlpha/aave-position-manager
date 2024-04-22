@@ -20,8 +20,11 @@
 - [5. Deployment](#5-deployment)
 - [6. Upgrades](#6-upgrades)
 - [7. Interactions](#7-interactions)
-  - [7.1. Fund proxy with ETH](#71-fund-proxy-with-eth)
-  - [7.2. Update Health Factor Target](#72-update-health-factor-target)
+  - [7.1. Fund contract with ETH](#71-fund-contract-with-eth)
+  - [7.2. Wrap ETH to WETH](#72-wrap-eth-to-weth)
+  - [7.2. Unwrap WETH to ETH](#72-unwrap-weth-to-eth)
+  - [7.3. Swap Tokens](#73-swap-tokens)
+  - [7.3. Update Health Factor Target](#73-update-health-factor-target)
 - [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
 - [9. License](#9-license)
 
@@ -102,7 +105,6 @@ make coverage-report
 | Chain | Command             |
 | ----- | ------------------- |
 | Anvil | `make deploy-anvil` |
-| Base  | `make deploy-base`  |
 
 ## 6. Upgrades
 
@@ -112,23 +114,48 @@ Under development 🏗️
 
 Interactions are defined in [Interactions.s.sol](./script/Interactions.s.sol).
 
-### 7.1. Fund proxy with ETH
+### 7.1. Fund contract with ETH
 
-Input value in ETH.
+Input value in ETH e.g. `0.15`.
 
 | Chain | Command               |
 | ----- | --------------------- |
 | Anvil | `make send-ETH-anvil` |
-| Base  | `make send-ETH-base`  |
 
-### 7.2. Update Health Factor Target
+### 7.2. Wrap ETH to WETH
 
-Input value to 2 decimal places e.g. 125.
+Wraps all the ETH in the contract to WETH.
+
+| Chain | Command                    |
+| ----- | -------------------------- |
+| Anvil | `make wrap-ETH-WETH-anvil` |
+
+### 7.3. Unwrap WETH to ETH
+
+Unwraps all the WETH in the contract to ETH.
+
+| Chain | Command                      |
+| ----- | ---------------------------- |
+| Anvil | `make unwrap-WETH-ETH-anvil` |
+
+### 7.4. Swap Tokens
+
+Swap tokens using UniswapV3.
+
+| Chain | Command                      |
+| ----- | ---------------------------- |
+| Anvil | `make swap-ETH-USDC-anvil`   |
+| Anvil | `make swap-USDC-WETH-anvil`  |
+| Anvil | `make swap-ETH-wstETH-anvil` |
+| Anvil | `make swap-wstETH-ETH-anvil` |
+
+### 7.5. Update Health Factor Target
+
+Input value to 2 decimal places e.g. `225`.
 
 | Chain | Command                 |
 | ----- | ----------------------- |
 | Anvil | `make update-hft-anvil` |
-| Base  | `make update-hft-base`  |
 
 ## 8. Build and Deploy Documentation
 

@@ -106,11 +106,23 @@ deploy-script:
 send-ETH-script: 
 	@forge script script/Interactions.s.sol:FundAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint256)" ${MAKE_CLI_INPUT_VALUE}
 
+wrap-ETH-WETH-script:
+	@forge script script/Interactions.s.sol:WrapETHToWETH ${NETWORK_ARGS} -vvvv
+
+unwrap-WETH-ETH-script:
+	@forge script script/Interactions.s.sol:UnwrapWETHToETH ${NETWORK_ARGS} -vvvv
+
 swap-ETH-USDC-script:
 	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "USDC/ETH" "ETH" "USDC"
 
 swap-USDC-WETH-script:
 	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "USDC/ETH" "USDC" "WETH"
+
+swap-ETH-wstETH-script:
+	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "wstETH/ETH" "ETH" "wstETH"
+
+swap-wstETH-ETH-script:
+	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "wstETH/ETH" "wstETH" "ETH"
 
 update-hft-script:
 	@forge script script/Interactions.s.sol:UpdateHFTAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint16)" ${MAKE_CLI_INPUT_VALUE}
@@ -125,16 +137,11 @@ update-hft: ask-for-value store-value update-hft-script remove-value
 # │                         RUN COMMANDS                         │
 # ================================================================
 deploy-anvil: anvil-network deploy-script
-#deploy-holesky: holesky-network deploy-script
-
 send-ETH-anvil: anvil-network send-ETH
-#send-ETH-holesky: holesky-network send-ETH
-
+wrap-ETH-WETH-anvil: anvil-network wrap-ETH-WETH-script
+unwrap-WETH-ETH-anvil: anvil-network unwrap-WETH-ETH-script
 swap-ETH-USDC-anvil: anvil-network swap-ETH-USDC-script
-#swap-tokens-holesky: holesky-network swap-tokens
-
 swap-USDC-WETH-anvil: anvil-network swap-USDC-WETH-script
-#swap-tokens-holesky: holesky-network swap-tokens
-
+swap-ETH-wstETH-anvil: anvil-network swap-ETH-wstETH-script
+swap-wstETH-ETH-anvil: anvil-network swap-wstETH-ETH-script
 update-hft-anvil: anvil-network update-hft
-#update-hft-holesky: holesky-network update-hft

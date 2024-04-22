@@ -30,6 +30,22 @@ contract FundAavePM is Script, Setup {
     }
 }
 
+contract WrapETHToWETH is Script, Setup {
+    function run() public {
+        vm.startBroadcast();
+        aavePM.wrapETHToWETH();
+        vm.stopBroadcast();
+    }
+}
+
+contract UnwrapWETHToETH is Script, Setup {
+    function run() public {
+        vm.startBroadcast();
+        aavePM.unwrapWETHToETH();
+        vm.stopBroadcast();
+    }
+}
+
 contract SwapTokensAavePM is Script, Setup {
     function run(
         string memory _uniswapV3PoolIdentifier,

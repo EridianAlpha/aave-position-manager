@@ -212,6 +212,8 @@
 <li><a href="#72-wrapunwrap-weth">7.2. Wrap/Unwrap WETH</a></li>
 <li><a href="#73-swap-tokens">7.3. Swap Tokens</a></li>
 <li><a href="#74-update-health-factor-target">7.4. Update Health Factor Target</a></li>
+<li><a href="#75-aave-supply-wsteth">7.5. Aave Supply wstETH</a></li>
+<li><a href="#76-aave-borrow-usdc">7.6. Aave Borrow USDC</a></li>
 </ul>
 </li>
 <li><a href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></li>
@@ -299,6 +301,19 @@ make coverage-report
 <p>Input value to 2 decimal places e.g. <code>225</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make update-hft-anvil</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="75-aave-supply-wsteth"><a class="header" href="#75-aave-supply-wsteth">7.5. Aave Supply wstETH</a></h3>
+<p>Supplies all wstETH to Aave.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make aave-supply-wstETH-anvil</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="76-aave-borrow-usdc"><a class="header" href="#76-aave-borrow-usdc">7.6. Aave Borrow USDC</a></h3>
+<p>Borrows the specified amount of USDC from Aave. If the Health Factor is below the target, the borrow will fail.</p>
+<p>Input value in USDC e.g. <code>100</code>.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make aave-borrow-USDC-anvil</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="8-build-and-deploy-documentation"><a class="header" href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></h2>

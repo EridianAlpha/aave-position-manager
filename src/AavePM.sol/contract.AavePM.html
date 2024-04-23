@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/fd2ac3269b9e3bcd4f76abed204f2f87e3f2d35c/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e5ff4c818eb9da738a1e141f46b81e54b56dd392/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, Initializable, AccessControlUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -330,10 +330,37 @@ Emits a <code>RescueEth</code> event.</em></p>
 </tbody></table>
 </div>
 <h3 id="wrapethtoweth"><a class="header" href="#wrapethtoweth">wrapETHToWETH</a></h3>
-<pre><code class="language-solidity">function wrapETHToWETH() public payable;
+<pre><code class="language-solidity">function wrapETHToWETH() public payable onlyRole(MANAGER_ROLE);
 </code></pre>
 <h3 id="unwrapwethtoeth"><a class="header" href="#unwrapwethtoeth">unwrapWETHToETH</a></h3>
-<pre><code class="language-solidity">function unwrapWETHToETH() public;
+<pre><code class="language-solidity">function unwrapWETHToETH() public onlyRole(MANAGER_ROLE);
+</code></pre>
+<h3 id="aavesupplywsteth"><a class="header" href="#aavesupplywsteth">aaveSupplyWstETH</a></h3>
+<p>Deposit all wstETH into Aave.</p>
+<p><em>Caller must have <code>MANAGER_ROLE</code>.</em></p>
+<pre><code class="language-solidity">function aaveSupplyWstETH() public onlyRole(MANAGER_ROLE);
+</code></pre>
+<h3 id="aaveborrowusdc"><a class="header" href="#aaveborrowusdc">aaveBorrowUSDC</a></h3>
+<p>Borrow USDC from Aave.</p>
+<p><em>Caller must have <code>MANAGER_ROLE</code>.</em></p>
+<pre><code class="language-solidity">function aaveBorrowUSDC(uint256 borrowAmount) public onlyRole(MANAGER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>borrowAmount</code></td><td><code>uint256</code></td><td>The amount of USDC to borrow. 8 decimal places to the dollar. e.g. 100000000 = $1.00.</td></tr>
+</tbody></table>
+</div>
+<h3 id="aaverepay"><a class="header" href="#aaverepay">aaveRepay</a></h3>
+<p>Repay Aave debt.</p>
+<p><em>Caller must have <code>MANAGER_ROLE</code>.
+TODO: Implement function.</em></p>
+<pre><code class="language-solidity">function aaveRepay() public onlyRole(MANAGER_ROLE);
+</code></pre>
+<h3 id="aavewithdraw"><a class="header" href="#aavewithdraw">aaveWithdraw</a></h3>
+<p>Withdraw all wstETH from Aave.</p>
+<p><em>Caller must have <code>MANAGER_ROLE</code>.
+TODO: Implement function.</em></p>
+<pre><code class="language-solidity">function aaveWithdraw() public onlyRole(MANAGER_ROLE);
 </code></pre>
 <h3 id="swaptokens"><a class="header" href="#swaptokens">swapTokens</a></h3>
 <p>Swaps the contract's entire specified token balance using a UniswapV3 pool.</p>
@@ -360,6 +387,7 @@ Reverts if there are no tokens in the contract or if the transaction doesn't mee
 </tbody></table>
 </div>
 <h3 id="uniswapv3calculateminout"><a class="header" href="#uniswapv3calculateminout">uniswapV3CalculateMinOut</a></h3>
+<p>// TODO: Add comment</p>
 <pre><code class="language-solidity">function uniswapV3CalculateMinOut(
     uint256 _currentBalance,
     string memory _uniswapV3PoolIdentifier,
@@ -368,7 +396,11 @@ Reverts if there are no tokens in the contract or if the transaction doesn't mee
 ) public view returns (uint256 minOut);
 </code></pre>
 <h3 id="renameidentifierfromethtowethifneeded"><a class="header" href="#renameidentifierfromethtowethifneeded">renameIdentifierFromETHToWETHIfNeeded</a></h3>
+<p>// TODO: Add comment</p>
 <pre><code class="language-solidity">function renameIdentifierFromETHToWETHIfNeeded(string memory tokenIdentifier) private pure returns (string memory);
+</code></pre>
+<h3 id="rebalance"><a class="header" href="#rebalance">rebalance</a></h3>
+<pre><code class="language-solidity">function rebalance() public onlyRole(MANAGER_ROLE);
 </code></pre>
 <h3 id="getcreator"><a class="header" href="#getcreator">getCreator</a></h3>
 <p>Getter function to get the i_creator address.</p>
@@ -482,6 +514,31 @@ Reverts if there are no tokens in the contract or if the transaction doesn't mee
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>contractBalance</code></td><td><code>uint256</code></td><td>The contract's balance of the specified token identifier.</td></tr>
+</tbody></table>
+</div>
+<h3 id="getaaveaccountdata"><a class="header" href="#getaaveaccountdata">getAaveAccountData</a></h3>
+<p>Getter function to get the Aave user account data.</p>
+<p><em>Public function to allow anyone to view the Aave user account data.</em></p>
+<pre><code class="language-solidity">function getAaveAccountData()
+    public
+    view
+    returns (
+        uint256 totalCollateralBase,
+        uint256 totalDebtBase,
+        uint256 availableBorrowsBase,
+        uint256 currentLiquidationThreshold,
+        uint256 ltv,
+        uint256 healthFactor
+    );
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>totalCollateralBase</code></td><td><code>uint256</code></td><td>The total collateral in the user's account.</td></tr>
+<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt in the user's account.</td></tr>
+<tr><td><code>availableBorrowsBase</code></td><td><code>uint256</code></td><td>The available borrows in the user's account.</td></tr>
+<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold in the user's account.</td></tr>
+<tr><td><code>ltv</code></td><td><code>uint256</code></td><td>The loan-to-value ratio in the user's account.</td></tr>
+<tr><td><code>healthFactor</code></td><td><code>uint256</code></td><td>The health factor in the user's account.</td></tr>
 </tbody></table>
 </div>
                     </main>

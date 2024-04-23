@@ -185,14 +185,14 @@ contract AavePMUpdateTests is AavePMTestSetup {
 
         vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
         vm.prank(attacker1);
-        aavePM.updateContractAddress("aave", newContractAddress);
+        aavePM.updateContractAddress("aavePool", newContractAddress);
 
         vm.expectEmit();
-        emit IAavePM.ContractAddressUpdated("aave", aavePM.getContractAddress("aave"), newContractAddress);
+        emit IAavePM.ContractAddressUpdated("aavePool", aavePM.getContractAddress("aavePool"), newContractAddress);
 
         vm.prank(owner1);
-        aavePM.updateContractAddress("aave", newContractAddress);
-        assertEq(aavePM.getContractAddress("aave"), newContractAddress);
+        aavePM.updateContractAddress("aavePool", newContractAddress);
+        assertEq(aavePM.getContractAddress("aavePool"), newContractAddress);
     }
 
     function test_UpdateTokenAddress() public {
@@ -521,7 +521,7 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetAave() public {
-        assertEq(aavePM.getContractAddress("aave"), s_contractAddresses["aave"]);
+        assertEq(aavePM.getContractAddress("aavePool"), s_contractAddresses["aavePool"]);
     }
 
     function test_GetUniswapV3Router() public {

@@ -230,24 +230,28 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @notice Deposit all wstETH into Aave.
     /// @dev Caller must have `MANAGER_ROLE`.
     function aaveSupplyWstETH() public onlyRole(MANAGER_ROLE) {
+        address aavePoolAddress = s_contractAddresses["aavePool"];
+
         // Takes all wstETH in the contract and deposits it into Aave
-        TransferHelper.safeApprove(
-            s_tokenAddresses["wstETH"], address(s_contractAddresses["aave"]), getContractBalance("wstETH")
-        );
-        IPool(s_contractAddresses["aave"]).deposit(
-            s_tokenAddresses["wstETH"], getContractBalance("wstETH"), address(this), 0
-        );
+        TransferHelper.safeApprove(s_tokenAddresses["wstETH"], aavePoolAddress, getContractBalance("wstETH"));
+        IPool(aavePoolAddress).deposit(s_tokenAddresses["wstETH"], getContractBalance("wstETH"), address(this), 0);
     }
 
     /// @notice Borrow USDC from Aave.
     /// @dev Caller must have `MANAGER_ROLE`.
     /// @param borrowAmount The amount of USDC to borrow. 8 decimal places to the cent.
     function aaveBorrowUSDC(uint256 borrowAmount) public onlyRole(MANAGER_ROLE) {
-        IPool(s_contractAddresses["aave"]).borrow(s_tokenAddresses["USDC"], borrowAmount, 2, 0, address(this));
+        IPool(s_contractAddresses["aavePool"]).borrow(s_tokenAddresses["USDC"], borrowAmount, 2, 0, address(this));
     }
 
+    /// @notice Repay Aave debt.
+    /// @dev Caller must have `MANAGER_ROLE`.
+    ///      // TODO: Implement function.
     function aaveRepay() public onlyRole(MANAGER_ROLE) {}
 
+    /// @notice Withdraw all wstETH from Aave.
+    /// @dev Caller must have `MANAGER_ROLE`.
+    ///      // TODO: Implement function.
     function aaveWithdraw() public onlyRole(MANAGER_ROLE) {}
 
     // ================================================================
@@ -441,6 +445,6 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         )
     {
         (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor) =
-            IPool(s_contractAddresses["aave"]).getUserAccountData(address(this));
+            IPool(s_contractAddresses["aavePool"]).getUserAccountData(address(this));
     }
 }

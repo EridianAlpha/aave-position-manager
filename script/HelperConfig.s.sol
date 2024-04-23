@@ -10,7 +10,8 @@ contract HelperConfig is Script {
     // Added to remove this whole contract from coverage report.
     function test() public {}
 
-    address public aaveAddress;
+    address public aavePoolAddress;
+    address public aaveOracleAddress;
     address public uniswapV3RouterAddress;
     address public uniswapV3WstETHETHPoolAddress;
     uint24 public uniswapV3WstETHETHPoolFee;
@@ -34,7 +35,8 @@ contract HelperConfig is Script {
 
         if (chainId == 1) {
             // Mainnet
-            aaveAddress = vm.envAddress("MAINNET_ADDRESS_AAVE");
+            aavePoolAddress = vm.envAddress("MAINNET_ADDRESS_AAVE_POOL");
+            aaveOracleAddress = vm.envAddress("MAINNET_ADDRESS_AAVE_ORACLE");
             uniswapV3RouterAddress = vm.envAddress("MAINNET_ADDRESS_UNISWAP_V3_ROUTER");
             uniswapV3WstETHETHPoolAddress = vm.envAddress("MAINNET_ADDRESS_UNISWAP_V3_WSTETH_ETH_POOL");
             uniswapV3WstETHETHPoolFee = uint24(vm.envUint("MAINNET_FEE_UNISWAP_V3_WSTETH_ETH_POOL"));
@@ -46,7 +48,8 @@ contract HelperConfig is Script {
             awstETHAddress = vm.envAddress("MAINNET_ADDRESS_AWSTETH");
         } else if (chainId == 8453) {
             // Base
-            aaveAddress = vm.envAddress("BASE_ADDRESS_AAVE");
+            aavePoolAddress = vm.envAddress("BASE_ADDRESS_AAVE_POOL");
+            aaveOracleAddress = vm.envAddress("BASE_ADDRESS_AAVE_ORACLE");
             uniswapV3RouterAddress = vm.envAddress("BASE_ADDRESS_UNISWAP_V3_ROUTER");
             uniswapV3WstETHETHPoolAddress = vm.envAddress("BASE_ADDRESS_UNISWAP_V3_WSTETH_ETH_POOL");
             uniswapV3WstETHETHPoolFee = uint24(vm.envUint("BASE_FEE_UNISWAP_V3_WSTETH_ETH_POOL"));
@@ -67,9 +70,10 @@ contract HelperConfig is Script {
         getChainVariables();
 
         // Contract addresses
-        IAavePM.ContractAddress[] memory contractAddresses = new IAavePM.ContractAddress[](2);
-        contractAddresses[0] = IAavePM.ContractAddress("aave", aaveAddress);
-        contractAddresses[1] = IAavePM.ContractAddress("uniswapV3Router", uniswapV3RouterAddress);
+        IAavePM.ContractAddress[] memory contractAddresses = new IAavePM.ContractAddress[](3);
+        contractAddresses[0] = IAavePM.ContractAddress("aavePool", aavePoolAddress);
+        contractAddresses[1] = IAavePM.ContractAddress("aaveOracle", aaveOracleAddress);
+        contractAddresses[2] = IAavePM.ContractAddress("uniswapV3Router", uniswapV3RouterAddress);
 
         // Token addresses
         IAavePM.TokenAddress[] memory tokenAddresses = new IAavePM.TokenAddress[](4);

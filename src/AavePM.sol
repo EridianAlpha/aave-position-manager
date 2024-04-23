@@ -11,6 +11,7 @@ import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRoute
 import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
+import {IPriceOracle} from "@aave/aave-v3-core/contracts/interfaces/IPriceOracle.sol";
 
 import {IAavePM} from "./interfaces/IAavePM.sol";
 import {IWETH9} from "./interfaces/IWETH9.sol";
@@ -225,6 +226,9 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                        FUNCTIONS - AAVE                      │
     // ================================================================
+
+    /// @notice Deposit all wstETH into Aave.
+    /// @dev Caller must have `MANAGER_ROLE`.
     function aaveSupplyWstETH() public onlyRole(MANAGER_ROLE) {
         // Takes all wstETH in the contract and deposits it into Aave
         TransferHelper.safeApprove(
@@ -235,8 +239,12 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         );
     }
 
-    // TODO: More complex as it needs to know the HF of the position
-    function aaveBorrow() public onlyRole(MANAGER_ROLE) {}
+    /// @notice Borrow USDC from Aave.
+    /// @dev Caller must have `MANAGER_ROLE`.
+    /// @param borrowAmount The amount of USDC to borrow. 8 decimal places to the cent.
+    function aaveBorrowUSDC(uint256 borrowAmount) public onlyRole(MANAGER_ROLE) {
+        IPool(s_contractAddresses["aave"]).borrow(s_tokenAddresses["USDC"], borrowAmount, 2, 0, address(this));
+    }
 
     function aaveRepay() public onlyRole(MANAGER_ROLE) {}
 

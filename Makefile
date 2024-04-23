@@ -79,6 +79,11 @@ convert-value-to-wei:
 	wei_value=$$(echo "$$value * 10^18 / 1" | bc); \
 	echo $$wei_value > MAKE_CLI_INPUT_VALUE.tmp;
 
+convert-value-to-USDC:
+	@value=$$(cat MAKE_CLI_INPUT_VALUE.tmp); \
+	usdc_value=$$(echo "$$value * 10^6 / 1" | bc); \
+	echo $$usdc_value > MAKE_CLI_INPUT_VALUE.tmp;
+
 store-value:
 	$(eval \
 		MAKE_CLI_INPUT_VALUE := $(shell cat MAKE_CLI_INPUT_VALUE.tmp) \
@@ -129,11 +134,18 @@ swap-wstETH-ETH-script:
 update-hft-script:
 	@forge script script/Interactions.s.sol:UpdateHFTAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint16)" ${MAKE_CLI_INPUT_VALUE}
 
+aave-supply-wstETH-script:
+	@forge script script/Interactions.s.sol:SupplyAavePM ${NETWORK_ARGS} -vvvv
+
+aave-borrow-USDC-script:
+	@forge script script/Interactions.s.sol:BorrowAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint256)" ${MAKE_CLI_INPUT_VALUE}
+
 # ================================================================
 # │                       COMBINED COMMANDS                      │
 # ================================================================
 send-ETH: ask-for-value convert-value-to-wei store-value send-ETH-script remove-value
 update-hft: ask-for-value store-value update-hft-script remove-value
+aave-borrow-USDC: ask-for-value convert-value-to-USDC store-value aave-borrow-USDC-script remove-value
 
 # ================================================================
 # │                         RUN COMMANDS                         │
@@ -147,3 +159,5 @@ swap-USDC-WETH-anvil: anvil-network swap-USDC-WETH-script
 swap-ETH-wstETH-anvil: anvil-network swap-ETH-wstETH-script
 swap-wstETH-ETH-anvil: anvil-network swap-wstETH-ETH-script
 update-hft-anvil: anvil-network update-hft
+aave-supply-wstETH-anvil: anvil-network aave-supply-wstETH-script
+aave-borrow-USDC-anvil: anvil-network aave-borrow-USDC

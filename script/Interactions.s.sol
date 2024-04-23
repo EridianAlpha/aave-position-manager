@@ -65,3 +65,19 @@ contract UpdateHFTAavePM is Script, Setup {
         vm.stopBroadcast();
     }
 }
+
+contract SupplyAavePM is Script, Setup {
+    function run() public {
+        vm.startBroadcast();
+        aavePM.aaveSupplyWstETH();
+        vm.stopBroadcast();
+    }
+}
+
+contract BorrowAavePM is Script, Setup {
+    function run(uint256 value) public {
+        vm.startBroadcast();
+        aavePM.aaveBorrowUSDC(value);
+        vm.stopBroadcast();
+    }
+}

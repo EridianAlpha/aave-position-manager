@@ -39,6 +39,7 @@ contract AavePMTestSetup is Test {
     uint256 constant GAS_PRICE = 1;
     uint256 constant SEND_VALUE = 1 ether;
     uint256 constant STARTING_BALANCE = 10 ether;
+    uint256 constant USDC_BORROW_AMOUNT = 100;
     uint16 constant INITIAL_HEALTH_FACTOR_TARGET_MINIMUM = 200;
     uint16 constant UPDATED_HEALTH_FACTOR_TARGET_MINIMUM = 250;
     uint24 constant UPDATED_UNISWAPV3_POOL_FEE = 200;
@@ -382,6 +383,27 @@ contract AavePMAaveTests is AavePMTestSetup {
 
         // Check the health factor is UINT256_MAX (Infinity) as nothing has been borrowed
         assertEq(healthFactor, UINT256_MAX);
+        vm.stopPrank();
+    }
+
+    function test_AaveBorrowUSDC() public {
+        vm.startPrank(manager1);
+        // Send some ETH to the contract and wrap it to WETH
+        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
+        require(success, "Failed to send ETH to AavePM contract");
+        aavePM.wrapETHToWETH();
+
+        // Swap WETH for wstETH
+        aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
+
+        // Supply wstETH to Aave
+        aavePM.aaveSupplyWstETH();
+
+        // Borrow USDC
+        aavePM.aaveBorrowUSDC(USDC_BORROW_AMOUNT);
+
+        // Check the USDC balance of the contract
+        assertEq(USDC.balanceOf(address(aavePM)), USDC_BORROW_AMOUNT);
         vm.stopPrank();
     }
 }

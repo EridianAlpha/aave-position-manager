@@ -95,7 +95,9 @@ install:
 	forge install openzeppelin/openzeppelin-contracts@v5.0.1 --no-commit && \
 	forge install openzeppelin/openzeppelin-contracts-upgradeable@v5.0.1 --no-commit && \
 	forge install uniswap/v3-core --no-commit && \
-	forge install uniswap/v3-periphery --no-commit \
+	forge install uniswap/v3-periphery --no-commit && \
+	forge install aave/aave-v3-core@v1.19.3 --no-commit
+	
 
 # ================================================================
 # │                           SCRIPTS                            │

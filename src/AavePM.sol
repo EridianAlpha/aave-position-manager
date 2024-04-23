@@ -10,6 +10,8 @@ import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Po
 import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
+import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
+
 import {IAavePM} from "./interfaces/IAavePM.sol";
 import {IWETH9} from "./interfaces/IWETH9.sol";
 import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
@@ -219,6 +221,27 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     function unwrapWETHToETH() public {
         IWETH9(s_tokenAddresses["WETH"]).withdraw(getContractBalance("WETH"));
     }
+
+    // ================================================================
+    // │                        FUNCTIONS - AAVE                      │
+    // ================================================================
+    function aaveSupplyWstETH() public {
+        // Takes all wstETH in the contract and deposits it into Aave
+        TransferHelper.safeApprove(
+            s_tokenAddresses["wstETH"], address(s_contractAddresses["aave"]), getContractBalance("wstETH")
+        );
+        IPool(s_contractAddresses["aave"]).deposit(
+            s_tokenAddresses["wstETH"], getContractBalance("wstETH"), address(this), 0
+        );
+    }
+
+    function aaveBorrow() public {}
+
+    function aaveRepay() public {}
+
+    function aaveGetHealthFactor() public {}
+
+    function aaveWithdraw() public {}
 
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │

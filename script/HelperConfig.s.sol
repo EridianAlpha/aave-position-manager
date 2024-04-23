@@ -19,6 +19,7 @@ contract HelperConfig is Script {
     address public wethAddress;
     address public wstETHAddress;
     address public usdcAddress;
+    address public awstETHAddress;
 
     struct NetworkConfig {
         IAavePM.ContractAddress[] contractAddresses;
@@ -42,6 +43,7 @@ contract HelperConfig is Script {
             wethAddress = vm.envAddress("MAINNET_ADDRESS_WETH");
             wstETHAddress = vm.envAddress("MAINNET_ADDRESS_WSTETH");
             usdcAddress = vm.envAddress("MAINNET_ADDRESS_USDC");
+            awstETHAddress = vm.envAddress("MAINNET_ADDRESS_AWSTETH");
         } else if (chainId == 8453) {
             // Base
             aaveAddress = vm.envAddress("BASE_ADDRESS_AAVE");
@@ -53,6 +55,7 @@ contract HelperConfig is Script {
             wethAddress = vm.envAddress("BASE_ADDRESS_WETH");
             wstETHAddress = vm.envAddress("BASE_ADDRESS_WSTETH");
             usdcAddress = vm.envAddress("BASE_ADDRESS_USDC");
+            awstETHAddress = vm.envAddress("BASE_ADDRESS_AWSTETH");
         } else {
             revert(string(abi.encodePacked("Chain not supported: ", Strings.toString(block.chainid))));
         }
@@ -69,10 +72,11 @@ contract HelperConfig is Script {
         contractAddresses[1] = IAavePM.ContractAddress("uniswapV3Router", uniswapV3RouterAddress);
 
         // Token addresses
-        IAavePM.TokenAddress[] memory tokenAddresses = new IAavePM.TokenAddress[](3);
+        IAavePM.TokenAddress[] memory tokenAddresses = new IAavePM.TokenAddress[](4);
         tokenAddresses[0] = IAavePM.TokenAddress("WETH", wethAddress);
         tokenAddresses[1] = IAavePM.TokenAddress("wstETH", wstETHAddress);
         tokenAddresses[2] = IAavePM.TokenAddress("USDC", usdcAddress);
+        tokenAddresses[3] = IAavePM.TokenAddress("awstETH", awstETHAddress);
 
         // UniswapV3 pools
         IAavePM.UniswapV3Pool[] memory uniswapV3Pools = new IAavePM.UniswapV3Pool[](2);

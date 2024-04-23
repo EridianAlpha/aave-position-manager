@@ -9,6 +9,7 @@ remappings = [
     "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
     "@uniswap/v3-core/contracts/=lib/v3-core/contracts/",
     "@uniswap/v3-periphery/contracts/=lib/v3-periphery/contracts/",
+    "@aave/aave-v3-core/contracts/=lib/aave-v3-core/contracts/",
     ]
 
 # Allow foundry to run commands on the command line

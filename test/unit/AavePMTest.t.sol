@@ -51,6 +51,11 @@ contract AavePMTestSetup is Test {
     // Encoded reverts
     bytes encodedRevert_AccessControlUnauthorizedAccount_Owner;
 
+    IERC20 WETH;
+    IERC20 wstETH;
+    IERC20 USDC;
+    IERC20 awstETH;
+
     function setUp() external {
         DeployAavePM deployAavePM = new DeployAavePM();
 
@@ -94,6 +99,11 @@ contract AavePMTestSetup is Test {
         vm.deal(owner1, STARTING_BALANCE);
         vm.deal(manager1, STARTING_BALANCE);
         vm.deal(attacker1, STARTING_BALANCE);
+
+        WETH = IERC20(aavePM.getTokenAddress("WETH"));
+        wstETH = IERC20(aavePM.getTokenAddress("wstETH"));
+        USDC = IERC20(aavePM.getTokenAddress("USDC"));
+        awstETH = IERC20(aavePM.getTokenAddress("awstETH"));
 
         encodedRevert_AccessControlUnauthorizedAccount_Owner = abi.encodeWithSelector(
             IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.getRoleHash("OWNER_ROLE")
@@ -313,7 +323,6 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         rescueEth_SetUp();
 
         aavePM.wrapETHToWETH();
-        IERC20 WETH = IERC20(aavePM.getTokenAddress("WETH"));
         uint256 wethBalance = WETH.balanceOf(address(aavePM));
         assertEq(wethBalance, balanceBefore);
     }
@@ -322,12 +331,31 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         rescueEth_SetUp();
 
         aavePM.wrapETHToWETH();
-        IERC20 WETH = IERC20(aavePM.getTokenAddress("WETH"));
         uint256 wethBalance = WETH.balanceOf(address(aavePM));
         assertEq(wethBalance, balanceBefore);
 
         aavePM.unwrapWETHToETH();
         assertEq(address(aavePM).balance, balanceBefore);
+    }
+}
+
+// ================================================================
+// │                           AAVE TESTS                         │
+// ================================================================
+contract AavePMAaveTests is AavePMTestSetup {
+    function test_SupplyWstETHToAave() public {
+        // Send some ETH to the contract and wrap it to WETH
+        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
+        require(success, "Failed to send ETH to AavePM contract");
+        aavePM.wrapETHToWETH();
+
+        // Swap WETH for wstETH
+        vm.prank(manager1);
+        aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
+        uint256 wstETHbalanceBefore = wstETH.balanceOf(address(aavePM));
+        aavePM.aaveSupplyWstETH();
+
+        assertEq(awstETH.balanceOf(address(aavePM)), wstETHbalanceBefore);
     }
 }
 
@@ -345,8 +373,6 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
     }
 
     function test_SwapETHToWstETH() public {
-        IERC20 wstETH = IERC20(aavePM.getTokenAddress("wstETH"));
-
         // Send some ETH to the contract and wrap it to WETH
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
@@ -364,8 +390,6 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
     }
 
     function test_SwapWstETHToWETH() public {
-        IERC20 WETH = IERC20(aavePM.getTokenAddress("WETH"));
-
         // Send some ETH to the contract and wrap it to WETH
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
@@ -387,8 +411,6 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
     }
 
     function test_SwapETHToUSDC() public {
-        IERC20 USDC = IERC20(aavePM.getTokenAddress("USDC"));
-
         // Send some ETH to the contract and wrap it to WETH
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
@@ -406,8 +428,6 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
     }
 
     function test_SwapUSDCToWETH() public {
-        IERC20 WETH = IERC20(aavePM.getTokenAddress("WETH"));
-
         // Send some ETH to the contract and wrap it to WETH
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
@@ -492,7 +512,6 @@ contract AavePMGetterTests is AavePMTestSetup {
         aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
 
         // Check the wstETH balance of the contract
-        IERC20 wstETH = IERC20(aavePM.getTokenAddress("wstETH"));
         assertEq(aavePM.getContractBalance("wstETH"), wstETH.balanceOf(address(aavePM)));
     }
 }

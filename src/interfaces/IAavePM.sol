@@ -80,6 +80,14 @@ interface IAavePM {
     function unwrapWETHToETH() external;
 
     // ================================================================
+    // │                        FUNCTIONS - AAVE                      │
+    // ================================================================
+    function aaveSupplyWstETH() external;
+    function aaveBorrow() external;
+    function aaveRepay() external;
+    function aaveWithdraw() external;
+
+    // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │
     // ================================================================
     function swapTokens(
@@ -113,4 +121,15 @@ interface IAavePM {
     function getHealthFactorTarget() external view returns (uint16 healthFactorTarget);
     function getHealthFactorTargetMinimum() external view returns (uint16 healthFactorTargetMinimum);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
+    function getAaveAccountData()
+        external
+        view
+        returns (
+            uint256 totalCollateralBase,
+            uint256 totalDebtBase,
+            uint256 availableBorrowsBase,
+            uint256 currentLiquidationThreshold,
+            uint256 ltv,
+            uint256 healthFactor
+        );
 }

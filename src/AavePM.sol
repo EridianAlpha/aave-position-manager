@@ -214,18 +214,18 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         if (!callSuccess) revert AavePM__RescueEthFailed();
     }
 
-    function wrapETHToWETH() public payable {
+    function wrapETHToWETH() public payable onlyRole(MANAGER_ROLE) {
         IWETH9(s_tokenAddresses["WETH"]).deposit{value: address(this).balance}();
     }
 
-    function unwrapWETHToETH() public {
+    function unwrapWETHToETH() public onlyRole(MANAGER_ROLE) {
         IWETH9(s_tokenAddresses["WETH"]).withdraw(getContractBalance("WETH"));
     }
 
     // ================================================================
     // │                        FUNCTIONS - AAVE                      │
     // ================================================================
-    function aaveSupplyWstETH() public {
+    function aaveSupplyWstETH() public onlyRole(MANAGER_ROLE) {
         // Takes all wstETH in the contract and deposits it into Aave
         TransferHelper.safeApprove(
             s_tokenAddresses["wstETH"], address(s_contractAddresses["aave"]), getContractBalance("wstETH")
@@ -235,13 +235,12 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         );
     }
 
-    function aaveBorrow() public {}
+    // TODO: More complex as it needs to know the HF of the position
+    function aaveBorrow() public onlyRole(MANAGER_ROLE) {}
 
-    function aaveRepay() public {}
+    function aaveRepay() public onlyRole(MANAGER_ROLE) {}
 
-    function aaveGetHealthFactor() public {}
-
-    function aaveWithdraw() public {}
+    function aaveWithdraw() public onlyRole(MANAGER_ROLE) {}
 
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │
@@ -411,5 +410,29 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         } else {
             return contractBalance = IERC20(s_tokenAddresses[_identifier]).balanceOf(address(this));
         }
+    }
+
+    /// @notice Getter function to get the Aave user account data.
+    /// @dev Public function to allow anyone to view the Aave user account data.
+    /// @return totalCollateralBase The total collateral in the user's account.
+    /// @return totalDebtBase The total debt in the user's account.
+    /// @return availableBorrowsBase The available borrows in the user's account.
+    /// @return currentLiquidationThreshold The current liquidation threshold in the user's account.
+    /// @return ltv The loan-to-value ratio in the user's account.
+    /// @return healthFactor The health factor in the user's account.
+    function getAaveAccountData()
+        public
+        view
+        returns (
+            uint256 totalCollateralBase,
+            uint256 totalDebtBase,
+            uint256 availableBorrowsBase,
+            uint256 currentLiquidationThreshold,
+            uint256 ltv,
+            uint256 healthFactor
+        )
+    {
+        (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor) =
+            IPool(s_contractAddresses["aave"]).getUserAccountData(address(this));
     }
 }

@@ -322,6 +322,7 @@ contract AavePMRescueEthTest is AavePMTestSetup {
     function test_wrapETHToWETH() public {
         rescueEth_SetUp();
 
+        vm.prank(manager1);
         aavePM.wrapETHToWETH();
         uint256 wethBalance = WETH.balanceOf(address(aavePM));
         assertEq(wethBalance, balanceBefore);
@@ -330,12 +331,14 @@ contract AavePMRescueEthTest is AavePMTestSetup {
     function test_unwrapWETHToETH() public {
         rescueEth_SetUp();
 
+        vm.startPrank(manager1);
         aavePM.wrapETHToWETH();
         uint256 wethBalance = WETH.balanceOf(address(aavePM));
         assertEq(wethBalance, balanceBefore);
 
         aavePM.unwrapWETHToETH();
         assertEq(address(aavePM).balance, balanceBefore);
+        vm.stopPrank();
     }
 }
 
@@ -344,18 +347,42 @@ contract AavePMRescueEthTest is AavePMTestSetup {
 // ================================================================
 contract AavePMAaveTests is AavePMTestSetup {
     function test_SupplyWstETHToAave() public {
+        vm.startPrank(manager1);
         // Send some ETH to the contract and wrap it to WETH
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
         aavePM.wrapETHToWETH();
 
         // Swap WETH for wstETH
-        vm.prank(manager1);
         aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
         uint256 wstETHbalanceBefore = wstETH.balanceOf(address(aavePM));
+
+        // Supply wstETH to Aave
         aavePM.aaveSupplyWstETH();
 
+        // Check the awstETH balance of the contract
         assertEq(awstETH.balanceOf(address(aavePM)), wstETHbalanceBefore);
+        vm.stopPrank();
+    }
+
+    function test_AaveMaxHealthFactor() public {
+        vm.startPrank(manager1);
+        // Send some ETH to the contract and wrap it to WETH
+        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
+        require(success, "Failed to send ETH to AavePM contract");
+        aavePM.wrapETHToWETH();
+
+        // Swap WETH for wstETH
+        aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
+
+        // Supply wstETH to Aave
+        aavePM.aaveSupplyWstETH();
+
+        (,,,,, uint256 healthFactor) = aavePM.getAaveAccountData();
+
+        // Check the health factor is UINT256_MAX (Infinity) as nothing has been borrowed
+        assertEq(healthFactor, UINT256_MAX);
+        vm.stopPrank();
     }
 }
 
@@ -373,13 +400,13 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
     }
 
     function test_SwapETHToWstETH() public {
+        vm.startPrank(manager1);
         // Send some ETH to the contract and wrap it to WETH
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
         aavePM.wrapETHToWETH();
 
         // Call the swapTokens function
-        vm.prank(manager1);
         (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
 
         // Check the wstETH balance of the contract
@@ -387,20 +414,20 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
 
         assertEq(tokenOutIdentifier, "wstETH");
         assertEq(amountOut, wstETHbalance);
+        vm.stopPrank();
     }
 
     function test_SwapWstETHToWETH() public {
+        vm.startPrank(manager1);
         // Send some ETH to the contract and wrap it to WETH
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
         aavePM.wrapETHToWETH();
 
         // Call the swapTokens function to get wstETH
-        vm.prank(manager1);
         aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
 
         // Call the swapTokens function again to convert wstETH back to WETH
-        vm.prank(manager1);
         (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("wstETH/ETH", "wstETH", "WETH");
 
         // Check the WETH balance of the contract
@@ -408,16 +435,17 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
 
         assertEq(tokenOutIdentifier, "WETH");
         assertEq(amountOut, WETHbalance);
+        vm.stopPrank();
     }
 
     function test_SwapETHToUSDC() public {
+        vm.startPrank(manager1);
         // Send some ETH to the contract and wrap it to WETH
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
         aavePM.wrapETHToWETH();
 
         // Call the swapTokens function to convert ETH to USDC
-        vm.prank(manager1);
         (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("USDC/ETH", "ETH", "USDC");
 
         // Check the USDC balance of the contract
@@ -425,20 +453,20 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
 
         assertEq(tokenOutIdentifier, "USDC");
         assertEq(amountOut, USDCbalance);
+        vm.stopPrank();
     }
 
     function test_SwapUSDCToWETH() public {
+        vm.startPrank(manager1);
         // Send some ETH to the contract and wrap it to WETH
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
         aavePM.wrapETHToWETH();
 
         // Call the swapTokens function to convert ETH to USDC
-        vm.prank(manager1);
         aavePM.swapTokens("USDC/ETH", "ETH", "USDC");
 
         // Call the swapTokens function again to convert USDC back to WETH
-        vm.prank(manager1);
         (string memory tokenOutIdentifier, uint256 amountOut) = aavePM.swapTokens("USDC/ETH", "USDC", "WETH");
 
         // Check the WETH balance of the contract
@@ -446,6 +474,7 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
 
         assertEq(tokenOutIdentifier, "WETH");
         assertEq(amountOut, WETHbalance);
+        vm.stopPrank();
     }
 }
 
@@ -502,17 +531,18 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetContractBalanceWstETH() public {
+        vm.startPrank(manager1);
         // Send some ETH to the contract and wrap it to WETH
         (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
         require(success, "Failed to send ETH to AavePM contract");
         aavePM.wrapETHToWETH();
 
         // Call the swapTokens function to get wstETH
-        vm.prank(manager1);
         aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
 
         // Check the wstETH balance of the contract
         assertEq(aavePM.getContractBalance("wstETH"), wstETH.balanceOf(address(aavePM)));
+        vm.stopPrank();
     }
 }
 

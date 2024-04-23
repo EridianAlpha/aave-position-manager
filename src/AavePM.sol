@@ -239,7 +239,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
 
     /// @notice Borrow USDC from Aave.
     /// @dev Caller must have `MANAGER_ROLE`.
-    /// @param borrowAmount The amount of USDC to borrow. 8 decimal places to the cent.
+    /// @param borrowAmount The amount of USDC to borrow. 8 decimal places to the dollar. e.g. 100000000 = $1.00.
     function aaveBorrowUSDC(uint256 borrowAmount) public onlyRole(MANAGER_ROLE) {
         IPool(s_contractAddresses["aavePool"]).borrow(s_tokenAddresses["USDC"], borrowAmount, 2, 0, address(this));
     }
@@ -295,7 +295,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
             sqrtPriceLimitX96: 0 // TODO: Calculate price limit
         });
 
-        // Approve the swapRouter to spend the tokenIn and swap the tokens
+        // Approve the swapRouter to spend the tokenIn and swap the tokens.
         TransferHelper.safeApprove(s_tokenAddresses[_tokenInIdentifier], address(swapRouter), currentBalance);
         amountOut = swapRouter.exactInputSingle(params);
         return (_tokenOutIdentifier, amountOut);
@@ -322,10 +322,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
                 : _tokenOutIdentifier]
         ).decimals();
 
-        // Fetch current ratio from the pool
+        // Fetch current ratio from the pool.
         (uint160 sqrtRatioX96,,,,,,) = pool.slot0();
 
-        // Calculate the current ratio
+        // Calculate the current ratio.
         uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (10 ** _token0Decimals) >> (96 * 2);
 
         uint256 expectedOut = (_currentBalance * (10 ** _token0Decimals)) / currentRatio;
@@ -342,6 +342,74 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         return (keccak256(abi.encodePacked(tokenIdentifier)) == keccak256(abi.encodePacked("ETH")))
             ? "WETH"
             : tokenIdentifier;
+    }
+
+    // ================================================================
+    // │                    FUNCTIONS - CORE FEATURES                 │
+    // ================================================================
+    function rebalance() public onlyRole(MANAGER_ROLE) {
+        // Convert any ETH to WETH.
+        if (getContractBalance("ETH") > 0) wrapETHToWETH();
+
+        // Convert any WETH to wstETH.
+        if (getContractBalance("WETH") > 0) swapTokens("wstETH/ETH", "ETH", "wstETH");
+
+        // Deposit wstETH into Aave.
+        if (getContractBalance("wstETH") > 0) aaveSupplyWstETH();
+
+        // Check the current health factor
+        uint16 healthFactorTarget = getHealthFactorTarget();
+
+        // Get the current Aave account data
+        (
+            uint256 totalCollateralBase,
+            uint256 totalDebtBase,
+            ,
+            uint256 currentLiquidationThreshold,
+            ,
+            uint256 healthFactor
+        ) = getAaveAccountData();
+
+        // TODO: healthFactor and healthFactorTarget have different decimal places, how to compare properly?
+        if (healthFactor < healthFactorTarget) {
+            // If the health factor is below the target, repay debt to increase the health factor.
+            // TODO: Implement branch - Can this be combined with the calculations below?
+            //       It would show the max amount to borrow, but just repaying that amount - would it be a negative?
+        } else if (healthFactor > healthFactorTarget) {
+            // If the health factor is above the target, borrow more USDC and reinvest.
+            /* 
+            *   Calculate the maximum amount of USDC that can be borrowed.
+            *       - Minus totalDebtBase from totalCollateralBase to get the actual collateral not including reinvested debt.
+            *       - At the end, minus totalDebtBase to get the remaining amount to borrow to reach the target health factor.
+            *       - currentLiquidationThreshold is a percentage with 4 decimal places e.g. 8250 = 82.5%.
+            *       - healthFactorTarget is a value with 2 decimal places e.g. 200 = 2.00.
+            *       - totalCollateralBase is in USD base unit with 8 decimals to the dollar e.g. 100000000 = $1.00.
+            *       - totalDebtBase is in USD base unit with 8 decimals to the dollar e.g. 100000000 = $1.00.
+            *       - 1e2 used as healthFactorTarget has 2 decimal places.
+            *
+            *                  | ((totalCollateralBase - totalDebtBase) * currentLiquidationThreshold ) |
+            *  maxBorrowUSDC = |------------------------------------------------------------------------| - totalDebtBase
+            *                  |        ((healthFactorTarget * 1e2) - currentLiquidationThreshold)      |
+            */
+            uint256 maxBorrowUSDC = (
+                ((totalCollateralBase - totalDebtBase) * currentLiquidationThreshold)
+                    / ((healthFactorTarget * 1e2) - currentLiquidationThreshold)
+            ) - totalDebtBase;
+
+            // aaveBorrowUSDC input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount.
+            aaveBorrowUSDC(maxBorrowUSDC / 1e2);
+
+            // Swap borrowed USDC to WETH.
+            swapTokens("USDC/ETH", "USDC", "ETH");
+
+            // Convert WETH to wstETH.
+            swapTokens("wstETH/ETH", "ETH", "wstETH");
+
+            // Deposit additional wstETH into Aave.
+            aaveSupplyWstETH();
+        }
+
+        // TODO: Should their be a check for the final health factor? Or should it be left to the user to monitor?
     }
 
     // ================================================================

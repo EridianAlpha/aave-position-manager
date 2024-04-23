@@ -107,6 +107,11 @@ interface IAavePM {
     ) external view returns (uint256 minOut);
 
     // ================================================================
+    // │                    FUNCTIONS - CORE FEATURES                 │
+    // ================================================================
+    function rebalance() external;
+
+    // ================================================================
     // │                       FUNCTIONS - GETTERS                    │
     // ================================================================
     function getCreator() external view returns (address creator);

@@ -40,9 +40,11 @@ contract AavePMTestSetup is Test {
     uint256 constant SEND_VALUE = 1 ether;
     uint256 constant STARTING_BALANCE = 10 ether;
     uint256 constant USDC_BORROW_AMOUNT = 100;
+    uint16 constant INCREASED_HEALTH_FACTOR_TARGET = 300;
+    uint16 constant DECREASED_HEALTH_FACTOR_TARGET = 200;
     uint16 constant INITIAL_HEALTH_FACTOR_TARGET_MINIMUM = 200;
-    uint16 constant UPDATED_HEALTH_FACTOR_TARGET_MINIMUM = 250;
     uint24 constant UPDATED_UNISWAPV3_POOL_FEE = 200;
+    uint256 constant AAVE_HEALTH_FACTOR_DIVISOR = 1e16; // Used to convert e.g. 2000003260332359246 into 200
 
     // Create users
     address owner1 = makeAddr("owner1");
@@ -230,7 +232,7 @@ contract AavePMUpdateTests is AavePMTestSetup {
     }
 
     function test_UpdateHealthFactorTarget() public {
-        uint16 newHealthFactorTarget = UPDATED_HEALTH_FACTOR_TARGET_MINIMUM;
+        uint16 newHealthFactorTarget = INCREASED_HEALTH_FACTOR_TARGET;
         uint16 previousHealthFactorTarget = aavePM.getHealthFactorTarget();
 
         vm.expectEmit();
@@ -498,6 +500,47 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
         assertEq(amountOut, WETHbalance);
         vm.stopPrank();
     }
+}
+
+// ================================================================
+// │                        CORE FEATURE TESTS                    │
+// ================================================================
+contract CoreFeatureTests is AavePMTestSetup {
+    function test_Rebalance() public {
+        vm.startPrank(manager1);
+        // Send some ETH to the contract
+        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
+        require(success, "Failed to send ETH to AavePM contract");
+
+        aavePM.rebalance();
+
+        (,,,,, uint256 endHealthFactor) = aavePM.getAaveAccountData();
+        uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
+
+        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + 1));
+        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - 1));
+        vm.stopPrank();
+    }
+
+    function test_RebalanceUpdateHealthFactor() public {
+        test_Rebalance();
+
+        // Update the health factor target
+        vm.prank(owner1);
+        aavePM.updateHealthFactorTarget(DECREASED_HEALTH_FACTOR_TARGET);
+
+        vm.startPrank(manager1);
+        aavePM.rebalance();
+
+        (,,,,, uint256 endHealthFactor) = aavePM.getAaveAccountData();
+        uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
+
+        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + 1));
+        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - 1));
+        vm.stopPrank();
+    }
+
+    // TODO: Add additional tests for the rebalance function for non-empty Aave accounts
 }
 
 // ================================================================

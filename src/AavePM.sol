@@ -113,6 +113,9 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         _grantRole(MANAGER_ROLE, owner);
         _setRoleAdmin(MANAGER_ROLE, OWNER_ROLE);
 
+        // Grant the contract the MANAGER_ROLE to allow it to execute its own functions.
+        _grantRole(MANAGER_ROLE, address(this));
+
         // Convert the contractAddresses array to a mapping.
         for (uint256 i = 0; i < contractAddresses.length; i++) {
             s_contractAddresses[contractAddresses[i].identifier] = contractAddresses[i].contractAddress;
@@ -250,15 +253,68 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         IPool(s_contractAddresses["aavePool"]).borrow(s_tokenAddresses["USDC"], borrowAmount, 2, 0, address(this));
     }
 
-    /// @notice Repay Aave debt.
+    /// @notice Repay USDC debt to Aave.
     /// @dev Caller must have `MANAGER_ROLE`.
-    ///      // TODO: Implement function.
-    function aaveRepay() public onlyRole(MANAGER_ROLE) {}
+    /// @param repayAmount The amount of USDC to repay. 8 decimal places to the dollar. e.g. 100000000 = $1.00.
+    function aaveRepayDebtUSDC(uint256 repayAmount) public onlyRole(MANAGER_ROLE) {
+        address usdcAddress = s_tokenAddresses["USDC"];
+        address aavePoolAddress = s_contractAddresses["aavePool"];
+
+        TransferHelper.safeApprove(usdcAddress, aavePoolAddress, repayAmount);
+        IPool(aavePoolAddress).repay(usdcAddress, repayAmount, 2, address(this));
+    }
 
     /// @notice Withdraw all wstETH from Aave.
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      // TODO: Implement function.
-    function aaveWithdraw() public onlyRole(MANAGER_ROLE) {}
+    function aaveWithdraw(uint256 withdrawAmount) public onlyRole(MANAGER_ROLE) {
+        IPool(s_contractAddresses["aavePool"]).withdraw(s_tokenAddresses["wstETH"], withdrawAmount, address(this));
+    }
+
+    /// @notice Flash loan callback function.
+    /// @dev This function is called by the Aave pool contract after the flash loan is executed.
+    ///      It is used to repay the flash loan and execute the operation.
+    ///      The function is called by the Aave pool contract and is not intended to be called directly.
+    /// @param asset The address of the asset being flash loaned.
+    /// @param amount The amount of the asset being flash loaned.
+    /// @param premium The fee charged for the flash loan.
+    /// @param initiator The address of the contract that initiated the flash loan.
+    /// @return bool True if the operation was successful.
+    function executeOperation(
+        address asset,
+        uint256 amount,
+        uint256 premium,
+        address initiator,
+        bytes calldata /* params */
+    ) external returns (bool) {
+        // Only allow the AavePM contract to call this function.
+        if (initiator != address(this)) revert AavePM__FlashLoanInitiatorUnauthorized();
+
+        uint256 repaymentAmountTotalUSDC = amount + premium;
+
+        // Use the flash loan USDC to repay the debt.
+        this.aaveRepayDebtUSDC(amount);
+
+        // Now the HF is higher, withdraw the corresponding amount of wstETH from collateral.
+        // TODO: Use Uniswap price as that's where the swap will happen.
+        uint256 wstETHPrice = IPriceOracle(s_contractAddresses["aaveOracle"]).getAssetPrice(s_tokenAddresses["wstETH"]);
+
+        // Calculate the amount of wstETH to withdraw.
+        // TODO: Why 1e20 ?
+        uint256 wstETHToWithdraw = (repaymentAmountTotalUSDC * 1e20) / wstETHPrice;
+
+        // TODO: Calculate the slippage allowance - currently using 1005 (0.5%) slippage allowance
+        uint256 wstETHToWithdrawSlippageAllowance = (wstETHToWithdraw * 1005) / 1000;
+
+        // Withdraw the wstETH from Aave.
+        this.aaveWithdraw(wstETHToWithdrawSlippageAllowance);
+
+        // Convert the wstETH to USDC.
+        this.swapTokens("wstETH/ETH", "wstETH", "ETH");
+        this.swapTokens("USDC/ETH", "ETH", "USDC");
+        TransferHelper.safeApprove(asset, s_contractAddresses["aavePool"], repaymentAmountTotalUSDC);
+        return true;
+    }
 
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │
@@ -350,8 +406,34 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
             : tokenIdentifier;
     }
 
+    function calculateMaxBorrowUSDC(
+        uint256 totalCollateralBase,
+        uint256 totalDebtBase,
+        uint256 currentLiquidationThreshold,
+        uint16 healthFactorTarget
+    ) private pure returns (uint256 maxBorrowUSDC) {
+        /* 
+        *   Calculate the maximum amount of USDC that can be borrowed.
+        *       - Minus totalDebtBase from totalCollateralBase to get the actual collateral not including reinvested debt.
+        *       - At the end, minus totalDebtBase to get the remaining amount to borrow to reach the target health factor.
+        *       - currentLiquidationThreshold is a percentage with 4 decimal places e.g. 8250 = 82.5%.
+        *       - healthFactorTarget is a value with 2 decimal places e.g. 200 = 2.00.
+        *       - totalCollateralBase is in USD base unit with 8 decimals to the dollar e.g. 100000000 = $1.00.
+        *       - totalDebtBase is in USD base unit with 8 decimals to the dollar e.g. 100000000 = $1.00.
+        *       - 1e2 used as healthFactorTarget has 2 decimal places.
+        *
+        *                   ((totalCollateralBase - totalDebtBase) * currentLiquidationThreshold ) 
+        *  maxBorrowUSDC = ------------------------------------------------------------------------
+        *                          ((healthFactorTarget * 1e2) - currentLiquidationThreshold)      
+        */
+        maxBorrowUSDC = (
+            ((totalCollateralBase - totalDebtBase) * currentLiquidationThreshold)
+                / ((healthFactorTarget * 1e2) - currentLiquidationThreshold)
+        );
+    }
+
     // ================================================================
-    // │                    FUNCTIONS - CORE FEATURES                 │
+    // │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │
     // ================================================================
 
     /// @notice Rebalance the Aave position.
@@ -361,68 +443,66 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     ///      If the health factor is below the target, it repays debt to increase the health factor.
     ///      If the health factor is above the target, it borrows more USDC and reinvests.
     function rebalance() public onlyRole(MANAGER_ROLE) {
-        // Convert any ETH to WETH.
+        // Convert any existing tokens and supply to Aave.
         if (getContractBalance("ETH") > 0) wrapETHToWETH();
-
-        // Convert any WETH to wstETH.
         if (getContractBalance("WETH") > 0) swapTokens("wstETH/ETH", "ETH", "wstETH");
-
-        // Deposit wstETH into Aave.
         if (getContractBalance("wstETH") > 0) aaveSupplyWstETH();
 
-        // Check the current health factor
-        uint16 healthFactorTarget = getHealthFactorTarget();
-
-        // Get the current Aave account data
+        // Get the current Aave account data.
         (
             uint256 totalCollateralBase,
             uint256 totalDebtBase,
             ,
             uint256 currentLiquidationThreshold,
             ,
-            uint256 healthFactor
+            uint256 initialHealthFactor
         ) = getAaveAccountData();
 
-        // TODO: healthFactor and healthFactorTarget have different decimal places, how to compare properly?
-        if (healthFactor < healthFactorTarget) {
+        // Scale the initial health factor to 2 decimal places.
+        uint256 initialHealthFactorScaled = initialHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
+
+        // Get the current health factor target.
+        uint16 healthFactorTarget = getHealthFactorTarget();
+
+        // Calculate the maximum amount of USDC that can be borrowed.
+        uint256 maxBorrowUSDC =
+            calculateMaxBorrowUSDC(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget);
+
+        // TODO: Calculate this elsewhere.
+        uint16 healthFactorTargetRange = 10;
+
+        if (initialHealthFactorScaled < (healthFactorTarget - healthFactorTargetRange)) {
             // If the health factor is below the target, repay debt to increase the health factor.
-            // TODO: Implement branch - Can this be combined with the calculations below?
-            //       It would show the max amount to borrow, but just repaying that amount - would it be a negative?
-        } else if (healthFactor > healthFactorTarget) {
+
+            // Calculate the repayment amount required to reach the target health factor.
+            uint256 repaymentAmountUSDC = totalDebtBase - maxBorrowUSDC;
+
+            // Take out a flash loan for the USDC amount needed to repay and rebalance the health factor.
+            // flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
+            IPool(s_contractAddresses["aavePool"]).flashLoanSimple(
+                address(this), s_tokenAddresses["USDC"], repaymentAmountUSDC / 1e2, bytes(""), 0
+            );
+
+            // Deposit any remaining dust to Aave.
+            if (getContractBalance("wstETH") > 0) aaveSupplyWstETH();
+            if (getContractBalance("USDC") > 0) aaveRepayDebtUSDC(getContractBalance("USDC"));
+        } else if (initialHealthFactorScaled > healthFactorTarget + healthFactorTargetRange) {
             // If the health factor is above the target, borrow more USDC and reinvest.
-            /* 
-            *   Calculate the maximum amount of USDC that can be borrowed.
-            *       - Minus totalDebtBase from totalCollateralBase to get the actual collateral not including reinvested debt.
-            *       - At the end, minus totalDebtBase to get the remaining amount to borrow to reach the target health factor.
-            *       - currentLiquidationThreshold is a percentage with 4 decimal places e.g. 8250 = 82.5%.
-            *       - healthFactorTarget is a value with 2 decimal places e.g. 200 = 2.00.
-            *       - totalCollateralBase is in USD base unit with 8 decimals to the dollar e.g. 100000000 = $1.00.
-            *       - totalDebtBase is in USD base unit with 8 decimals to the dollar e.g. 100000000 = $1.00.
-            *       - 1e2 used as healthFactorTarget has 2 decimal places.
-            *
-            *                  | ((totalCollateralBase - totalDebtBase) * currentLiquidationThreshold ) |
-            *  maxBorrowUSDC = |------------------------------------------------------------------------| - totalDebtBase
-            *                  |        ((healthFactorTarget * 1e2) - currentLiquidationThreshold)      |
-            */
-            uint256 maxBorrowUSDC = (
-                ((totalCollateralBase - totalDebtBase) * currentLiquidationThreshold)
-                    / ((healthFactorTarget * 1e2) - currentLiquidationThreshold)
-            ) - totalDebtBase;
+
+            // Calculate the additional amount to borrow to reach the target health factor.
+            uint256 additionalBorrowUSDC = maxBorrowUSDC - totalDebtBase;
 
             // aaveBorrowUSDC input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount.
-            aaveBorrowUSDC(maxBorrowUSDC / 1e2);
+            aaveBorrowUSDC(additionalBorrowUSDC / 1e2);
 
-            // Swap borrowed USDC to WETH.
+            // Swap borrowed USDC -> WETH -> wstETH then supply to Aave.
             swapTokens("USDC/ETH", "USDC", "ETH");
-
-            // Convert WETH to wstETH.
             swapTokens("wstETH/ETH", "ETH", "wstETH");
-
-            // Deposit additional wstETH into Aave.
             aaveSupplyWstETH();
         }
 
         // Safety check to ensure the health factor is above the minimum target.
+        // TODO: Improve check.
         (,,,,, uint256 endHealthFactor) = getAaveAccountData();
         uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
         if (endHealthFactorScaled < (HEALTH_FACTOR_TARGET_MINIMUM - 1)) revert AavePM__HealthFactorBelowMinimum();

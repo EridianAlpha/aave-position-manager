@@ -13,6 +13,7 @@ interface IAavePM {
     error AavePM__HealthFactorUnchanged();
     error AavePM__HealthFactorBelowMinimum();
     error AavePM__NotEnoughTokensForSwap(string tokenInIdentifier);
+    error AavePM__FlashLoanInitiatorUnauthorized();
 
     // ================================================================
     // │                           STRUCTS                            │
@@ -84,8 +85,15 @@ interface IAavePM {
     // ================================================================
     function aaveSupplyWstETH() external;
     function aaveBorrowUSDC(uint256 borrowAmount) external;
-    function aaveRepay() external;
-    function aaveWithdraw() external;
+    function aaveRepayDebtUSDC(uint256 repayAmount) external;
+    function aaveWithdraw(uint256 withdrawAmount) external;
+    function executeOperation(
+        address asset,
+        uint256 amount,
+        uint256 premium,
+        address initiator,
+        bytes calldata /* params */
+    ) external returns (bool);
 
     // ================================================================
     // │                     FUNCTIONS - TOKEN SWAPS                  │
@@ -107,7 +115,7 @@ interface IAavePM {
     ) external view returns (uint256 minOut);
 
     // ================================================================
-    // │                    FUNCTIONS - CORE FEATURES                 │
+    // │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │
     // ================================================================
     function rebalance() external;
 

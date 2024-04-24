@@ -522,7 +522,7 @@ contract CoreFeatureTests is AavePMTestSetup {
         vm.stopPrank();
     }
 
-    function test_RebalanceUpdateHealthFactor() public {
+    function test_RebalanceHealthFactorDecrease() public {
         test_Rebalance();
 
         // Update the health factor target
@@ -541,6 +541,25 @@ contract CoreFeatureTests is AavePMTestSetup {
     }
 
     // TODO: Add additional tests for the rebalance function for non-empty Aave accounts
+
+    function test_RebalanceHealthFactorIncrease() public {
+        test_Rebalance();
+
+        // Update the health factor target
+        vm.prank(owner1);
+        aavePM.updateHealthFactorTarget(INCREASED_HEALTH_FACTOR_TARGET);
+
+        vm.startPrank(manager1);
+        aavePM.rebalance();
+
+        (,,,,, uint256 endHealthFactor) = aavePM.getAaveAccountData();
+        uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
+
+        // TODO: These ranges might be too tight
+        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + 1));
+        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - 1));
+        vm.stopPrank();
+    }
 }
 
 // ================================================================

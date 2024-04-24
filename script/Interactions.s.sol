@@ -81,3 +81,11 @@ contract BorrowAavePM is Script, Setup {
         vm.stopBroadcast();
     }
 }
+
+contract RebalanceAavePM is Script, Setup {
+    function run() public {
+        vm.startBroadcast();
+        aavePM.rebalance();
+        vm.stopBroadcast();
+    }
+}

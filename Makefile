@@ -140,12 +140,16 @@ aave-supply-wstETH-script:
 aave-borrow-USDC-script:
 	@forge script script/Interactions.s.sol:BorrowAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint256)" ${MAKE_CLI_INPUT_VALUE}
 
+rebalance-script:
+	@forge script script/Interactions.s.sol:RebalanceAavePM ${NETWORK_ARGS} -vvvv
+
 # ================================================================
 # │                       COMBINED COMMANDS                      │
 # ================================================================
 send-ETH: ask-for-value convert-value-to-wei store-value send-ETH-script remove-value
 update-hft: ask-for-value store-value update-hft-script remove-value
 aave-borrow-USDC: ask-for-value convert-value-to-USDC store-value aave-borrow-USDC-script remove-value
+
 
 # ================================================================
 # │                         RUN COMMANDS                         │
@@ -161,3 +165,4 @@ swap-wstETH-ETH-anvil: anvil-network swap-wstETH-ETH-script
 update-hft-anvil: anvil-network update-hft
 aave-supply-wstETH-anvil: anvil-network aave-supply-wstETH-script
 aave-borrow-USDC-anvil: anvil-network aave-borrow-USDC
+rebalance-anvil: anvil-network rebalance-script

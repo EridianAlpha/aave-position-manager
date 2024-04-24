@@ -26,6 +26,7 @@
   * [7.4. Update Health Factor Target](#74-update-health-factor-target)
   * [7.5. Aave Supply wstETH](#75-aave-supply-wsteth)
   * [7.6. Aave Borrow USDC](#76-aave-borrow-usdc)
+  * [7.7. Rebalance](#77-rebalance)
 * [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
 * [9. License](#9-license)
 
@@ -168,6 +169,14 @@ Input value in USDC e.g. `100`.
 | Chain | Command                       |
 | ----- | ----------------------------- |
 | Anvil | `make aave-borrow-USDC-anvil` |
+
+### 7.7. Rebalance
+
+Rebalances the Aave position to maintain the desired Health Factor.
+
+| Chain | Command                |
+| ----- | ---------------------- |
+| Anvil | `make rebalance-anvil` |
 
 ## 8. Build and Deploy Documentation
 

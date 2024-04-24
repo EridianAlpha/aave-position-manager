@@ -54,6 +54,12 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     ///      A contract upgrade is required to change this value.
     uint16 private constant HEALTH_FACTOR_TARGET_MINIMUM = 200;
 
+    /// @notice The divisor for the Aave Health Factor.
+    /// @dev The Aave Health Factor is a value with 18 decimal places.
+    ///      This divisor is used to scale the Health Factor to 2 decimal places.
+    //       Used to convert e.g. 2000003260332359246 into 200.
+    uint256 constant AAVE_HEALTH_FACTOR_DIVISOR = 1e16;
+
     // ================================================================
     // │                           MODIFIERS                          │
     // ================================================================
@@ -347,6 +353,13 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     // ================================================================
     // │                    FUNCTIONS - CORE FEATURES                 │
     // ================================================================
+
+    /// @notice Rebalance the Aave position.
+    /// @dev Caller must have `MANAGER_ROLE`.
+    ///      The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
+    ///      It then deposits the wstETH into Aave.
+    ///      If the health factor is below the target, it repays debt to increase the health factor.
+    ///      If the health factor is above the target, it borrows more USDC and reinvests.
     function rebalance() public onlyRole(MANAGER_ROLE) {
         // Convert any ETH to WETH.
         if (getContractBalance("ETH") > 0) wrapETHToWETH();
@@ -409,7 +422,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
             aaveSupplyWstETH();
         }
 
-        // TODO: Should their be a check for the final health factor? Or should it be left to the user to monitor?
+        // Safety check to ensure the health factor is above the minimum target.
+        (,,,,, uint256 endHealthFactor) = getAaveAccountData();
+        uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
+        if (endHealthFactorScaled < (HEALTH_FACTOR_TARGET_MINIMUM - 1)) revert AavePM__HealthFactorBelowMinimum();
     }
 
     // ================================================================

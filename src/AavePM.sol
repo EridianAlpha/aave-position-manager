@@ -75,10 +75,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         _disableInitializers();
     }
 
-    /// @notice // TODO
+    /// @notice // TODO: Add comment
     receive() external payable {}
 
-    /// @notice // TODO
+    /// @notice // TODO: Add comment
     fallback() external payable {
         revert AavePM__FunctionDoesNotExist();
     }
@@ -484,6 +484,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
             );
 
             // Deposit any remaining dust to Aave.
+            // TODO: Set a lower limit for dust so it doesn't cost more in gas to deposit than the amount.
             if (getContractBalance("wstETH") > 0) aaveSupplyWstETH();
             if (getContractBalance("USDC") > 0) aaveRepayDebtUSDC(getContractBalance("USDC"));
         } else if (initialHealthFactorScaled > healthFactorTarget + healthFactorTargetRange) {

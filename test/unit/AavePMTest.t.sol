@@ -503,7 +503,7 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
 }
 
 // ================================================================
-// │                        CORE FEATURE TESTS                    │
+// │                REBALANCE, DEPOSIT, WITHDRAW TESTS            │
 // ================================================================
 contract CoreFeatureTests is AavePMTestSetup {
     function test_Rebalance() public {

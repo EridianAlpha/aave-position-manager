@@ -10,6 +10,7 @@ contract Setup is Script {
     AavePM public aavePM;
 
     constructor() {
+        // TODO: Can all the .call functions use aavePM instead of aavePMAddressProxy?
         aavePMAddressProxy = getAavePMAddressProxy();
         aavePM = AavePM(payable(aavePMAddressProxy));
     }
@@ -86,6 +87,59 @@ contract RebalanceAavePM is Script, Setup {
     function run() public {
         vm.startBroadcast();
         aavePM.rebalance();
+        vm.stopBroadcast();
+    }
+}
+
+contract GetContractBalanceAavePM is Script, Setup {
+    function run(string memory _identifier) public returns (uint256 contractBalance) {
+        vm.startBroadcast();
+        contractBalance = aavePM.getContractBalance(_identifier);
+        vm.stopBroadcast();
+        return contractBalance;
+    }
+}
+
+contract GetAaveAccountDataAavePM is Script, Setup {
+    function run()
+        public
+        returns (
+            uint256 totalCollateralBase,
+            uint256 totalDebtBase,
+            uint256 availableBorrowsBase,
+            uint256 currentLiquidationThreshold,
+            uint256 ltv,
+            uint256 healthFactor
+        )
+    {
+        vm.startBroadcast();
+        (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor) =
+            aavePM.getAaveAccountData();
+        vm.stopBroadcast();
+        return
+            (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor);
+    }
+}
+
+contract SetAaveStateAavePM is Script, Setup {
+    function run(uint256 totalCollateralAwstETH, uint256 totalDebtBase) public {
+        vm.startBroadcast();
+        // TODO: Make 10 ether a parameter/variable
+        (bool callSuccess,) = aavePMAddressProxy.call{value: 10 ether}("");
+        if (!callSuccess) revert("Failed to send ETH to AavePM");
+        aavePM.wrapETHToWETH();
+        aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
+        aavePM.aaveSupplyWstETH();
+        aavePM.aaveBorrowUSDC(totalDebtBase / 1e2);
+
+        // Withdraw the extra collateral
+        uint256 newtTotalCollateralAwstETH = aavePM.getContractBalance("awstETH");
+        aavePM.aaveWithdrawWstETH(newtTotalCollateralAwstETH - totalCollateralAwstETH);
+
+        // Send the extra collateral back to the user
+        aavePM.swapTokens("wstETH/ETH", "wstETH", "ETH");
+        aavePM.unwrapWETHToETH();
+        aavePM.rescueEth(msg.sender);
         vm.stopBroadcast();
     }
 }

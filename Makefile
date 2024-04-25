@@ -143,13 +143,19 @@ aave-borrow-USDC-script:
 rebalance-script:
 	@forge script script/Interactions.s.sol:RebalanceAavePM ${NETWORK_ARGS} -vvvv
 
+getContractBalance-script:
+	@forge script script/Interactions.s.sol:GetContractBalanceAavePM ${NETWORK_ARGS} -vvvv --sig "run(string)" ${MAKE_CLI_INPUT_VALUE}
+
+getAaveAccountData-script:
+	@forge script script/Interactions.s.sol:GetAaveAccountDataAavePM ${NETWORK_ARGS} -vvvv
+
 # ================================================================
 # │                       COMBINED COMMANDS                      │
 # ================================================================
 send-ETH: ask-for-value convert-value-to-wei store-value send-ETH-script remove-value
 update-hft: ask-for-value store-value update-hft-script remove-value
 aave-borrow-USDC: ask-for-value convert-value-to-USDC store-value aave-borrow-USDC-script remove-value
-
+getContractBalance: ask-for-value store-value getContractBalance-script remove-value
 
 # ================================================================
 # │                         RUN COMMANDS                         │
@@ -166,3 +172,5 @@ update-hft-anvil: anvil-network update-hft
 aave-supply-wstETH-anvil: anvil-network aave-supply-wstETH-script
 aave-borrow-USDC-anvil: anvil-network aave-borrow-USDC
 rebalance-anvil: anvil-network rebalance-script
+getContractBalance-anvil: anvil-network getContractBalance
+getAaveAccountData-anvil: anvil-network getAaveAccountData-script

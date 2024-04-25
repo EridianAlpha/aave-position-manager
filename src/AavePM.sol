@@ -264,10 +264,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         IPool(aavePoolAddress).repay(usdcAddress, repayAmount, 2, address(this));
     }
 
-    /// @notice Withdraw all wstETH from Aave.
+    /// @notice Withdraw wstETH from Aave.
     /// @dev Caller must have `MANAGER_ROLE`.
-    ///      // TODO: Implement function.
-    function aaveWithdraw(uint256 withdrawAmount) public onlyRole(MANAGER_ROLE) {
+    ///      // TODO: Update comment.
+    function aaveWithdrawWstETH(uint256 withdrawAmount) public onlyRole(MANAGER_ROLE) {
         IPool(s_contractAddresses["aavePool"]).withdraw(s_tokenAddresses["wstETH"], withdrawAmount, address(this));
     }
 
@@ -307,7 +307,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         uint256 wstETHToWithdrawSlippageAllowance = (wstETHToWithdraw * 1005) / 1000;
 
         // Withdraw the wstETH from Aave.
-        this.aaveWithdraw(wstETHToWithdrawSlippageAllowance);
+        this.aaveWithdrawWstETH(wstETHToWithdrawSlippageAllowance);
 
         // Convert the wstETH to USDC.
         this.swapTokens("wstETH/ETH", "wstETH", "ETH");

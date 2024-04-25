@@ -496,7 +496,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
             // aaveBorrowUSDC input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount.
             aaveBorrowUSDC(additionalBorrowUSDC / 1e2);
 
-            // Swap borrowed USDC -> WETH -> wstETH then supply to Aave.
+            // Swap borrowed USDC ➜ WETH ➜ wstETH then supply to Aave.
             swapTokens("USDC/ETH", "USDC", "ETH");
             swapTokens("wstETH/ETH", "ETH", "wstETH");
             aaveSupplyWstETH();

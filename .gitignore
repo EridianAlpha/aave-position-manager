@@ -21,6 +21,8 @@ coverage-report.txt
 
 # Custom Foundry Files
 MAKE_CLI_INPUT_VALUE.tmp
+anvil.log
+historicalTestingOutput.csv
 
 # Mac OS Files
 .DS_Store

@@ -21,7 +21,10 @@ coverage-report.txt
 
 # Custom Foundry Files
 MAKE_CLI_INPUT_VALUE.tmp
+
+# HistoricalData Files
 anvil.log
+historicalApyUSDC.csv
 historicalTestingOutput.csv
 
 # Mac OS Files

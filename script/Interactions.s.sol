@@ -136,8 +136,9 @@ contract SetAaveStateAavePM is Script, Setup {
         uint256 newtTotalCollateralAwstETH = aavePM.getContractBalance("awstETH");
         aavePM.aaveWithdrawWstETH(newtTotalCollateralAwstETH - totalCollateralAwstETH);
 
-        // Send the extra collateral back to the user
+        // Send the extra tokens back to the user
         aavePM.swapTokens("wstETH/ETH", "wstETH", "ETH");
+        aavePM.swapTokens("USDC/ETH", "USDC", "ETH");
         aavePM.unwrapWETHToETH();
         aavePM.rescueEth(msg.sender);
         vm.stopBroadcast();

@@ -218,6 +218,8 @@ contract AavePM is
         s_healthFactorTarget = _healthFactorTarget;
     }
 
+    // TODO: Add update s_slippageTolerance function
+
     // ================================================================
     // │                    FUNCTIONS - ETH / WETH                    │
     // ================================================================
@@ -263,6 +265,10 @@ contract AavePM is
     ///      If the health factor is below the target, it repays debt to increase the health factor.
     ///      If the health factor is above the target, it borrows more USDC and reinvests.
     function rebalance() public onlyRole(MANAGER_ROLE) {
+        // TODO: Could this be a simple public function that calls an internal function on an inherited contract?
+        // This would make the main contract much cleaner and easier to read.
+        // So the AavePM contract would just be state, updates to state, and the functions to call logic from inherited contract.
+
         // Convert any existing tokens and supply to Aave.
         if (getContractBalance("ETH") > 0) wrapETHToWETH();
         if (getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");

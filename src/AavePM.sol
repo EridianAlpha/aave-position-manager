@@ -250,6 +250,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @dev Caller must have `MANAGER_ROLE`.
     /// @param borrowAmount The amount of USDC to borrow. 8 decimal places to the dollar. e.g. 100000000 = $1.00.
     function aaveBorrowUSDC(uint256 borrowAmount) public onlyRole(MANAGER_ROLE) {
+        // TODO: This should have a HF check to make sure that this borrow doesn't drop the HF below the target.
         IPool(s_contractAddresses["aavePool"]).borrow(s_tokenAddresses["USDC"], borrowAmount, 2, 0, address(this));
     }
 
@@ -268,6 +269,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      // TODO: Update comment.
     function aaveWithdrawWstETH(uint256 withdrawAmount) public onlyRole(MANAGER_ROLE) {
+        // TODO: This should have a HF check to make sure that this withdrawal doesn't drop the HF below the target.
         IPool(s_contractAddresses["aavePool"]).withdraw(s_tokenAddresses["wstETH"], withdrawAmount, address(this));
     }
 
@@ -287,7 +289,7 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         address initiator,
         bytes calldata /* params */
     ) external returns (bool) {
-        // Only allow the AavePM contract to call this function.
+        // Only allow the AavePM contract to initiate the flashloan and execute this function.
         if (initiator != address(this)) revert AavePM__FlashLoanInitiatorUnauthorized();
 
         uint256 repaymentAmountTotalUSDC = amount + premium;
@@ -337,8 +339,10 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         ISwapRouter swapRouter = ISwapRouter(s_contractAddresses["uniswapV3Router"]);
 
         // If ETH is input or output, convert the identifier to WETH.
-        _tokenInIdentifier = renameIdentifierFromETHToWETHIfNeeded(_tokenInIdentifier);
-        _tokenOutIdentifier = renameIdentifierFromETHToWETHIfNeeded(_tokenOutIdentifier);
+        bytes32 ethHash = keccak256(abi.encodePacked("ETH"));
+        _tokenInIdentifier = (keccak256(abi.encodePacked(_tokenInIdentifier)) == ethHash) ? "WETH" : _tokenInIdentifier;
+        _tokenOutIdentifier =
+            (keccak256(abi.encodePacked(_tokenOutIdentifier)) == ethHash) ? "WETH" : _tokenOutIdentifier;
 
         // Check if the contract has enough tokens to swap
         uint256 currentBalance = getContractBalance(_tokenInIdentifier);
@@ -393,17 +397,6 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         uint256 expectedOut = (_currentBalance * (10 ** _token0Decimals)) / currentRatio;
         uint256 slippageTolerance = expectedOut / s_slippageTolerance;
         return minOut = expectedOut - slippageTolerance;
-    }
-
-    /// @notice // TODO: Add comment
-    function renameIdentifierFromETHToWETHIfNeeded(string memory tokenIdentifier)
-        private
-        pure
-        returns (string memory)
-    {
-        return (keccak256(abi.encodePacked(tokenIdentifier)) == keccak256(abi.encodePacked("ETH")))
-            ? "WETH"
-            : tokenIdentifier;
     }
 
     function calculateMaxBorrowUSDC(

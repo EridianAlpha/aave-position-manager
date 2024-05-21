@@ -7,10 +7,12 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 contract AaveFunctions {
     /// @notice Deposit all wstETH into Aave.
     ///      // TODO: Update comment.
-    function _aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) internal {
+    function _aaveSupply(address aavePoolAddress, address tokenAddress, address aavePMAddress, uint256 tokenBalance)
+        internal
+    {
         // Takes all tokens in the contract and deposits it into Aave
         TransferHelper.safeApprove(tokenAddress, aavePoolAddress, tokenBalance);
-        IPool(aavePoolAddress).deposit(tokenAddress, tokenBalance, address(this), 0);
+        IPool(aavePoolAddress).deposit(tokenAddress, tokenBalance, aavePMAddress, 0);
     }
 
     /// @notice Withdraw wstETH from Aave.

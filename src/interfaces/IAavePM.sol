@@ -83,10 +83,6 @@ interface IAavePM {
     // ================================================================
     // │                        FUNCTIONS - AAVE                      │
     // ================================================================
-    function aaveSupplyWstETH() external;
-    function aaveBorrowUSDC(uint256 borrowAmount) external;
-    function aaveRepayDebtUSDC(uint256 repayAmount) external;
-    function aaveWithdrawWstETH(uint256 withdrawAmount) external;
     function executeOperation(
         address asset,
         uint256 amount,

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
+import {AaveFunctions} from "./AaveFunctions.sol";
+
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -20,7 +22,7 @@ import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha
 /// @notice A contract to manage positions on Aave.
-contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgradeable {
+contract AavePM is IAavePM, AaveFunctions, Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     // ================================================================
     // │                        STATE VARIABLES                       │
     // ================================================================
@@ -233,45 +235,8 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
     }
 
     // ================================================================
-    // │                        FUNCTIONS - AAVE                      │
+    // │                   FUNCTIONS - AAVE FLASH LOAN                │
     // ================================================================
-
-    /// @notice Deposit all wstETH into Aave.
-    /// @dev Caller must have `MANAGER_ROLE`.
-    function aaveSupplyWstETH() public onlyRole(MANAGER_ROLE) {
-        address aavePoolAddress = s_contractAddresses["aavePool"];
-
-        // Takes all wstETH in the contract and deposits it into Aave
-        TransferHelper.safeApprove(s_tokenAddresses["wstETH"], aavePoolAddress, getContractBalance("wstETH"));
-        IPool(aavePoolAddress).deposit(s_tokenAddresses["wstETH"], getContractBalance("wstETH"), address(this), 0);
-    }
-
-    /// @notice Borrow USDC from Aave.
-    /// @dev Caller must have `MANAGER_ROLE`.
-    /// @param borrowAmount The amount of USDC to borrow. 8 decimal places to the dollar. e.g. 100000000 = $1.00.
-    function aaveBorrowUSDC(uint256 borrowAmount) public onlyRole(MANAGER_ROLE) {
-        // TODO: This should have a HF check to make sure that this borrow doesn't drop the HF below the target.
-        IPool(s_contractAddresses["aavePool"]).borrow(s_tokenAddresses["USDC"], borrowAmount, 2, 0, address(this));
-    }
-
-    /// @notice Repay USDC debt to Aave.
-    /// @dev Caller must have `MANAGER_ROLE`.
-    /// @param repayAmount The amount of USDC to repay. 8 decimal places to the dollar. e.g. 100000000 = $1.00.
-    function aaveRepayDebtUSDC(uint256 repayAmount) public onlyRole(MANAGER_ROLE) {
-        address usdcAddress = s_tokenAddresses["USDC"];
-        address aavePoolAddress = s_contractAddresses["aavePool"];
-
-        TransferHelper.safeApprove(usdcAddress, aavePoolAddress, repayAmount);
-        IPool(aavePoolAddress).repay(usdcAddress, repayAmount, 2, address(this));
-    }
-
-    /// @notice Withdraw wstETH from Aave.
-    /// @dev Caller must have `MANAGER_ROLE`.
-    ///      // TODO: Update comment.
-    function aaveWithdrawWstETH(uint256 withdrawAmount) public onlyRole(MANAGER_ROLE) {
-        // TODO: This should have a HF check to make sure that this withdrawal doesn't drop the HF below the target.
-        IPool(s_contractAddresses["aavePool"]).withdraw(s_tokenAddresses["wstETH"], withdrawAmount, address(this));
-    }
 
     /// @notice Flash loan callback function.
     /// @dev This function is called by the Aave pool contract after the flash loan is executed.
@@ -292,14 +257,17 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         // Only allow the AavePM contract to initiate the flashloan and execute this function.
         if (initiator != address(this)) revert AavePM__FlashLoanInitiatorUnauthorized();
 
+        address wstETHAddress = s_tokenAddresses["wstETH"];
+        address aavePoolAddress = s_contractAddresses["aavePool"];
+
         uint256 repaymentAmountTotalUSDC = amount + premium;
 
         // Use the flash loan USDC to repay the debt.
-        this.aaveRepayDebtUSDC(amount);
+        _aaveRepayDebt(s_contractAddresses["aavePool"], s_tokenAddresses["USDC"], address(this), amount);
 
         // Now the HF is higher, withdraw the corresponding amount of wstETH from collateral.
         // TODO: Use Uniswap price as that's where the swap will happen.
-        uint256 wstETHPrice = IPriceOracle(s_contractAddresses["aaveOracle"]).getAssetPrice(s_tokenAddresses["wstETH"]);
+        uint256 wstETHPrice = IPriceOracle(s_contractAddresses["aaveOracle"]).getAssetPrice(wstETHAddress);
 
         // Calculate the amount of wstETH to withdraw.
         // TODO: Why 1e20 ?
@@ -309,12 +277,12 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         uint256 wstETHToWithdrawSlippageAllowance = (wstETHToWithdraw * 1005) / 1000;
 
         // Withdraw the wstETH from Aave.
-        this.aaveWithdrawWstETH(wstETHToWithdrawSlippageAllowance);
+        _aaveWithdrawCollateral(aavePoolAddress, wstETHAddress, address(this), wstETHToWithdrawSlippageAllowance);
 
         // Convert the wstETH to USDC.
         this.swapTokens("wstETH/ETH", "wstETH", "ETH");
         this.swapTokens("USDC/ETH", "ETH", "USDC");
-        TransferHelper.safeApprove(asset, s_contractAddresses["aavePool"], repaymentAmountTotalUSDC);
+        TransferHelper.safeApprove(asset, aavePoolAddress, repaymentAmountTotalUSDC);
         return true;
     }
 
@@ -439,7 +407,9 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         // Convert any existing tokens and supply to Aave.
         if (getContractBalance("ETH") > 0) wrapETHToWETH();
         if (getContractBalance("WETH") > 0) swapTokens("wstETH/ETH", "ETH", "wstETH");
-        if (getContractBalance("wstETH") > 0) aaveSupplyWstETH();
+        if (getContractBalance("wstETH") > 0) {
+            _aaveSupply(s_contractAddresses["aavePool"], s_tokenAddresses["wstETH"], getContractBalance("wstETH"));
+        }
 
         // Get the current Aave account data.
         (
@@ -464,6 +434,11 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
         // TODO: Calculate this elsewhere.
         uint16 healthFactorTargetRange = 10;
 
+        // Get data from state
+        address aavePoolAddress = s_contractAddresses["aavePool"];
+        address wstETHAddress = s_tokenAddresses["wstETH"];
+        address usdcAddress = s_tokenAddresses["USDC"];
+
         if (initialHealthFactorScaled < (healthFactorTarget - healthFactorTargetRange)) {
             // If the health factor is below the target, repay debt to increase the health factor.
 
@@ -472,27 +447,30 @@ contract AavePM is IAavePM, Initializable, AccessControlUpgradeable, UUPSUpgrade
 
             // Take out a flash loan for the USDC amount needed to repay and rebalance the health factor.
             // flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
-            IPool(s_contractAddresses["aavePool"]).flashLoanSimple(
-                address(this), s_tokenAddresses["USDC"], repaymentAmountUSDC / 1e2, bytes(""), 0
-            );
+            IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaymentAmountUSDC / 1e2, bytes(""), 0);
 
             // Deposit any remaining dust to Aave.
             // TODO: Set a lower limit for dust so it doesn't cost more in gas to deposit than the amount.
-            if (getContractBalance("wstETH") > 0) aaveSupplyWstETH();
-            if (getContractBalance("USDC") > 0) aaveRepayDebtUSDC(getContractBalance("USDC"));
+            if (getContractBalance("wstETH") > 0) {
+                _aaveSupply(aavePoolAddress, wstETHAddress, getContractBalance("wstETH"));
+            }
+            if (getContractBalance("USDC") > 0) {
+                _aaveRepayDebt(aavePoolAddress, usdcAddress, address(this), getContractBalance("USDC"));
+            }
         } else if (initialHealthFactorScaled > healthFactorTarget + healthFactorTargetRange) {
             // If the health factor is above the target, borrow more USDC and reinvest.
 
             // Calculate the additional amount to borrow to reach the target health factor.
             uint256 additionalBorrowUSDC = maxBorrowUSDC - totalDebtBase;
 
-            // aaveBorrowUSDC input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount.
-            aaveBorrowUSDC(additionalBorrowUSDC / 1e2);
+            // _aaveBorrow input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount.
+            uint256 borrowAmountUSDC = additionalBorrowUSDC / 1e2;
+            _aaveBorrow(aavePoolAddress, usdcAddress, address(this), borrowAmountUSDC);
 
             // Swap borrowed USDC ➜ WETH ➜ wstETH then supply to Aave.
             swapTokens("USDC/ETH", "USDC", "ETH");
             swapTokens("wstETH/ETH", "ETH", "wstETH");
-            aaveSupplyWstETH();
+            _aaveSupply(aavePoolAddress, wstETHAddress, getContractBalance("wstETH"));
         }
 
         // Safety check to ensure the health factor is above the minimum target.

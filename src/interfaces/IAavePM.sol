@@ -12,7 +12,6 @@ interface IAavePM {
     error AavePM__RescueAddressNotAnOwner();
     error AavePM__HealthFactorUnchanged();
     error AavePM__HealthFactorBelowMinimum();
-    error AavePM__FlashLoanInitiatorUnauthorized();
 
     // ================================================================
     // │                           STRUCTS                            │
@@ -76,17 +75,6 @@ interface IAavePM {
     // │                    FUNCTIONS - ETH / WETH                    │
     // ================================================================
     function rescueEth(address rescueAddress) external;
-
-    // ================================================================
-    // │                        FUNCTIONS - AAVE                      │
-    // ================================================================
-    function executeOperation(
-        address asset,
-        uint256 amount,
-        uint256 premium,
-        address initiator,
-        bytes calldata /* params */
-    ) external returns (bool);
 
     // ================================================================
     // │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │

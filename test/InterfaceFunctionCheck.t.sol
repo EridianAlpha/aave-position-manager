@@ -11,7 +11,10 @@ contract InterfaceTest is Test, Script {
 
         string memory uupsFunctions = "UPGRADE_INTERFACE_VERSION,proxiableUUID,upgradeToAndCall";
 
-        string memory ignoreList = string(abi.encodePacked(accessControlFunctions, ",", uupsFunctions));
+        string memory aaveFlashLoanFunctions = "executeOperation";
+
+        string memory ignoreList =
+            string(abi.encodePacked(accessControlFunctions, ",", uupsFunctions, ",", aaveFlashLoanFunctions));
 
         // Command as an array with arguments
         string[] memory command = new string[](4);

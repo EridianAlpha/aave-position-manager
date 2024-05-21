@@ -6,7 +6,6 @@ pragma solidity 0.8.24;
 // ================================================================
 
 // Inherited Contract Imports
-import {TokenSwaps} from "./TokenSwaps.sol";
 import {AaveFunctions} from "./AaveFunctions.sol";
 import {AaveCalculations} from "./AaveCalculations.sol";
 
@@ -16,17 +15,12 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-// Uniswap Imports
-import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
-
 // Aave Imports
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
-import {IPriceOracle} from "@aave/aave-v3-core/contracts/interfaces/IPriceOracle.sol";
 
 // Interface Imports
 import {IWETH9} from "./interfaces/IWETH9.sol";
 import {IAavePM} from "./interfaces/IAavePM.sol";
-import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 
 // ================================================================
 // │                       AAVEPM CONTRACT                        │
@@ -38,7 +32,6 @@ import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 contract AavePM is
     IAavePM,
     AaveFunctions,
-    TokenSwaps,
     AaveCalculations,
     Initializable,
     AccessControlUpgradeable,
@@ -257,58 +250,6 @@ contract AavePM is
     /// @notice // TODO: Add comment
     function unwrapWETHToETH() internal {
         IWETH9(s_tokenAddresses["WETH"]).withdraw(getContractBalance("WETH"));
-    }
-
-    // ================================================================
-    // │                   FUNCTIONS - AAVE FLASH LOAN                │
-    // ================================================================
-
-    /// @notice Flash loan callback function.
-    /// @dev This function is called by the Aave pool contract after the flash loan is executed.
-    ///      It is used to repay the flash loan and execute the operation.
-    ///      The function is called by the Aave pool contract and is not intended to be called directly.
-    /// @param asset The address of the asset being flash loaned.
-    /// @param amount The amount of the asset being flash loaned.
-    /// @param premium The fee charged for the flash loan.
-    /// @param initiator The address of the contract that initiated the flash loan.
-    /// @return bool True if the operation was successful.
-    function executeOperation(
-        address asset,
-        uint256 amount,
-        uint256 premium,
-        address initiator,
-        bytes calldata /* params */
-    ) external returns (bool) {
-        // Only allow the AavePM contract to initiate the flashloan and execute this function.
-        if (initiator != address(this)) revert AavePM__FlashLoanInitiatorUnauthorized();
-
-        address wstETHAddress = s_tokenAddresses["wstETH"];
-        address aavePoolAddress = s_contractAddresses["aavePool"];
-
-        uint256 repaymentAmountTotalUSDC = amount + premium;
-
-        // Use the flash loan USDC to repay the debt.
-        _aaveRepayDebt(aavePoolAddress, s_tokenAddresses["USDC"], amount);
-
-        // Now the HF is higher, withdraw the corresponding amount of wstETH from collateral.
-        // TODO: Use Uniswap price as that's where the swap will happen.
-        uint256 wstETHPrice = IPriceOracle(s_contractAddresses["aaveOracle"]).getAssetPrice(wstETHAddress);
-
-        // Calculate the amount of wstETH to withdraw.
-        // TODO: Why 1e20 ?
-        uint256 wstETHToWithdraw = (repaymentAmountTotalUSDC * 1e20) / wstETHPrice;
-
-        // TODO: Calculate the slippage allowance - currently using 1005 (0.5%) slippage allowance
-        uint256 wstETHToWithdrawSlippageAllowance = (wstETHToWithdraw * 1005) / 1000;
-
-        // Withdraw the wstETH from Aave.
-        _aaveWithdrawCollateral(aavePoolAddress, wstETHAddress, wstETHToWithdrawSlippageAllowance);
-
-        // Convert the wstETH to USDC.
-        _swapTokens("wstETH/ETH", "wstETH", "ETH");
-        _swapTokens("USDC/ETH", "ETH", "USDC");
-        TransferHelper.safeApprove(asset, aavePoolAddress, repaymentAmountTotalUSDC);
-        return true;
     }
 
     // ================================================================

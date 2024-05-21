@@ -1,15 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
-import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
+// ================================================================
+// │                           IMPORTS                            │
+// ================================================================
 
-import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+// Aave Imports
+import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
+
+// Uniswap Imports
 import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
+// Interface Imports
 import {IAavePM} from "./interfaces/IAavePM.sol";
+import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 
+// ================================================================
+// │                    TOKENSWAPS CONTRACT                       │
+// ================================================================
+
+/// @notice // TODO: Add comment
 contract TokenSwaps {
     // TODO: Move errors to interface
     error TokenSwaps__NotEnoughTokensForSwap(string tokenInIdentifier);
@@ -40,7 +52,7 @@ contract TokenSwaps {
 
         // Check if the contract has enough tokens to swap
         uint256 currentBalance = aavePM.getContractBalance(_tokenInIdentifier);
-        if (currentBalance == 0) revert("Not enough tokens for swap");
+        if (currentBalance == 0) revert TokenSwaps__NotEnoughTokensForSwap(_tokenInIdentifier);
 
         // Prepare the swap parameters
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({

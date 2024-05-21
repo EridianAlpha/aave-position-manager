@@ -1,22 +1,35 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {AaveFunctions} from "./AaveFunctions.sol";
-import {TokenSwaps} from "./TokenSwaps.sol";
+// ================================================================
+// │                           IMPORTS                            │
+// ================================================================
 
-import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+// Inherited Contract Imports
+import {TokenSwaps} from "./TokenSwaps.sol";
+import {AaveFunctions} from "./AaveFunctions.sol";
+
+// OpenZeppelin Imports
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
+// Uniswap Imports
 import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
+// Aave Imports
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 import {IPriceOracle} from "@aave/aave-v3-core/contracts/interfaces/IPriceOracle.sol";
 
-import {IAavePM} from "./interfaces/IAavePM.sol";
+// Interface Imports
 import {IWETH9} from "./interfaces/IWETH9.sol";
+import {IAavePM} from "./interfaces/IAavePM.sol";
 import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
+
+// ================================================================
+// │                       AAVEPM CONTRACT                        │
+// ================================================================
 
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha

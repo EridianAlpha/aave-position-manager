@@ -1,9 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
+// ================================================================
+// │                           IMPORTS                            │
+// ================================================================
+
+// Aave Imports
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
+// Uniswap Imports
+import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
+
+// ================================================================
+// │                   AAVEFUNCTIONS CONTRACT                     │
+// ================================================================
+
+/// @notice // TODO: Add comment
 contract AaveFunctions {
     /// @notice Deposit all wstETH into Aave.
     ///      // TODO: Update comment.

@@ -34,20 +34,24 @@ contract TokenSwaps {
         _tokenInIdentifier = _convertToWETHIfNeeded(_tokenInIdentifier);
         _tokenOutIdentifier = _convertToWETHIfNeeded(_tokenOutIdentifier);
 
+        // Get the token addresses from the identifiers.
+        address tokenInAddress = aavePM.getTokenAddress(_tokenInIdentifier);
+        address tokenOutAddress = aavePM.getTokenAddress(_tokenOutIdentifier);
+
         // Check if the contract has enough tokens to swap
         uint256 currentBalance = aavePM.getContractBalance(_tokenInIdentifier);
         if (currentBalance == 0) revert("Not enough tokens for swap");
 
         // Prepare the swap parameters
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
-            tokenIn: aavePM.getTokenAddress(_tokenInIdentifier),
-            tokenOut: aavePM.getTokenAddress(_tokenOutIdentifier),
+            tokenIn: tokenInAddress,
+            tokenOut: tokenOutAddress,
             fee: uniswapV3PoolFee,
             recipient: address(this),
             deadline: block.timestamp,
             amountIn: currentBalance,
             amountOutMinimum: uniswapV3CalculateMinOut(
-                aavePM, currentBalance, uniswapV3PoolAddress, _tokenInIdentifier, _tokenOutIdentifier
+                aavePM, currentBalance, uniswapV3PoolAddress, tokenInAddress, tokenOutAddress
             ),
             sqrtPriceLimitX96: 0 // TODO: Calculate price limit
         });
@@ -77,13 +81,10 @@ contract TokenSwaps {
         IAavePM aavePM,
         uint256 _currentBalance,
         address _uniswapV3PoolAddress,
-        string memory _tokenInIdentifier,
-        string memory _tokenOutIdentifier
+        address tokenInAddress,
+        address tokenOutAddress
     ) private view returns (uint256 minOut) {
         IUniswapV3Pool pool = IUniswapV3Pool(_uniswapV3PoolAddress);
-
-        address tokenInAddress = aavePM.getTokenAddress(_tokenInIdentifier);
-        address tokenOutAddress = aavePM.getTokenAddress(_tokenOutIdentifier);
 
         // sqrtRatioX96 calculates the price of token1 in units of token0 (token1/token0)
         // so only token0 decimals are needed to calculate minOut.

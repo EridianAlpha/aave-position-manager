@@ -25,10 +25,9 @@ contract TokenSwaps {
     function _swapTokens(
         string memory _uniswapV3PoolIdentifier,
         string memory _tokenInIdentifier,
-        string memory _tokenOutIdentifier,
-        address aavePMAddress
+        string memory _tokenOutIdentifier
     ) internal returns (string memory tokenOutIdentifier, uint256 amountOut) {
-        IAavePM aavePM = IAavePM(aavePMAddress);
+        IAavePM aavePM = IAavePM(address(this));
         (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee) = aavePM.getUniswapV3Pool(_uniswapV3PoolIdentifier);
 
         // If ETH is input or output, convert the identifier to WETH.
@@ -44,7 +43,7 @@ contract TokenSwaps {
             tokenIn: aavePM.getTokenAddress(_tokenInIdentifier),
             tokenOut: aavePM.getTokenAddress(_tokenOutIdentifier),
             fee: uniswapV3PoolFee,
-            recipient: aavePMAddress,
+            recipient: address(this),
             deadline: block.timestamp,
             amountIn: currentBalance,
             amountOutMinimum: uniswapV3CalculateMinOut(

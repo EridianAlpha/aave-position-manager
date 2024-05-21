@@ -263,7 +263,7 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
         uint256 repaymentAmountTotalUSDC = amount + premium;
 
         // Use the flash loan USDC to repay the debt.
-        _aaveRepayDebt(aavePoolAddress, s_tokenAddresses["USDC"], address(this), amount);
+        _aaveRepayDebt(aavePoolAddress, s_tokenAddresses["USDC"], amount);
 
         // Now the HF is higher, withdraw the corresponding amount of wstETH from collateral.
         // TODO: Use Uniswap price as that's where the swap will happen.
@@ -277,11 +277,11 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
         uint256 wstETHToWithdrawSlippageAllowance = (wstETHToWithdraw * 1005) / 1000;
 
         // Withdraw the wstETH from Aave.
-        _aaveWithdrawCollateral(aavePoolAddress, wstETHAddress, address(this), wstETHToWithdrawSlippageAllowance);
+        _aaveWithdrawCollateral(aavePoolAddress, wstETHAddress, wstETHToWithdrawSlippageAllowance);
 
         // Convert the wstETH to USDC.
-        _swapTokens("wstETH/ETH", "wstETH", "ETH", address(this));
-        _swapTokens("USDC/ETH", "ETH", "USDC", address(this));
+        _swapTokens("wstETH/ETH", "wstETH", "ETH");
+        _swapTokens("USDC/ETH", "ETH", "USDC");
         TransferHelper.safeApprove(asset, aavePoolAddress, repaymentAmountTotalUSDC);
         return true;
     }
@@ -329,11 +329,9 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
     function rebalance() public onlyRole(MANAGER_ROLE) {
         // Convert any existing tokens and supply to Aave.
         if (getContractBalance("ETH") > 0) wrapETHToWETH();
-        if (getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH", address(this));
+        if (getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");
         if (getContractBalance("wstETH") > 0) {
-            _aaveSupply(
-                s_contractAddresses["aavePool"], s_tokenAddresses["wstETH"], address(this), getContractBalance("wstETH")
-            );
+            _aaveSupply(s_contractAddresses["aavePool"], s_tokenAddresses["wstETH"], getContractBalance("wstETH"));
         }
 
         // Get the current Aave account data.
@@ -377,10 +375,10 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
             // Deposit any remaining dust to Aave.
             // TODO: Set a lower limit for dust so it doesn't cost more in gas to deposit than the amount.
             if (getContractBalance("wstETH") > 0) {
-                _aaveSupply(aavePoolAddress, wstETHAddress, address(this), getContractBalance("wstETH"));
+                _aaveSupply(aavePoolAddress, wstETHAddress, getContractBalance("wstETH"));
             }
             if (getContractBalance("USDC") > 0) {
-                _aaveRepayDebt(aavePoolAddress, usdcAddress, address(this), getContractBalance("USDC"));
+                _aaveRepayDebt(aavePoolAddress, usdcAddress, getContractBalance("USDC"));
             }
         } else if (initialHealthFactorScaled > healthFactorTarget + healthFactorTargetRange) {
             // If the health factor is above the target, borrow more USDC and reinvest.
@@ -390,12 +388,12 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
 
             // _aaveBorrow input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount.
             uint256 borrowAmountUSDC = additionalBorrowUSDC / 1e2;
-            _aaveBorrow(aavePoolAddress, usdcAddress, address(this), borrowAmountUSDC);
+            _aaveBorrow(aavePoolAddress, usdcAddress, borrowAmountUSDC);
 
             // Swap borrowed USDC ➜ WETH ➜ wstETH then supply to Aave.
-            _swapTokens("USDC/ETH", "USDC", "ETH", address(this));
-            _swapTokens("wstETH/ETH", "ETH", "wstETH", address(this));
-            _aaveSupply(aavePoolAddress, wstETHAddress, address(this), getContractBalance("wstETH"));
+            _swapTokens("USDC/ETH", "USDC", "ETH");
+            _swapTokens("wstETH/ETH", "ETH", "wstETH");
+            _aaveSupply(aavePoolAddress, wstETHAddress, getContractBalance("wstETH"));
         }
 
         // Safety check to ensure the health factor is above the minimum target.

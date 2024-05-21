@@ -12,7 +12,6 @@ interface IAavePM {
     error AavePM__RescueAddressNotAnOwner();
     error AavePM__HealthFactorUnchanged();
     error AavePM__HealthFactorBelowMinimum();
-    error AavePM__NotEnoughTokensForSwap(string tokenInIdentifier);
     error AavePM__FlashLoanInitiatorUnauthorized();
 
     // ================================================================
@@ -77,8 +76,6 @@ interface IAavePM {
     // │                    FUNCTIONS - ETH / WETH                    │
     // ================================================================
     function rescueEth(address rescueAddress) external;
-    function wrapETHToWETH() external payable;
-    function unwrapWETHToETH() external;
 
     // ================================================================
     // │                        FUNCTIONS - AAVE                      │
@@ -90,25 +87,6 @@ interface IAavePM {
         address initiator,
         bytes calldata /* params */
     ) external returns (bool);
-
-    // ================================================================
-    // │                     FUNCTIONS - TOKEN SWAPS                  │
-    // ================================================================
-    function swapTokens(
-        string memory _uniswapV3PoolIdentifier,
-        string memory _tokenInIdentifier,
-        string memory _tokenOutIdentifier
-    ) external returns (string memory tokenOutIdentifier, uint256 amountOut);
-
-    // ================================================================
-    // │                    FUNCTIONS - CALCULATIONS                  │
-    // ================================================================
-    function uniswapV3CalculateMinOut(
-        uint256 _currentBalance,
-        string memory _uniswapV3PoolIdentifier,
-        string memory _tokenInIdentifier,
-        string memory _tokenOutIdentifier
-    ) external view returns (uint256 minOut);
 
     // ================================================================
     // │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │
@@ -130,6 +108,7 @@ interface IAavePM {
     function getHealthFactorTarget() external view returns (uint16 healthFactorTarget);
     function getHealthFactorTargetMinimum() external view returns (uint16 healthFactorTargetMinimum);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
+    function getSlippageTolerance() external view returns (uint16 slippageTolerance);
     function getAaveAccountData()
         external
         view

@@ -2,14 +2,13 @@
 pragma solidity 0.8.24;
 
 import {AaveFunctions} from "./AaveFunctions.sol";
+import {TokenSwaps} from "./TokenSwaps.sol";
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
-import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
@@ -22,7 +21,7 @@ import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha
 /// @notice A contract to manage positions on Aave.
-contract AavePM is IAavePM, AaveFunctions, Initializable, AccessControlUpgradeable, UUPSUpgradeable {
+contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     // ================================================================
     // │                        STATE VARIABLES                       │
     // ================================================================
@@ -227,11 +226,11 @@ contract AavePM is IAavePM, AaveFunctions, Initializable, AccessControlUpgradeab
         if (!callSuccess) revert AavePM__RescueEthFailed();
     }
 
-    function wrapETHToWETH() public payable onlyRole(MANAGER_ROLE) {
+    function wrapETHToWETH() internal {
         IWETH9(s_tokenAddresses["WETH"]).deposit{value: address(this).balance}();
     }
 
-    function unwrapWETHToETH() public onlyRole(MANAGER_ROLE) {
+    function unwrapWETHToETH() internal {
         IWETH9(s_tokenAddresses["WETH"]).withdraw(getContractBalance("WETH"));
     }
 
@@ -264,7 +263,7 @@ contract AavePM is IAavePM, AaveFunctions, Initializable, AccessControlUpgradeab
         uint256 repaymentAmountTotalUSDC = amount + premium;
 
         // Use the flash loan USDC to repay the debt.
-        _aaveRepayDebt(s_contractAddresses["aavePool"], s_tokenAddresses["USDC"], address(this), amount);
+        _aaveRepayDebt(aavePoolAddress, s_tokenAddresses["USDC"], address(this), amount);
 
         // Now the HF is higher, withdraw the corresponding amount of wstETH from collateral.
         // TODO: Use Uniswap price as that's where the swap will happen.
@@ -281,92 +280,15 @@ contract AavePM is IAavePM, AaveFunctions, Initializable, AccessControlUpgradeab
         _aaveWithdrawCollateral(aavePoolAddress, wstETHAddress, address(this), wstETHToWithdrawSlippageAllowance);
 
         // Convert the wstETH to USDC.
-        this.swapTokens("wstETH/ETH", "wstETH", "ETH");
-        this.swapTokens("USDC/ETH", "ETH", "USDC");
+        _swapTokens("wstETH/ETH", "wstETH", "ETH", address(this));
+        _swapTokens("USDC/ETH", "ETH", "USDC", address(this));
         TransferHelper.safeApprove(asset, aavePoolAddress, repaymentAmountTotalUSDC);
         return true;
     }
 
     // ================================================================
-    // │                     FUNCTIONS - TOKEN SWAPS                  │
-    // ================================================================
-
-    /// @notice Swaps the contract's entire specified token balance using a UniswapV3 pool.
-    /// @dev Caller must have `MANAGER_ROLE`.
-    ///      Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
-    ///      Reverts if there are no tokens in the contract or if the transaction doesn't meet the `amountOutMinimum` criteria due to price movements.
-    /// @param _uniswapV3PoolIdentifier The identifier of the UniswapV3 pool to use for the swap.
-    /// @param _tokenInIdentifier The identifier of the token to swap.
-    /// @param _tokenOutIdentifier The identifier of the token to receive from the swap.
-    /// @return tokenOutIdentifier The identifier of the token received from the swap.
-    /// @return amountOut The amount tokens received from the swap.
-    function swapTokens(
-        string memory _uniswapV3PoolIdentifier,
-        string memory _tokenInIdentifier,
-        string memory _tokenOutIdentifier
-    ) public onlyRole(MANAGER_ROLE) returns (string memory tokenOutIdentifier, uint256 amountOut) {
-        ISwapRouter swapRouter = ISwapRouter(s_contractAddresses["uniswapV3Router"]);
-
-        // If ETH is input or output, convert the identifier to WETH.
-        bytes32 ethHash = keccak256(abi.encodePacked("ETH"));
-        _tokenInIdentifier = (keccak256(abi.encodePacked(_tokenInIdentifier)) == ethHash) ? "WETH" : _tokenInIdentifier;
-        _tokenOutIdentifier =
-            (keccak256(abi.encodePacked(_tokenOutIdentifier)) == ethHash) ? "WETH" : _tokenOutIdentifier;
-
-        // Check if the contract has enough tokens to swap
-        uint256 currentBalance = getContractBalance(_tokenInIdentifier);
-        if (currentBalance == 0) revert AavePM__NotEnoughTokensForSwap(_tokenInIdentifier);
-
-        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
-            tokenIn: s_tokenAddresses[_tokenInIdentifier],
-            tokenOut: s_tokenAddresses[_tokenOutIdentifier],
-            fee: s_uniswapV3Pools[_uniswapV3PoolIdentifier].fee,
-            recipient: address(this),
-            deadline: block.timestamp,
-            amountIn: currentBalance,
-            amountOutMinimum: uniswapV3CalculateMinOut(
-                currentBalance, _uniswapV3PoolIdentifier, _tokenInIdentifier, _tokenOutIdentifier
-            ),
-            sqrtPriceLimitX96: 0 // TODO: Calculate price limit
-        });
-
-        // Approve the swapRouter to spend the tokenIn and swap the tokens.
-        TransferHelper.safeApprove(s_tokenAddresses[_tokenInIdentifier], address(swapRouter), currentBalance);
-        amountOut = swapRouter.exactInputSingle(params);
-        return (_tokenOutIdentifier, amountOut);
-    }
-
-    // ================================================================
     // │                   FUNCTIONS - CALCULATIONS                   │
     // ================================================================
-
-    /// @notice // TODO: Add comment
-    function uniswapV3CalculateMinOut(
-        uint256 _currentBalance,
-        string memory _uniswapV3PoolIdentifier,
-        string memory _tokenInIdentifier,
-        string memory _tokenOutIdentifier
-    ) public view returns (uint256 minOut) {
-        IUniswapV3Pool pool = IUniswapV3Pool(s_uniswapV3Pools[_uniswapV3PoolIdentifier].poolAddress);
-
-        // sqrtRatioX96 calculates the price of token1 in units of token0 (token1/token0)
-        // so only token0 decimals are needed to calculate minOut.
-        uint256 _token0Decimals = IERC20Extended(
-            s_tokenAddresses[s_tokenAddresses[_tokenInIdentifier] == pool.token0()
-                ? _tokenInIdentifier
-                : _tokenOutIdentifier]
-        ).decimals();
-
-        // Fetch current ratio from the pool.
-        (uint160 sqrtRatioX96,,,,,,) = pool.slot0();
-
-        // Calculate the current ratio.
-        uint256 currentRatio = uint256(sqrtRatioX96) * (uint256(sqrtRatioX96)) * (10 ** _token0Decimals) >> (96 * 2);
-
-        uint256 expectedOut = (_currentBalance * (10 ** _token0Decimals)) / currentRatio;
-        uint256 slippageTolerance = expectedOut / s_slippageTolerance;
-        return minOut = expectedOut - slippageTolerance;
-    }
 
     function calculateMaxBorrowUSDC(
         uint256 totalCollateralBase,
@@ -407,7 +329,7 @@ contract AavePM is IAavePM, AaveFunctions, Initializable, AccessControlUpgradeab
     function rebalance() public onlyRole(MANAGER_ROLE) {
         // Convert any existing tokens and supply to Aave.
         if (getContractBalance("ETH") > 0) wrapETHToWETH();
-        if (getContractBalance("WETH") > 0) swapTokens("wstETH/ETH", "ETH", "wstETH");
+        if (getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH", address(this));
         if (getContractBalance("wstETH") > 0) {
             _aaveSupply(
                 s_contractAddresses["aavePool"], s_tokenAddresses["wstETH"], address(this), getContractBalance("wstETH")
@@ -471,8 +393,8 @@ contract AavePM is IAavePM, AaveFunctions, Initializable, AccessControlUpgradeab
             _aaveBorrow(aavePoolAddress, usdcAddress, address(this), borrowAmountUSDC);
 
             // Swap borrowed USDC ➜ WETH ➜ wstETH then supply to Aave.
-            swapTokens("USDC/ETH", "USDC", "ETH");
-            swapTokens("wstETH/ETH", "ETH", "wstETH");
+            _swapTokens("USDC/ETH", "USDC", "ETH", address(this));
+            _swapTokens("wstETH/ETH", "ETH", "wstETH", address(this));
             _aaveSupply(aavePoolAddress, wstETHAddress, address(this), getContractBalance("wstETH"));
         }
 
@@ -561,6 +483,13 @@ contract AavePM is IAavePM, AaveFunctions, Initializable, AccessControlUpgradeab
         } else {
             return contractBalance = IERC20(s_tokenAddresses[_identifier]).balanceOf(address(this));
         }
+    }
+
+    /// @notice Getter function to get the Slippage Tolerance.
+    /// @dev Public function to allow anyone to view the Slippage Tolerance value.
+    /// @return slippageTolerance The Slippage Tolerance value.
+    function getSlippageTolerance() public view returns (uint16 slippageTolerance) {
+        return s_slippageTolerance;
     }
 
     /// @notice Getter function to get the Aave user account data.

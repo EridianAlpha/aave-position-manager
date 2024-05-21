@@ -107,8 +107,8 @@ interface IAavePM {
         returns (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee);
     function getHealthFactorTarget() external view returns (uint16 healthFactorTarget);
     function getHealthFactorTargetMinimum() external view returns (uint16 healthFactorTargetMinimum);
-    function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function getSlippageTolerance() external view returns (uint16 slippageTolerance);
+    function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function getAaveAccountData()
         external
         view

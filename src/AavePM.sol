@@ -8,6 +8,7 @@ pragma solidity 0.8.24;
 // Inherited Contract Imports
 import {TokenSwaps} from "./TokenSwaps.sol";
 import {AaveFunctions} from "./AaveFunctions.sol";
+import {AaveCalculations} from "./AaveCalculations.sol";
 
 // OpenZeppelin Imports
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -34,7 +35,15 @@ import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha
 /// @notice A contract to manage positions on Aave.
-contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessControlUpgradeable, UUPSUpgradeable {
+contract AavePM is
+    IAavePM,
+    AaveFunctions,
+    TokenSwaps,
+    AaveCalculations,
+    Initializable,
+    AccessControlUpgradeable,
+    UUPSUpgradeable
+{
     // ================================================================
     // │                        STATE VARIABLES                       │
     // ================================================================
@@ -109,6 +118,7 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
     /// @param tokenAddresses An array of `TokenAddress` structures containing addresses of relevant ERC-20 tokens.
     /// @param uniswapV3Pools An array of `UniswapV3Pool` structures containing the address and fee of the UniswapV3 pools.
     /// @param initialHealthFactorTarget The initial target health factor, used to manage risk.
+    /// @param initialSlippageTolerance The initial slippage tolerance for token swaps.
     function initialize(
         address owner,
         ContractAddress[] memory contractAddresses,
@@ -239,10 +249,12 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
         if (!callSuccess) revert AavePM__RescueEthFailed();
     }
 
+    /// @notice // TODO: Add comment
     function wrapETHToWETH() internal {
         IWETH9(s_tokenAddresses["WETH"]).deposit{value: address(this).balance}();
     }
 
+    /// @notice // TODO: Add comment
     function unwrapWETHToETH() internal {
         IWETH9(s_tokenAddresses["WETH"]).withdraw(getContractBalance("WETH"));
     }
@@ -300,36 +312,6 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
     }
 
     // ================================================================
-    // │                   FUNCTIONS - CALCULATIONS                   │
-    // ================================================================
-
-    function calculateMaxBorrowUSDC(
-        uint256 totalCollateralBase,
-        uint256 totalDebtBase,
-        uint256 currentLiquidationThreshold,
-        uint16 healthFactorTarget
-    ) private pure returns (uint256 maxBorrowUSDC) {
-        /* 
-        *   Calculate the maximum amount of USDC that can be borrowed.
-        *       - Minus totalDebtBase from totalCollateralBase to get the actual collateral not including reinvested debt.
-        *       - At the end, minus totalDebtBase to get the remaining amount to borrow to reach the target health factor.
-        *       - currentLiquidationThreshold is a percentage with 4 decimal places e.g. 8250 = 82.5%.
-        *       - healthFactorTarget is a value with 2 decimal places e.g. 200 = 2.00.
-        *       - totalCollateralBase is in USD base unit with 8 decimals to the dollar e.g. 100000000 = $1.00.
-        *       - totalDebtBase is in USD base unit with 8 decimals to the dollar e.g. 100000000 = $1.00.
-        *       - 1e2 used as healthFactorTarget has 2 decimal places.
-        *
-        *                   ((totalCollateralBase - totalDebtBase) * currentLiquidationThreshold ) 
-        *  maxBorrowUSDC = ------------------------------------------------------------------------
-        *                          ((healthFactorTarget * 1e2) - currentLiquidationThreshold)      
-        */
-        maxBorrowUSDC = (
-            ((totalCollateralBase - totalDebtBase) * currentLiquidationThreshold)
-                / ((healthFactorTarget * 1e2) - currentLiquidationThreshold)
-        );
-    }
-
-    // ================================================================
     // │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │
     // ================================================================
 
@@ -365,7 +347,7 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
 
         // Calculate the maximum amount of USDC that can be borrowed.
         uint256 maxBorrowUSDC =
-            calculateMaxBorrowUSDC(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget);
+            _calculateMaxBorrowUSDC(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget);
 
         // TODO: Calculate this elsewhere.
         uint16 healthFactorTargetRange = 10;
@@ -484,6 +466,13 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
         return HEALTH_FACTOR_TARGET_MINIMUM;
     }
 
+    /// @notice Getter function to get the Slippage Tolerance.
+    /// @dev Public function to allow anyone to view the Slippage Tolerance value.
+    /// @return slippageTolerance The Slippage Tolerance value.
+    function getSlippageTolerance() public view returns (uint16 slippageTolerance) {
+        return s_slippageTolerance;
+    }
+
     /// @notice Getter function to get the contract's balance.
     /// @dev Public function to allow anyone to view the contract's balance.
     /// @param _identifier The identifier for the token address.
@@ -494,13 +483,6 @@ contract AavePM is IAavePM, AaveFunctions, TokenSwaps, Initializable, AccessCont
         } else {
             return contractBalance = IERC20(s_tokenAddresses[_identifier]).balanceOf(address(this));
         }
-    }
-
-    /// @notice Getter function to get the Slippage Tolerance.
-    /// @dev Public function to allow anyone to view the Slippage Tolerance value.
-    /// @return slippageTolerance The Slippage Tolerance value.
-    function getSlippageTolerance() public view returns (uint16 slippageTolerance) {
-        return s_slippageTolerance;
     }
 
     /// @notice Getter function to get the Aave user account data.

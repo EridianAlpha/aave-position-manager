@@ -9,6 +9,8 @@ import {IAavePM} from "../../src/interfaces/IAavePM.sol";
 
 /// @notice //TODO Add comment.
 contract AavePMUpgradeExample is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
+    function test() public {} // Added to remove this whole testing file from coverage report.
+
     bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
     string private constant VERSION = "0.0.2";
 

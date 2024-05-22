@@ -7,7 +7,7 @@ import {AavePM} from "src/AavePM.sol";
 import {DeployAavePM} from "script/DeployAavePM.s.sol";
 
 // ================================================================
-// │                 COMMON SETUP AND CONSTRUCTOR                 │
+// │                       DEPLOY AAVEPM TEST                     │
 // ================================================================
 contract DeployAavePMTest is Test {
     AavePM aavePM;

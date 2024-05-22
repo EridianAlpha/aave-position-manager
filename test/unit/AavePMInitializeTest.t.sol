@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {AavePMTestSetup} from "test/unit/AavePMTests/AavePMTestSetupTest.t.sol";
+import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
 
 // ================================================================
 // │                        INITIALIZE TESTS                      │

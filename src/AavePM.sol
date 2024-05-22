@@ -240,13 +240,13 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
     ///      In normal operation, the contract shouldn't hold ETH,
     ///      as it is used to swap for wstETH.
     ///      It is called without an argument to rescue the entire balance.
-    ///      Caller must have `OWNER_ROLE`.
-    ///      The use of nonReentrant isn't required due to the `OWNER_ROLE` restriction and it drains 100% of the ETH balance anyway.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      The use of nonReentrant isn't required due to the `rescueAddress` check for the `OWNER_ROLE`
+    ///      and it drains 100% of the ETH balance anyway.
     ///      Throws `AavePM__RescueEthFailed` if the ETH transfer fails.
     ///      Emits a `RescueEth` event.
     /// @param rescueAddress The address to send the rescued ETH to.
-    function rescueEth(address rescueAddress) external onlyRole(OWNER_ROLE) {
-        // TODO: To make this easier to use, it could be called by a manager address, but only sendable to an owner.
+    function rescueEth(address rescueAddress) external onlyRole(MANAGER_ROLE) {
         // Check if the rescueAddress is an owner
         if (!hasRole(OWNER_ROLE, rescueAddress)) revert AavePM__RescueAddressNotAnOwner();
 

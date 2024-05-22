@@ -59,7 +59,13 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
     /// @dev The value is hardcoded in the contract to prevent the position from
     ///      being liquidated cause by accidentally setting a low target.
     ///      A contract upgrade is required to change this value.
-    uint16 private constant HEALTH_FACTOR_TARGET_MINIMUM = 200;
+    uint16 private constant HEALTH_FACTOR_TARGET_MINIMUM = 200; // 2.00
+
+    /// @notice The maximum Slippage Tolerance.
+    /// @dev The value is hardcoded in the contract to prevent terrible trades
+    ///      from occurring due to a high slippage tolerance.
+    ///      A contract upgrade is required to change this value.
+    uint16 private constant SLIPPAGE_TOLERANCE_MAXIMUM = 200; // 0.5%
 
     /// @notice The divisor for the Aave Health Factor.
     /// @dev The Aave Health Factor is a value with 18 decimal places.
@@ -194,11 +200,11 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
     }
 
     /// @notice Update the Health Factor target.
-    /// @dev Caller must have `OWNER_ROLE`.
+    /// @dev Caller must have `MANAGER_ROLE`.
     ///      Emits a `HealthFactorTargetUpdated` event.
     /// @param _healthFactorTarget The new Health Factor target.
-    function updateHealthFactorTarget(uint16 _healthFactorTarget) external onlyRole(OWNER_ROLE) {
-        // Should be different from the current healthFactorTarget
+    function updateHealthFactorTarget(uint16 _healthFactorTarget) external onlyRole(MANAGER_ROLE) {
+        // Should be different from the current s_healthFactorTarget
         if (s_healthFactorTarget == _healthFactorTarget) revert AavePM__HealthFactorUnchanged();
 
         // New healthFactorTarget must be greater than the HEALTH_FACTOR_TARGET_MINIMUM.
@@ -209,7 +215,21 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
         s_healthFactorTarget = _healthFactorTarget;
     }
 
-    // TODO: Add update s_slippageTolerance function
+    /// @notice Update the Slippage Tolerance.
+    /// @dev Caller must have `MANAGER_ROLE`.
+    ///      Emits a `SlippageToleranceUpdated` event.
+    /// @param _slippageTolerance The new Slippage Tolerance.
+    function updateSlippageTolerance(uint16 _slippageTolerance) external onlyRole(MANAGER_ROLE) {
+        // Should be different from the current s_slippageTolerance
+        if (s_slippageTolerance == _slippageTolerance) revert AavePM__SlippageToleranceUnchanged();
+
+        // New _slippageTolerance must be less than the SLIPPAGE_TOLERANCE_MAXIMUM.
+        // Failsafe to prevent terrible trades occurring due to a high slippage tolerance.
+        if (_slippageTolerance > SLIPPAGE_TOLERANCE_MAXIMUM) revert AavePM__SlippageToleranceAboveMaximum();
+
+        emit SlippageToleranceUpdated(s_slippageTolerance, _slippageTolerance);
+        s_slippageTolerance = _slippageTolerance;
+    }
 
     // ================================================================
     // │                        FUNCTIONS - ETH                       │
@@ -318,18 +338,25 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
         return HEALTH_FACTOR_TARGET_MINIMUM;
     }
 
-    /// @notice Getter function to get the Aave Health Factor divisor.
-    /// @dev Public function to allow anyone to view the Aave Health Factor divisor value.
-    /// @return aaveHealthFactorDivisor The Aave Health Factor divisor value.
-    function getAaveHealthFactorDivisor() public pure returns (uint256 aaveHealthFactorDivisor) {
-        return AAVE_HEALTH_FACTOR_DIVISOR;
-    }
-
     /// @notice Getter function to get the Slippage Tolerance.
     /// @dev Public function to allow anyone to view the Slippage Tolerance value.
     /// @return slippageTolerance The Slippage Tolerance value.
     function getSlippageTolerance() public view returns (uint16 slippageTolerance) {
         return s_slippageTolerance;
+    }
+
+    /// @notice Getter function to get the Slippage Tolerance maximum.
+    /// @dev Public function to allow anyone to view the Slippage Tolerance maximum value.
+    /// @return slippageToleranceMaximum The Slippage Tolerance maximum value.
+    function getSlippageToleranceMaximum() public pure returns (uint16 slippageToleranceMaximum) {
+        return HEALTH_FACTOR_TARGET_MINIMUM;
+    }
+
+    /// @notice Getter function to get the Aave Health Factor divisor.
+    /// @dev Public function to allow anyone to view the Aave Health Factor divisor value.
+    /// @return aaveHealthFactorDivisor The Aave Health Factor divisor value.
+    function getAaveHealthFactorDivisor() public pure returns (uint256 aaveHealthFactorDivisor) {
+        return AAVE_HEALTH_FACTOR_DIVISOR;
     }
 
     /// @notice Getter function to get the contract's balance.

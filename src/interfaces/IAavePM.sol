@@ -12,6 +12,8 @@ interface IAavePM {
     error AavePM__RescueAddressNotAnOwner();
     error AavePM__HealthFactorUnchanged();
     error AavePM__HealthFactorBelowMinimum();
+    error AavePM__SlippageToleranceUnchanged();
+    error AavePM__SlippageToleranceAboveMaximum();
 
     // ================================================================
     // │                           STRUCTS                            │
@@ -46,6 +48,7 @@ interface IAavePM {
         string indexed identifier, address indexed newUniswapV3PoolAddress, uint24 indexed newUniswapV3PoolFee
     );
     event HealthFactorTargetUpdated(uint16 previousHealthFactorTarget, uint16 newHealthFactorTarget);
+    event SlippageToleranceUpdated(uint16 previousSlippageTolerance, uint16 newSlippageTolerance);
 
     // ================================================================
     // │                    FUNCTIONS - INITIALIZER                   │
@@ -70,6 +73,7 @@ interface IAavePM {
         uint24 _newUniswapV3PoolFee
     ) external;
     function updateHealthFactorTarget(uint16 _healthFactorTarget) external;
+    function updateSlippageTolerance(uint16 _slippageTolerance) external;
 
     // ================================================================
     // │                        FUNCTIONS - ETH                       │
@@ -95,8 +99,9 @@ interface IAavePM {
         returns (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee);
     function getHealthFactorTarget() external view returns (uint16 healthFactorTarget);
     function getHealthFactorTargetMinimum() external pure returns (uint16 healthFactorTargetMinimum);
-    function getAaveHealthFactorDivisor() external pure returns (uint256 aaveHealthFactorDivisor);
     function getSlippageTolerance() external view returns (uint16 slippageTolerance);
+    function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
+    function getAaveHealthFactorDivisor() external pure returns (uint256 aaveHealthFactorDivisor);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function getAaveAccountData()
         external

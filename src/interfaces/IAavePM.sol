@@ -75,7 +75,6 @@ interface IAavePM {
     // │                    FUNCTIONS - ETH / WETH                    │
     // ================================================================
     function rescueEth(address rescueAddress) external;
-    function wrapETHToWETH() external payable;
 
     // ================================================================
     // │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │

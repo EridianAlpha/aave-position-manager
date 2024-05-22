@@ -14,6 +14,7 @@ import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Po
 import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
 // Interface Imports
+import {IWETH9} from "./interfaces/IWETH9.sol";
 import {IAavePM} from "./interfaces/IAavePM.sol";
 import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 
@@ -82,6 +83,17 @@ contract TokenSwaps {
         TransferHelper.safeApprove(params.tokenIn, address(swapRouter), currentBalance);
         amountOut = swapRouter.exactInputSingle(params);
         return amountOut;
+    }
+
+    /// @notice // TODO: Add comment
+    function _wrapETHToWETH() internal {
+        IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
+    }
+
+    /// @notice // TODO: Add comment
+    function _unwrapWETHToETH() internal {
+        IAavePM aavePM = IAavePM(address(this));
+        IWETH9(aavePM.getTokenAddress("WETH")).withdraw(aavePM.getContractBalance("WETH"));
     }
 
     // ================================================================

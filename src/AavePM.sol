@@ -18,7 +18,6 @@ import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/acce
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 // Interface Imports
-import {IWETH9} from "./interfaces/IWETH9.sol";
 import {IAavePM} from "./interfaces/IAavePM.sol";
 
 // ================================================================
@@ -234,16 +233,6 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
         emit EthRescued(rescueAddress, getContractBalance("ETH"));
         (bool callSuccess,) = rescueAddress.call{value: getContractBalance("ETH")}("");
         if (!callSuccess) revert AavePM__RescueEthFailed();
-    }
-
-    /// @notice // TODO: Move to inherited contract and make internal
-    function wrapETHToWETH() public payable {
-        IWETH9(s_tokenAddresses["WETH"]).deposit{value: address(this).balance}();
-    }
-
-    /// @notice // TODO: Add comment
-    function unwrapWETHToETH() public {
-        IWETH9(s_tokenAddresses["WETH"]).withdraw(getContractBalance("WETH"));
     }
 
     // ================================================================

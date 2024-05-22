@@ -7,8 +7,7 @@ import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 import {IAavePM} from "../src/interfaces/IAavePM.sol";
 
 contract HelperConfig is Script {
-    // Added to remove this whole contract from coverage report.
-    function test() public {}
+    function test() public {} // Added to remove this whole contract from coverage report.
 
     address public aavePoolAddress;
     address public aaveOracleAddress;

@@ -6,8 +6,7 @@ import {console} from "forge-std/console.sol";
 import {Script, console} from "forge-std/Script.sol";
 
 contract HelperFunctions is Script {
-    // Added to remove this whole contract from coverage report.
-    function test() public {}
+    function test() public {} // Added to remove this whole contract from coverage report.
 
     function parseHexString(string memory _a) internal pure returns (address _parsedAddress) {
         bytes memory tmp = bytes(_a);

@@ -31,10 +31,10 @@ interface IAavePM {
         address poolAddress;
         uint24 fee;
     }
+
     // ================================================================
     // │                            EVENTS                            │
     // ================================================================
-
     event EthRescued(address indexed to, uint256 amount);
     event ContractAddressUpdated(
         string indexed identifier, address indexed previousContractAddress, address indexed newContractAddress
@@ -72,7 +72,7 @@ interface IAavePM {
     function updateHealthFactorTarget(uint16 _healthFactorTarget) external;
 
     // ================================================================
-    // │                    FUNCTIONS - ETH / WETH                    │
+    // │                        FUNCTIONS - ETH                       │
     // ================================================================
     function rescueEth(address rescueAddress) external;
 

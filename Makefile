@@ -116,9 +116,6 @@ send-ETH-script:
 wrap-ETH-WETH-script:
 	@forge script script/Interactions.s.sol:WrapETHToWETH ${NETWORK_ARGS} -vvvv
 
-unwrap-WETH-ETH-script:
-	@forge script script/Interactions.s.sol:UnwrapWETHToETH ${NETWORK_ARGS} -vvvv
-
 swap-ETH-USDC-script:
 	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "USDC/ETH" "ETH" "USDC"
 

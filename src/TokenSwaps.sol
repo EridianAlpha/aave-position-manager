@@ -90,12 +90,6 @@ contract TokenSwaps {
         IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
     }
 
-    /// @notice // TODO: Add comment
-    function _unwrapWETHToETH() internal {
-        IAavePM aavePM = IAavePM(address(this));
-        IWETH9(aavePM.getTokenAddress("WETH")).withdraw(aavePM.getContractBalance("WETH"));
-    }
-
     // ================================================================
     // │                   FUNCTIONS - CALCULATIONS                   │
     // ================================================================

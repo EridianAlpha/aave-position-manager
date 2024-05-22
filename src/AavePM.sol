@@ -6,8 +6,7 @@ pragma solidity 0.8.24;
 // ================================================================
 
 // Inherited Contract Imports
-import {AaveFunctions} from "./AaveFunctions.sol";
-import {AaveCalculations} from "./AaveCalculations.sol";
+import {Rebalance} from "./Rebalance.sol";
 
 // OpenZeppelin Imports
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -29,14 +28,7 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha
 /// @notice A contract to manage positions on Aave.
-contract AavePM is
-    IAavePM,
-    AaveFunctions,
-    AaveCalculations,
-    Initializable,
-    AccessControlUpgradeable,
-    UUPSUpgradeable
-{
+contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     // ================================================================
     // │                        STATE VARIABLES                       │
     // ================================================================
@@ -74,7 +66,7 @@ contract AavePM is
     /// @dev The Aave Health Factor is a value with 18 decimal places.
     ///      This divisor is used to scale the Health Factor to 2 decimal places.
     //       Used to convert e.g. 2000003260332359246 into 200.
-    uint256 constant AAVE_HEALTH_FACTOR_DIVISOR = 1e16;
+    uint256 private constant AAVE_HEALTH_FACTOR_DIVISOR = 1e16;
 
     // ================================================================
     // │                           MODIFIERS                          │
@@ -244,13 +236,13 @@ contract AavePM is
         if (!callSuccess) revert AavePM__RescueEthFailed();
     }
 
-    /// @notice // TODO: Add comment
-    function wrapETHToWETH() internal {
+    /// @notice // TODO: Move to inherited contract and make internal
+    function wrapETHToWETH() public payable {
         IWETH9(s_tokenAddresses["WETH"]).deposit{value: address(this).balance}();
     }
 
     /// @notice // TODO: Add comment
-    function unwrapWETHToETH() internal {
+    function unwrapWETHToETH() public {
         IWETH9(s_tokenAddresses["WETH"]).withdraw(getContractBalance("WETH"));
     }
 
@@ -265,84 +257,7 @@ contract AavePM is
     ///      If the health factor is below the target, it repays debt to increase the health factor.
     ///      If the health factor is above the target, it borrows more USDC and reinvests.
     function rebalance() public onlyRole(MANAGER_ROLE) {
-        // TODO: Could this be a simple public function that calls an internal function on an inherited contract?
-        // This would make the main contract much cleaner and easier to read.
-        // So the AavePM contract would just be state, updates to state, and the functions to call logic from inherited contract.
-
-        // Convert any existing tokens and supply to Aave.
-        if (getContractBalance("ETH") > 0) wrapETHToWETH();
-        if (getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");
-        if (getContractBalance("wstETH") > 0) {
-            _aaveSupply(s_contractAddresses["aavePool"], s_tokenAddresses["wstETH"], getContractBalance("wstETH"));
-        }
-
-        // Get the current Aave account data.
-        (
-            uint256 totalCollateralBase,
-            uint256 totalDebtBase,
-            ,
-            uint256 currentLiquidationThreshold,
-            ,
-            uint256 initialHealthFactor
-        ) = getAaveAccountData();
-
-        // Scale the initial health factor to 2 decimal places.
-        uint256 initialHealthFactorScaled = initialHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
-
-        // Get the current health factor target.
-        uint16 healthFactorTarget = getHealthFactorTarget();
-
-        // Calculate the maximum amount of USDC that can be borrowed.
-        uint256 maxBorrowUSDC =
-            _calculateMaxBorrowUSDC(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget);
-
-        // TODO: Calculate this elsewhere.
-        uint16 healthFactorTargetRange = 10;
-
-        // Get data from state
-        address aavePoolAddress = s_contractAddresses["aavePool"];
-        address wstETHAddress = s_tokenAddresses["wstETH"];
-        address usdcAddress = s_tokenAddresses["USDC"];
-
-        if (initialHealthFactorScaled < (healthFactorTarget - healthFactorTargetRange)) {
-            // If the health factor is below the target, repay debt to increase the health factor.
-
-            // Calculate the repayment amount required to reach the target health factor.
-            uint256 repaymentAmountUSDC = totalDebtBase - maxBorrowUSDC;
-
-            // Take out a flash loan for the USDC amount needed to repay and rebalance the health factor.
-            // flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
-            IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaymentAmountUSDC / 1e2, bytes(""), 0);
-
-            // Deposit any remaining dust to Aave.
-            // TODO: Set a lower limit for dust so it doesn't cost more in gas to deposit than the amount.
-            if (getContractBalance("wstETH") > 0) {
-                _aaveSupply(aavePoolAddress, wstETHAddress, getContractBalance("wstETH"));
-            }
-            if (getContractBalance("USDC") > 0) {
-                _aaveRepayDebt(aavePoolAddress, usdcAddress, getContractBalance("USDC"));
-            }
-        } else if (initialHealthFactorScaled > healthFactorTarget + healthFactorTargetRange) {
-            // If the health factor is above the target, borrow more USDC and reinvest.
-
-            // Calculate the additional amount to borrow to reach the target health factor.
-            uint256 additionalBorrowUSDC = maxBorrowUSDC - totalDebtBase;
-
-            // _aaveBorrow input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount.
-            uint256 borrowAmountUSDC = additionalBorrowUSDC / 1e2;
-            _aaveBorrow(aavePoolAddress, usdcAddress, borrowAmountUSDC);
-
-            // Swap borrowed USDC ➜ WETH ➜ wstETH then supply to Aave.
-            _swapTokens("USDC/ETH", "USDC", "ETH");
-            _swapTokens("wstETH/ETH", "ETH", "wstETH");
-            _aaveSupply(aavePoolAddress, wstETHAddress, getContractBalance("wstETH"));
-        }
-
-        // Safety check to ensure the health factor is above the minimum target.
-        // TODO: Improve check.
-        (,,,,, uint256 endHealthFactor) = getAaveAccountData();
-        uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
-        if (endHealthFactorScaled < (HEALTH_FACTOR_TARGET_MINIMUM - 1)) revert AavePM__HealthFactorBelowMinimum();
+        _rebalance();
     }
 
     // ================================================================
@@ -411,6 +326,13 @@ contract AavePM is
     /// @return healthFactorTargetMinimum The Health Factor Target minimum value.
     function getHealthFactorTargetMinimum() public pure returns (uint16 healthFactorTargetMinimum) {
         return HEALTH_FACTOR_TARGET_MINIMUM;
+    }
+
+    /// @notice Getter function to get the Aave Health Factor divisor.
+    /// @dev Public function to allow anyone to view the Aave Health Factor divisor value.
+    /// @return aaveHealthFactorDivisor The Aave Health Factor divisor value.
+    function getAaveHealthFactorDivisor() public pure returns (uint256 aaveHealthFactorDivisor) {
+        return AAVE_HEALTH_FACTOR_DIVISOR;
     }
 
     /// @notice Getter function to get the Slippage Tolerance.

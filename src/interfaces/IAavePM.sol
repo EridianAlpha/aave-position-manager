@@ -75,6 +75,7 @@ interface IAavePM {
     // │                    FUNCTIONS - ETH / WETH                    │
     // ================================================================
     function rescueEth(address rescueAddress) external;
+    function wrapETHToWETH() external payable;
 
     // ================================================================
     // │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │
@@ -94,7 +95,8 @@ interface IAavePM {
         view
         returns (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee);
     function getHealthFactorTarget() external view returns (uint16 healthFactorTarget);
-    function getHealthFactorTargetMinimum() external view returns (uint16 healthFactorTargetMinimum);
+    function getHealthFactorTargetMinimum() external pure returns (uint16 healthFactorTargetMinimum);
+    function getAaveHealthFactorDivisor() external pure returns (uint256 aaveHealthFactorDivisor);
     function getSlippageTolerance() external view returns (uint16 slippageTolerance);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function getAaveAccountData()

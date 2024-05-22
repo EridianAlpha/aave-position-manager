@@ -36,6 +36,7 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         address usdcAddress = aavePM.getTokenAddress("USDC");
 
         // Convert any existing tokens and supply to Aave.
+        // TODO: This should be done in a separate function so it's not always done. Only do it if needed.
         if (aavePM.getContractBalance("ETH") > 0) _wrapETHToWETH();
         if (aavePM.getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");
         if (aavePM.getContractBalance("wstETH") > 0) {

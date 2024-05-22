@@ -8,14 +8,4 @@ import "../../src/AavePM.sol";
 ///      - "test_RescueEthCallFailureThrowsError()"
 ///      This contract causes the .call to fail as it doesn't have a receive()
 ///      or fallback() function so the ETH can't be accepted.
-contract InvalidOwner {
-    AavePM aavePM;
-
-    constructor(address aavePMAddress) {
-        aavePM = AavePM(payable(aavePMAddress));
-    }
-
-    function aavePMRescueAllETH() public payable {
-        aavePM.rescueEth(address(this));
-    }
-}
+contract InvalidOwner {}

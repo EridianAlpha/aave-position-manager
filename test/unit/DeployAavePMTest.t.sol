@@ -3,8 +3,8 @@ pragma solidity 0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
 
-import {AavePM} from "../../src/AavePM.sol";
-import {DeployAavePM} from "../../script/DeployAavePM.s.sol";
+import {AavePM} from "src/AavePM.sol";
+import {DeployAavePM} from "script/DeployAavePM.s.sol";
 
 // ================================================================
 // │                 COMMON SETUP AND CONSTRUCTOR                 │

@@ -15,14 +15,6 @@ contract AavePMGetterTests is AavePMTestSetup {
         assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(INITIAL_VERSION)));
     }
 
-    function test_GetOwnerRole() public {
-        assertEq(aavePM.getRoleHash("OWNER_ROLE"), keccak256("OWNER_ROLE"));
-    }
-
-    function test_GetManagerRole() public {
-        assertEq(aavePM.getRoleHash("MANAGER_ROLE"), keccak256("MANAGER_ROLE"));
-    }
-
     function test_GetAave() public {
         assertEq(aavePM.getContractAddress("aavePool"), s_contractAddresses["aavePool"]);
     }
@@ -53,6 +45,35 @@ contract AavePMGetterTests is AavePMTestSetup {
 
     function test_GetContractBalanceETH() public {
         assertEq(aavePM.getContractBalance("ETH"), address(aavePM).balance);
+    }
+
+    function test_getRoleMembers() public {
+        address[] memory managers = aavePM.getRoleMembers("MANAGER_ROLE");
+        assertEq(managers.length, 3);
+
+        bool isManager1Present = false;
+        bool isOwner1Present = false;
+        bool isAavePMPresent = false;
+
+        for (uint256 i = 0; i < managers.length; i++) {
+            if (managers[i] == manager1) {
+                isManager1Present = true;
+            }
+            if (managers[i] == owner1) {
+                isOwner1Present = true;
+            }
+            if (managers[i] == address(aavePM)) {
+                isAavePMPresent = true;
+            }
+        }
+
+        require(isManager1Present, "Manager1 is not present in the MANAGER_ROLE");
+        require(isOwner1Present, "Owner1 is not present in the MANAGER_ROLE");
+        require(isAavePMPresent, "AavePM is not present in the MANAGER_ROLE");
+
+        address[] memory owners = aavePM.getRoleMembers("OWNER_ROLE");
+        assertEq(owners.length, 1);
+        assertEq(owners[0], owner1);
     }
 
     // TODO: Fix these tests

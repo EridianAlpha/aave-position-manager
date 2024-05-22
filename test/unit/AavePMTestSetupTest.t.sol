@@ -79,16 +79,16 @@ contract AavePMTestSetup is Test {
         }
 
         // Add the owner1 user as the new owner and manager
-        aavePM.grantRole(aavePM.getRoleHash("OWNER_ROLE"), owner1);
-        aavePM.grantRole(aavePM.getRoleHash("MANAGER_ROLE"), owner1);
+        aavePM.grantRole(keccak256("OWNER_ROLE"), owner1);
+        aavePM.grantRole(keccak256("MANAGER_ROLE"), owner1);
 
         // Add the manager1 user as a manager
-        aavePM.grantRole(aavePM.getRoleHash("MANAGER_ROLE"), manager1);
+        aavePM.grantRole(keccak256("MANAGER_ROLE"), manager1);
 
         // Remove the test contract as a manager and then an owner
         // Order matters as you can't remove the manager role if you're not an owner
-        aavePM.revokeRole(aavePM.getRoleHash("MANAGER_ROLE"), address(this));
-        aavePM.revokeRole(aavePM.getRoleHash("OWNER_ROLE"), address(this));
+        aavePM.revokeRole(keccak256("MANAGER_ROLE"), address(this));
+        aavePM.revokeRole(keccak256("OWNER_ROLE"), address(this));
 
         vm.deal(owner1, STARTING_BALANCE);
         vm.deal(manager1, STARTING_BALANCE);
@@ -100,11 +100,11 @@ contract AavePMTestSetup is Test {
         awstETH = IERC20(aavePM.getTokenAddress("awstETH"));
 
         encodedRevert_AccessControlUnauthorizedAccount_Owner = abi.encodeWithSelector(
-            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.getRoleHash("OWNER_ROLE")
+            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, keccak256("OWNER_ROLE")
         );
 
         encodedRevert_AccessControlUnauthorizedAccount_Manager = abi.encodeWithSelector(
-            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, aavePM.getRoleHash("MANAGER_ROLE")
+            IAccessControl.AccessControlUnauthorizedAccount.selector, attacker1, keccak256("MANAGER_ROLE")
         );
     }
 }

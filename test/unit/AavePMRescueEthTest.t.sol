@@ -55,7 +55,7 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         InvalidOwner invalidOwner = new InvalidOwner();
 
         // Add invalidOwner to the owner role.
-        aavePM.grantRole(aavePM.getRoleHash("OWNER_ROLE"), address(invalidOwner));
+        aavePM.grantRole(keccak256("OWNER_ROLE"), address(invalidOwner));
 
         // Attempt to rescue ETH to the invalidOwner contract, which will fail.
         vm.expectRevert(IAavePM.AavePM__RescueEthFailed.selector);

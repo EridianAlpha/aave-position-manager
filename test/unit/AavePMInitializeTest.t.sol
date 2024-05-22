@@ -10,10 +10,10 @@ contract AavePMInitializeTests is AavePMTestSetup {
     function test_Initialize() public {
         assertEq(aavePM.getCreator(), msg.sender);
 
-        assert(aavePM.hasRole(aavePM.getRoleHash("OWNER_ROLE"), owner1));
-        assert(aavePM.getRoleAdmin(aavePM.getRoleHash("OWNER_ROLE")) == aavePM.getRoleHash("OWNER_ROLE"));
+        assert(aavePM.hasRole(keccak256("OWNER_ROLE"), owner1));
+        assert(aavePM.getRoleAdmin(keccak256("OWNER_ROLE")) == keccak256("OWNER_ROLE"));
 
-        assert(aavePM.hasRole(aavePM.getRoleHash("MANAGER_ROLE"), owner1));
-        assert(aavePM.getRoleAdmin(aavePM.getRoleHash("MANAGER_ROLE")) == aavePM.getRoleHash("OWNER_ROLE"));
+        assert(aavePM.hasRole(keccak256("MANAGER_ROLE"), owner1));
+        assert(aavePM.getRoleAdmin(keccak256("MANAGER_ROLE")) == keccak256("OWNER_ROLE"));
     }
 }

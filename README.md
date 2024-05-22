@@ -8,6 +8,8 @@
 
 * [1. Overview](#1-overview)
   * [1.1. Key Functions](#11-key-functions)
+    * [1.1.1. Owner Functions](#111-owner-functions)
+    * [1.1.2. Manager Functions](#112-manager-functions)
 * [2. WebApp](#2-webapp)
 * [3. Installation](#3-installation)
   * [3.1. Clone repository](#31-clone-repository)
@@ -42,12 +44,21 @@ A smart contract manager for Aave positions.
 
 ### 1.1. Key Functions
 
-| Function          | Restrictions   | Description                                               |
-| ----------------- | -------------- | --------------------------------------------------------- |
-| deposit()         | `MANAGER_ROLE` | Deposit ETH or wstETH.                                    |
-| rebalance()       | `MANAGER_ROLE` | Rebalance the Aave position to the desired Health Factor. |
-| setHealthFactor() | `OWNER_ROLE`   | Set the desired Health Factor.                            |
-| withdraw()        | `OWNER_ROLE`   | Withdraw wstETH while maintaining desired Health Factor.  |
+#### 1.1.1. Owner Functions
+
+| Function        | Restrictions | Description                    |
+| --------------- | ------------ | ------------------------------ |
+| setHealthFactor | `OWNER_ROLE` | Set the desired Health Factor. |
+
+#### 1.1.2. Manager Functions
+
+| Function              | Restrictions   | Description                                                                 |
+| --------------------- | -------------- | --------------------------------------------------------------------------- |
+| borrowAndWithdrawUSDC | `MANAGER_ROLE` | Borrow USDC from Aave and withdraw to the specified owner.                  |
+| withdrawWstETH        | `MANAGER_ROLE` | Withdraw all wstETH from the contract to the specified owner.               |
+| repayUSDC             | `MANAGER_ROLE` | Repay USDC to Aave using all the USDC in the contract.                      |
+| withdrawTokens        | `MANAGER_ROLE` | Withdraw all the specified tokens from the contract to the specified owner. |
+| rebalance             | `MANAGER_ROLE` | Rebalance the Aave position to the desired Health Factor.                   |
 
 ## 2. WebApp
 

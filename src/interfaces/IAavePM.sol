@@ -90,7 +90,6 @@ interface IAavePM {
     // ================================================================
     function getCreator() external view returns (address creator);
     function getVersion() external pure returns (string memory version);
-    function getRoleHash(string memory) external pure returns (bytes32 roleHash);
     function getContractAddress(string memory) external view returns (address contractAddress);
     function getTokenAddress(string memory) external view returns (address tokenAddress);
     function getUniswapV3Pool(string memory)
@@ -103,6 +102,7 @@ interface IAavePM {
     function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
     function getAaveHealthFactorDivisor() external pure returns (uint256 aaveHealthFactorDivisor);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
+    function getRoleMembers(string memory _roleString) external view returns (address[] memory);
     function getAaveAccountData()
         external
         view

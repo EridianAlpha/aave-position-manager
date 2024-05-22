@@ -12,7 +12,8 @@ import {Rebalance} from "./Rebalance.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {AccessControlEnumerableUpgradeable} from
+    "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
 
 // Aave Imports
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
@@ -27,7 +28,7 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha
 /// @notice A contract to manage positions on Aave.
-contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, UUPSUpgradeable {
+contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable {
     // ================================================================
     // │                        STATE VARIABLES                       │
     // ================================================================
@@ -76,6 +77,7 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
     // ================================================================
     // │                           MODIFIERS                          │
     // ================================================================
+
     // No modifiers are defined in the contract.
 
     // ================================================================
@@ -117,6 +119,7 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
         uint16 initialHealthFactorTarget,
         uint16 initialSlippageTolerance
     ) public initializer {
+        __AccessControlEnumerable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
@@ -288,13 +291,6 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
         return VERSION;
     }
 
-    /// @notice Getter function to get the role hash of a specified role.
-    /// @dev Public function to allow anyone to generate a role hash.
-    /// @return roleHash The role hash corresponding to the given role.
-    function getRoleHash(string memory role) public pure returns (bytes32 roleHash) {
-        return keccak256(abi.encodePacked(role));
-    }
-
     /// @notice Generic getter function to get the contract address for a given identifier.
     /// @dev Public function to allow anyone to view the contract address for the given identifier.
     /// @param _identifier The identifier for the contract address.
@@ -359,10 +355,10 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
         return AAVE_HEALTH_FACTOR_DIVISOR;
     }
 
-    /// @notice Getter function to get the contract's balance.
-    /// @dev Public function to allow anyone to view the contract's balance.
+    /// @notice Getter function to get the balance of the provided identifier.
+    /// @dev Public function to allow anyone to view the balance of the provided identifier.
     /// @param _identifier The identifier for the token address.
-    /// @return contractBalance The contract's balance of the specified token identifier.
+    /// @return contractBalance The balance of the specified token identifier.
     function getContractBalance(string memory _identifier) public view returns (uint256 contractBalance) {
         if (keccak256(abi.encodePacked(_identifier)) == keccak256(abi.encodePacked("ETH"))) {
             return contractBalance = address(this).balance;
@@ -371,14 +367,28 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlUpgradeable, 
         }
     }
 
+    /// @notice Getter function to get all the members of a role.
+    /// @dev Public function to allow anyone to view the members of a role.
+    /// @param _roleString The identifier for the role.
+    /// @return members The array of addresses that are members of the role.
+    function getRoleMembers(string memory _roleString) public view returns (address[] memory) {
+        bytes32 _role = keccak256(abi.encodePacked(_roleString));
+        uint256 count = getRoleMemberCount(_role);
+        address[] memory members = new address[](count);
+        for (uint256 i = 0; i < count; i++) {
+            members[i] = getRoleMember(_role, i);
+        }
+        return members;
+    }
+
     /// @notice Getter function to get the Aave user account data.
     /// @dev Public function to allow anyone to view the Aave user account data.
-    /// @return totalCollateralBase The total collateral in the user's account.
-    /// @return totalDebtBase The total debt in the user's account.
-    /// @return availableBorrowsBase The available borrows in the user's account.
-    /// @return currentLiquidationThreshold The current liquidation threshold in the user's account.
-    /// @return ltv The loan-to-value ratio in the user's account.
-    /// @return healthFactor The health factor in the user's account.
+    /// @return totalCollateralBase The total collateral.
+    /// @return totalDebtBase The total debt.
+    /// @return availableBorrowsBase The available borrows.
+    /// @return currentLiquidationThreshold The current liquidation threshold.
+    /// @return ltv The loan-to-value ratio.
+    /// @return healthFactor The health factor.
     function getAaveAccountData()
         public
         view

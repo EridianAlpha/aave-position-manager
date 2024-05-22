@@ -3,7 +3,7 @@
 # ================================================================
 -include .env
 
-.PHONY: clean help install snapshot format anvil ethernal
+.PHONY: clean help install ethernal
 
 help:
 	@echo "Usage:"
@@ -12,11 +12,6 @@ help:
 clean 		:; forge clean
 update 		:; forge update
 build 		:; forge build
-snapshot 	:; forge snapshot
-format 		:; forge fmt
-
-# Configure Anvil
-anvil 		:; anvil -m 'test test test test test test test test test test test junk' --steps-tracing  #--block-time 1
 
 # Configure Network Variables
 anvil-network:
@@ -116,26 +111,8 @@ send-ETH-script:
 wrap-ETH-WETH-script:
 	@forge script script/Interactions.s.sol:WrapETHToWETH ${NETWORK_ARGS} -vvvv
 
-swap-ETH-USDC-script:
-	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "USDC/ETH" "ETH" "USDC"
-
-swap-USDC-WETH-script:
-	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "USDC/ETH" "USDC" "WETH"
-
-swap-ETH-wstETH-script:
-	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "wstETH/ETH" "ETH" "wstETH"
-
-swap-wstETH-ETH-script:
-	@forge script script/Interactions.s.sol:SwapTokensAavePM ${NETWORK_ARGS} -vvvv --sig "run(string, string, string)" "wstETH/ETH" "wstETH" "ETH"
-
 update-hft-script:
 	@forge script script/Interactions.s.sol:UpdateHFTAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint16)" ${MAKE_CLI_INPUT_VALUE}
-
-aave-supply-wstETH-script:
-	@forge script script/Interactions.s.sol:SupplyAavePM ${NETWORK_ARGS} -vvvv
-
-aave-borrow-USDC-script:
-	@forge script script/Interactions.s.sol:BorrowAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint256)" ${MAKE_CLI_INPUT_VALUE}
 
 rebalance-script:
 	@forge script script/Interactions.s.sol:RebalanceAavePM ${NETWORK_ARGS} -vvvv
@@ -151,7 +128,6 @@ getAaveAccountData-script:
 # ================================================================
 send-ETH: ask-for-value convert-value-to-wei store-value send-ETH-script remove-value
 update-hft: ask-for-value store-value update-hft-script remove-value
-aave-borrow-USDC: ask-for-value convert-value-to-USDC store-value aave-borrow-USDC-script remove-value
 getContractBalance: ask-for-value store-value getContractBalance-script remove-value
 
 # ================================================================
@@ -159,15 +135,7 @@ getContractBalance: ask-for-value store-value getContractBalance-script remove-v
 # ================================================================
 deploy-anvil: anvil-network deploy-script
 send-ETH-anvil: anvil-network send-ETH
-wrap-ETH-WETH-anvil: anvil-network wrap-ETH-WETH-script
-unwrap-WETH-ETH-anvil: anvil-network unwrap-WETH-ETH-script
-swap-ETH-USDC-anvil: anvil-network swap-ETH-USDC-script
-swap-USDC-WETH-anvil: anvil-network swap-USDC-WETH-script
-swap-ETH-wstETH-anvil: anvil-network swap-ETH-wstETH-script
-swap-wstETH-ETH-anvil: anvil-network swap-wstETH-ETH-script
 update-hft-anvil: anvil-network update-hft
-aave-supply-wstETH-anvil: anvil-network aave-supply-wstETH-script
-aave-borrow-USDC-anvil: anvil-network aave-borrow-USDC
 rebalance-anvil: anvil-network rebalance-script
 getContractBalance-anvil: anvil-network getContractBalance
 getAaveAccountData-anvil: anvil-network getAaveAccountData-script

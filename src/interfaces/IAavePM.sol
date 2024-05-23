@@ -103,15 +103,4 @@ interface IAavePM {
     function getAaveHealthFactorDivisor() external pure returns (uint256 aaveHealthFactorDivisor);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function getRoleMembers(string memory _roleString) external view returns (address[] memory);
-    function getAaveAccountData()
-        external
-        view
-        returns (
-            uint256 totalCollateralBase,
-            uint256 totalDebtBase,
-            uint256 availableBorrowsBase,
-            uint256 currentLiquidationThreshold,
-            uint256 ltv,
-            uint256 healthFactor
-        );
 }

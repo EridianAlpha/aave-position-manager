@@ -55,24 +55,3 @@ contract GetContractBalanceAavePM is Script, Setup {
         return contractBalance;
     }
 }
-
-contract GetAaveAccountDataAavePM is Script, Setup {
-    function run()
-        public
-        returns (
-            uint256 totalCollateralBase,
-            uint256 totalDebtBase,
-            uint256 availableBorrowsBase,
-            uint256 currentLiquidationThreshold,
-            uint256 ltv,
-            uint256 healthFactor
-        )
-    {
-        vm.startBroadcast();
-        (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor) =
-            aavePM.getAaveAccountData();
-        vm.stopBroadcast();
-        return
-            (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor);
-    }
-}

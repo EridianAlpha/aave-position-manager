@@ -380,28 +380,4 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
         }
         return members;
     }
-
-    /// @notice Getter function to get the Aave user account data.
-    /// @dev Public function to allow anyone to view the Aave user account data.
-    /// @return totalCollateralBase The total collateral.
-    /// @return totalDebtBase The total debt.
-    /// @return availableBorrowsBase The available borrows.
-    /// @return currentLiquidationThreshold The current liquidation threshold.
-    /// @return ltv The loan-to-value ratio.
-    /// @return healthFactor The health factor.
-    function getAaveAccountData()
-        public
-        view
-        returns (
-            uint256 totalCollateralBase,
-            uint256 totalDebtBase,
-            uint256 availableBorrowsBase,
-            uint256 currentLiquidationThreshold,
-            uint256 ltv,
-            uint256 healthFactor
-        )
-    {
-        (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor) =
-            IPool(s_contractAddresses["aavePool"]).getUserAccountData(address(this));
-    }
 }

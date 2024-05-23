@@ -3,6 +3,8 @@ pragma solidity 0.8.24;
 
 import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
 
+import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
+
 // ================================================================
 // │                         REBALANCE TESTS                      │
 // ================================================================
@@ -15,7 +17,8 @@ contract RebalanceTests is AavePMTestSetup {
 
         aavePM.rebalance();
 
-        (,,,,, uint256 endHealthFactor) = aavePM.getAaveAccountData();
+        (,,,,, uint256 endHealthFactor) =
+            IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address(aavePM));
         uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
 
         require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + 1));
@@ -33,7 +36,8 @@ contract RebalanceTests is AavePMTestSetup {
         vm.startPrank(manager1);
         aavePM.rebalance();
 
-        (,,,,, uint256 endHealthFactor) = aavePM.getAaveAccountData();
+        (,,,,, uint256 endHealthFactor) =
+            IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address(aavePM));
         uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
 
         require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + 1));
@@ -53,7 +57,8 @@ contract RebalanceTests is AavePMTestSetup {
         vm.startPrank(manager1);
         aavePM.rebalance();
 
-        (,,,,, uint256 endHealthFactor) = aavePM.getAaveAccountData();
+        (,,,,, uint256 endHealthFactor) =
+            IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address(aavePM));
         uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
 
         // TODO: These ranges might be too tight

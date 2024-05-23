@@ -32,7 +32,7 @@ contract HelperConfig is Script {
     function getChainVariables() public {
         uint256 chainId = block.chainid;
 
-        if (chainId == 1) {
+        if (chainId == 1 || chainId == 31338) {
             // Mainnet
             aavePoolAddress = vm.envAddress("MAINNET_ADDRESS_AAVE_POOL");
             aaveOracleAddress = vm.envAddress("MAINNET_ADDRESS_AAVE_ORACLE");

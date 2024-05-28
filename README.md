@@ -118,6 +118,8 @@ make coverage-report
 
 ## 6. Upgrades
 
+Upgrade the contract to a new logic implementation while maintaining the same proxy address.
+
 | Chain | Command              |
 | ----- | -------------------- |
 | Anvil | `make upgrade-anvil` |

@@ -4,19 +4,26 @@ pragma solidity 0.8.24;
 import {Script, console} from "forge-std/Script.sol";
 import {DevOpsTools} from "@foundry-devops/src/DevOpsTools.sol";
 
-import {IAavePM} from "src/interfaces/IAavePM.sol";
+import {AavePM} from "src/AavePM.sol";
+
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
+// ================================================================
+// │                             SETUP                            │
+// ================================================================
 contract Setup is Script {
-    IAavePM public aavePM;
+    AavePM public aavePM;
 
     constructor() {
         address _aavePMAddressProxy = DevOpsTools.get_most_recent_deployment("ERC1967Proxy", block.chainid);
         require(_aavePMAddressProxy != address(0), "ERC1967Proxy address is invalid");
-        aavePM = IAavePM(payable(_aavePMAddressProxy));
+        aavePM = AavePM(payable(_aavePMAddressProxy));
     }
 }
 
+// ================================================================
+// │                             FUND                             │
+// ================================================================
 contract FundAavePM is Script, Setup {
     function run(uint256 value) public {
         vm.startBroadcast();
@@ -26,6 +33,21 @@ contract FundAavePM is Script, Setup {
     }
 }
 
+// ================================================================
+// │                            UPGRADE                           │
+// ================================================================
+contract UpgradeAavePM is Script, Setup {
+    function run() public {
+        vm.startBroadcast();
+        AavePM newAavePM = new AavePM();
+        aavePM.upgradeToAndCall(address(newAavePM), "");
+        vm.stopBroadcast();
+    }
+}
+
+// ================================================================
+// │                     FUNCTIONS - UPDATES                      │
+// ================================================================
 contract UpdateHFTAavePM is Script, Setup {
     function run(uint16 value) public {
         vm.startBroadcast();
@@ -42,6 +64,9 @@ contract UpdateSTAavePM is Script, Setup {
     }
 }
 
+// ================================================================
+// │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │
+// ================================================================
 contract RebalanceAavePM is Script, Setup {
     function run() public {
         vm.startBroadcast();
@@ -50,6 +75,9 @@ contract RebalanceAavePM is Script, Setup {
     }
 }
 
+// ================================================================
+// │                       FUNCTIONS - GETTERS                    │
+// ================================================================
 contract GetContractBalanceAavePM is Script, Setup {
     function run(string memory _identifier) public returns (uint256 contractBalance) {
         vm.startBroadcast();

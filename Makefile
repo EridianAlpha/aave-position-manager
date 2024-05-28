@@ -105,6 +105,9 @@ install:
 deploy-script:
 	@forge script script/DeployAavePM.s.sol:DeployAavePM ${NETWORK_ARGS} -vvvv
 
+upgrade-script:
+	@forge script script/Interactions.s.sol:UpgradeAavePM ${NETWORK_ARGS} -vvvv
+
 send-ETH-script: 
 	@forge script script/Interactions.s.sol:FundAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint256)" ${MAKE_CLI_INPUT_VALUE}
 
@@ -135,6 +138,7 @@ getContractBalance: ask-for-value store-value getContractBalance-script remove-v
 # │                         RUN COMMANDS                         │
 # ================================================================
 deploy-anvil: anvil-network deploy-script
+upgrade-anvil: anvil-network upgrade-script
 send-ETH-anvil: anvil-network send-ETH
 update-hft-anvil: anvil-network update-hft
 update-st-anvil: anvil-network update-st

@@ -11,30 +11,22 @@ import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {HelperConfig} from "script/HelperConfig.s.sol";
 import {DeployAavePM} from "script/DeployAavePM.s.sol";
 
-contract AavePMTestSetup is Test {
+contract AavePMTestSetup is Test, AavePM {
     // Added to remove this whole testing file from coverage report.
     function test() public {}
 
     AavePM aavePM;
     HelperConfig helperConfig;
 
-    mapping(string => address) s_contractAddresses;
-    mapping(string => address) s_tokenAddresses;
-    mapping(string => IAavePM.UniswapV3Pool) private s_uniswapV3Pools;
-    uint16 initialHealthFactorTarget;
-
-    string constant INITIAL_VERSION = "0.0.1";
-    string constant UPGRADE_EXAMPLE_VERSION = "0.0.2";
-    uint256 constant GAS_PRICE = 1;
-    uint256 constant SEND_VALUE = 1 ether;
-    uint256 constant STARTING_BALANCE = 10 ether;
-    uint256 constant USDC_BORROW_AMOUNT = 100;
-    uint16 constant INCREASED_HEALTH_FACTOR_TARGET = 300;
-    uint16 constant DECREASED_HEALTH_FACTOR_TARGET = 200;
-    uint16 constant INITIAL_HEALTH_FACTOR_TARGET_MINIMUM = 200;
-    uint24 constant UPDATED_UNISWAPV3_POOL_FEE = 200;
-    uint16 private constant SLIPPAGE_TOLERANCE_MAXIMUM = 200; // 0.5%
-    uint256 constant AAVE_HEALTH_FACTOR_DIVISOR = 1e16; // Used to convert e.g. 2000003260332359246 into 200
+    uint256 internal constant GAS_PRICE = 1;
+    uint256 internal constant STARTING_BALANCE = 10 ether;
+    uint256 internal constant SEND_VALUE = 1 ether;
+    uint256 internal constant USDC_BORROW_AMOUNT = 100;
+    uint24 internal constant UNISWAPV3_POOL_FEE_CHANGE = 100;
+    uint16 internal constant HEALTH_FACTOR_TARGET_CHANGE = 100;
+    uint16 internal constant SLIPPAGE_TOLERANCE_CHANGE = 100;
+    uint16 internal constant REBALANCED_HEALTH_FACTOR_TOLERANCE = 1;
+    string internal constant UPGRADE_EXAMPLE_VERSION = "9.9.9";
 
     // Create users
     address owner1 = makeAddr("owner1");
@@ -50,6 +42,12 @@ contract AavePMTestSetup is Test {
     IERC20 USDC;
     IERC20 awstETH;
 
+    mapping(string => address) s_contractAddresses;
+    mapping(string => address) s_tokenAddresses;
+    mapping(string => IAavePM.UniswapV3Pool) private s_uniswapV3Pools;
+    uint16 initialHealthFactorTarget;
+    uint16 initialSlippageTolerance;
+
     function setUp() external {
         DeployAavePM deployAavePM = new DeployAavePM();
 
@@ -60,6 +58,7 @@ contract AavePMTestSetup is Test {
         IAavePM.TokenAddress[] memory tokenAddresses = config.tokenAddresses;
         IAavePM.UniswapV3Pool[] memory uniswapV3Pools = config.uniswapV3Pools;
         initialHealthFactorTarget = config.initialHealthFactorTarget;
+        initialSlippageTolerance = config.initialSlippageTolerance;
 
         // Convert the contractAddresses array to a mapping
         for (uint256 i = 0; i < contractAddresses.length; i++) {

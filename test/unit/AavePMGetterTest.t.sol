@@ -12,7 +12,7 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetVersion() public {
-        assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(INITIAL_VERSION)));
+        assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(VERSION)));
     }
 
     function test_GetAave() public {
@@ -40,7 +40,11 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_getHealthFactorTargetMinimum() public {
-        assertEq(aavePM.getHealthFactorTargetMinimum(), INITIAL_HEALTH_FACTOR_TARGET_MINIMUM);
+        assertEq(aavePM.getHealthFactorTargetMinimum(), HEALTH_FACTOR_TARGET_MINIMUM);
+    }
+
+    function test_GetSlippageTolerance() public {
+        assertEq(aavePM.getSlippageTolerance(), initialSlippageTolerance);
     }
 
     function test_GetContractBalanceETH() public {

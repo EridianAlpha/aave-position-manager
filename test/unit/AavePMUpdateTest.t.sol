@@ -39,8 +39,9 @@ contract AavePMUpdateTests is AavePMTestSetup {
     }
 
     function test_UpdateUniswapV3Pool() public {
+        (, uint24 initialFee) = aavePM.getUniswapV3Pool("wstETH/ETH");
         address newUniswapV3PoolAddress = makeAddr("newUniswapV3Pool");
-        uint24 newUniswapV3PoolFee = UPDATED_UNISWAPV3_POOL_FEE;
+        uint24 newUniswapV3PoolFee = initialFee + UNISWAPV3_POOL_FEE_CHANGE;
 
         vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Owner);
         vm.prank(attacker1);
@@ -57,14 +58,14 @@ contract AavePMUpdateTests is AavePMTestSetup {
         assertEq(returnedFee, newUniswapV3PoolFee);
     }
 
-    function test_UpdateHealthFactorTarget() public {
-        uint16 newHealthFactorTarget = INCREASED_HEALTH_FACTOR_TARGET;
+    function test_IncreaseHealthFactorTarget() public {
         uint16 previousHealthFactorTarget = aavePM.getHealthFactorTarget();
+        uint16 newHealthFactorTarget = previousHealthFactorTarget + HEALTH_FACTOR_TARGET_CHANGE;
 
         vm.expectEmit();
         emit IAavePM.HealthFactorTargetUpdated(previousHealthFactorTarget, newHealthFactorTarget);
 
-        vm.prank(owner1);
+        vm.prank(manager1);
         aavePM.updateHealthFactorTarget(newHealthFactorTarget);
         assertEq(aavePM.getHealthFactorTarget(), newHealthFactorTarget);
     }
@@ -73,7 +74,7 @@ contract AavePMUpdateTests is AavePMTestSetup {
         uint16 previousHealthFactorTarget = aavePM.getHealthFactorTarget();
 
         vm.expectRevert(IAavePM.AavePM__HealthFactorUnchanged.selector);
-        vm.prank(owner1);
+        vm.prank(manager1);
         aavePM.updateHealthFactorTarget(previousHealthFactorTarget);
     }
 
@@ -81,7 +82,35 @@ contract AavePMUpdateTests is AavePMTestSetup {
         uint16 newHealthFactorTarget = aavePM.getHealthFactorTargetMinimum() - 1;
 
         vm.expectRevert(IAavePM.AavePM__HealthFactorBelowMinimum.selector);
-        vm.prank(owner1);
+        vm.prank(manager1);
         aavePM.updateHealthFactorTarget(newHealthFactorTarget);
+    }
+
+    function test_DecreaseSlippageTolerance() public {
+        uint16 previousSlippageTolerance = aavePM.getSlippageTolerance();
+        uint16 newSlippageTolerance = previousSlippageTolerance - SLIPPAGE_TOLERANCE_CHANGE;
+
+        vm.expectEmit();
+        emit IAavePM.SlippageToleranceUpdated(previousSlippageTolerance, newSlippageTolerance);
+
+        vm.prank(manager1);
+        aavePM.updateSlippageTolerance(newSlippageTolerance);
+        assertEq(aavePM.getSlippageTolerance(), newSlippageTolerance);
+    }
+
+    function test_UpdateSlippageToleranceUnchanged() public {
+        uint16 previousSlippageTolerance = aavePM.getSlippageTolerance();
+
+        vm.expectRevert(IAavePM.AavePM__SlippageToleranceUnchanged.selector);
+        vm.prank(manager1);
+        aavePM.updateSlippageTolerance(previousSlippageTolerance);
+    }
+
+    function test_UpdateSlippageToleranceAboveMaximum() public {
+        uint16 newSlippageTolerance = aavePM.getSlippageToleranceMaximum() + 1;
+
+        vm.expectRevert(IAavePM.AavePM__SlippageToleranceAboveMaximum.selector);
+        vm.prank(manager1);
+        aavePM.updateSlippageTolerance(newSlippageTolerance);
     }
 }

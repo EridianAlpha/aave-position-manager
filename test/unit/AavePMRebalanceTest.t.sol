@@ -19,29 +19,28 @@ contract RebalanceTests is AavePMTestSetup {
 
         (,,,,, uint256 endHealthFactor) =
             IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address(aavePM));
-        uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
+        uint256 endHealthFactorScaled = endHealthFactor / 1e16;
 
-        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + 1));
-        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - 1));
+        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + REBALANCED_HEALTH_FACTOR_TOLERANCE));
+        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - REBALANCED_HEALTH_FACTOR_TOLERANCE));
         vm.stopPrank();
     }
 
     function test_RebalanceHealthFactorDecrease() public {
         test_Rebalance();
 
-        // Update the health factor target
-        vm.prank(owner1);
-        aavePM.updateHealthFactorTarget(DECREASED_HEALTH_FACTOR_TARGET);
-
         vm.startPrank(manager1);
+        // Decrease the health factor target
+        aavePM.updateHealthFactorTarget(HEALTH_FACTOR_TARGET_MINIMUM);
+
         aavePM.rebalance();
 
         (,,,,, uint256 endHealthFactor) =
             IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address(aavePM));
-        uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
+        uint256 endHealthFactorScaled = endHealthFactor / 1e16;
 
-        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + 1));
-        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - 1));
+        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + REBALANCED_HEALTH_FACTOR_TOLERANCE));
+        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - REBALANCED_HEALTH_FACTOR_TOLERANCE));
         vm.stopPrank();
     }
 
@@ -50,20 +49,18 @@ contract RebalanceTests is AavePMTestSetup {
     function test_RebalanceHealthFactorIncrease() public {
         test_Rebalance();
 
-        // Update the health factor target
-        vm.prank(owner1);
-        aavePM.updateHealthFactorTarget(INCREASED_HEALTH_FACTOR_TARGET);
-
         vm.startPrank(manager1);
+        // Increase the health factor target
+        aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() + HEALTH_FACTOR_TARGET_CHANGE);
         aavePM.rebalance();
 
         (,,,,, uint256 endHealthFactor) =
             IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address(aavePM));
-        uint256 endHealthFactorScaled = endHealthFactor / AAVE_HEALTH_FACTOR_DIVISOR;
+        uint256 endHealthFactorScaled = endHealthFactor / 1e16;
 
-        // TODO: These ranges might be too tight
-        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + 1));
-        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - 1));
+        // TODO: These ranges should be set as a global test variable
+        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + REBALANCED_HEALTH_FACTOR_TOLERANCE));
+        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - REBALANCED_HEALTH_FACTOR_TOLERANCE));
         vm.stopPrank();
     }
 }

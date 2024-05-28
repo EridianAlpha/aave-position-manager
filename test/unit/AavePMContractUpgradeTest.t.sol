@@ -17,7 +17,7 @@ contract AavePMContractUpgradeTests is AavePMTestSetup {
         AavePMUpgradeExample aavePMUpgradeExample = new AavePMUpgradeExample();
 
         // Check version before upgrade
-        assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(INITIAL_VERSION)));
+        assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(VERSION)));
 
         // Upgrade
         vm.prank(owner1);
@@ -40,7 +40,7 @@ contract AavePMContractUpgradeTests is AavePMTestSetup {
         // Downgrade
         vm.prank(owner1);
         aavePM.upgradeToAndCall(address(aavePMImplementationV1), "");
-        assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(INITIAL_VERSION)));
+        assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(VERSION)));
     }
 
     function test_InvalidUpgrade() public {

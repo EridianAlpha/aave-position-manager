@@ -3,29 +3,24 @@ pragma solidity 0.8.24;
 
 import {Script, console} from "forge-std/Script.sol";
 import {DevOpsTools} from "@foundry-devops/src/DevOpsTools.sol";
-import {AavePM} from "src/AavePM.sol";
+
+import {IAavePM} from "src/interfaces/IAavePM.sol";
+import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 contract Setup is Script {
-    address public aavePMAddressProxy;
-    AavePM public aavePM;
+    IAavePM public aavePM;
 
     constructor() {
-        // TODO: Can all the .call functions use aavePM instead of aavePMAddressProxy?
-        aavePMAddressProxy = getAavePMAddressProxy();
-        aavePM = AavePM(payable(aavePMAddressProxy));
-    }
-
-    function getAavePMAddressProxy() internal view returns (address) {
         address _aavePMAddressProxy = DevOpsTools.get_most_recent_deployment("ERC1967Proxy", block.chainid);
         require(_aavePMAddressProxy != address(0), "ERC1967Proxy address is invalid");
-        return _aavePMAddressProxy;
+        aavePM = IAavePM(payable(_aavePMAddressProxy));
     }
 }
 
 contract FundAavePM is Script, Setup {
     function run(uint256 value) public {
         vm.startBroadcast();
-        (bool callSuccess,) = aavePMAddressProxy.call{value: value}("");
+        (bool callSuccess,) = address(aavePM).call{value: value}("");
         if (!callSuccess) revert("Failed to send ETH to AavePM");
         vm.stopBroadcast();
     }
@@ -53,5 +48,27 @@ contract GetContractBalanceAavePM is Script, Setup {
         contractBalance = aavePM.getContractBalance(_identifier);
         vm.stopBroadcast();
         return contractBalance;
+    }
+}
+
+contract GetAaveAccountDataAavePM is Script, Setup {
+    function run()
+        public
+        returns (
+            uint256 totalCollateralBase,
+            uint256 totalDebtBase,
+            uint256 availableBorrowsBase,
+            uint256 currentLiquidationThreshold,
+            uint256 ltv,
+            uint256 healthFactor
+        )
+    {
+        vm.startBroadcast();
+        address aavePoolAddress = aavePM.getContractAddress("aavePool");
+        (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor) =
+            IPool(aavePoolAddress).getUserAccountData(address(aavePM));
+        vm.stopBroadcast();
+        return
+            (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor);
     }
 }

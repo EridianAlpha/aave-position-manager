@@ -108,9 +108,6 @@ deploy-script:
 send-ETH-script: 
 	@forge script script/Interactions.s.sol:FundAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint256)" ${MAKE_CLI_INPUT_VALUE}
 
-wrap-ETH-WETH-script:
-	@forge script script/Interactions.s.sol:WrapETHToWETH ${NETWORK_ARGS} -vvvv
-
 update-hft-script:
 	@forge script script/Interactions.s.sol:UpdateHFTAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint16)" ${MAKE_CLI_INPUT_VALUE}
 

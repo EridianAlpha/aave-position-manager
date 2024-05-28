@@ -49,30 +49,30 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
 
     /// @notice The version of the contract.
     /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
-    string private constant VERSION = "0.0.1";
+    string internal constant VERSION = "0.0.1";
 
     /// @notice The role hashes for the contract.
     /// @dev Two independent roles are defined: `OWNER_ROLE` and `MANAGER_ROLE`.
-    bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE");
-    bytes32 private constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
+    bytes32 internal constant OWNER_ROLE = keccak256("OWNER_ROLE");
+    bytes32 internal constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
     /// @notice The minimum Health Factor target.
     /// @dev The value is hardcoded in the contract to prevent the position from
     ///      being liquidated cause by accidentally setting a low target.
     ///      A contract upgrade is required to change this value.
-    uint16 private constant HEALTH_FACTOR_TARGET_MINIMUM = 200; // 2.00
+    uint16 internal constant HEALTH_FACTOR_TARGET_MINIMUM = 200; // 2.00
 
     /// @notice The maximum Slippage Tolerance.
     /// @dev The value is hardcoded in the contract to prevent terrible trades
     ///      from occurring due to a high slippage tolerance.
     ///      A contract upgrade is required to change this value.
-    uint16 private constant SLIPPAGE_TOLERANCE_MAXIMUM = 200; // 0.5%
+    uint16 internal constant SLIPPAGE_TOLERANCE_MAXIMUM = 200; // 0.5%
 
     /// @notice The divisor for the Aave Health Factor.
     /// @dev The Aave Health Factor is a value with 18 decimal places.
     ///      This divisor is used to scale the Health Factor to 2 decimal places.
     //       Used to convert e.g. 2000003260332359246 into 200.
-    uint256 private constant AAVE_HEALTH_FACTOR_DIVISOR = 1e16;
+    uint256 internal constant AAVE_HEALTH_FACTOR_DIVISOR = 1e16;
 
     // ================================================================
     // │                           MODIFIERS                          │

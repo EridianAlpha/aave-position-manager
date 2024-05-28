@@ -15,6 +15,9 @@ interface IAavePM {
     error AavePM__SlippageToleranceUnchanged();
     error AavePM__SlippageToleranceAboveMaximum();
 
+    error AaveFunctions__FlashLoanMsgSenderUnauthorized();
+    error AaveFunctions__FlashLoanInitiatorUnauthorized();
+
     // ================================================================
     // │                           STRUCTS                            │
     // ================================================================

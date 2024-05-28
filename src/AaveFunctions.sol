@@ -25,9 +25,6 @@ import {TokenSwaps} from "./TokenSwaps.sol";
 
 /// @notice // TODO: Add comment
 contract AaveFunctions is TokenSwaps {
-    // TODO: Move errors to interface
-    error AaveFunctions__FlashLoanInitiatorUnauthorized();
-
     /// @notice Deposit all wstETH into Aave.
     ///      // TODO: Update comment.
     function _aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) internal {
@@ -75,13 +72,15 @@ contract AaveFunctions is TokenSwaps {
         address initiator,
         bytes calldata /* params */
     ) external returns (bool) {
-        // Only allow the AavePM contract to initiate the flashloan and execute this function.
-        if (initiator != address(this)) revert AaveFunctions__FlashLoanInitiatorUnauthorized();
-
         IAavePM aavePM = IAavePM(address(this));
-
-        address wstETHAddress = aavePM.getTokenAddress("wstETH");
         address aavePoolAddress = aavePM.getContractAddress("aavePool");
+        address wstETHAddress = aavePM.getTokenAddress("wstETH");
+
+        // Only the Aave pool contract can call and execute this function.
+        if (msg.sender != aavePoolAddress) revert IAavePM.AaveFunctions__FlashLoanMsgSenderUnauthorized();
+
+        // Only allow the AavePM contract to initiate the flashloan and execute this function.
+        if (initiator != address(this)) revert IAavePM.AaveFunctions__FlashLoanInitiatorUnauthorized();
 
         uint256 repaymentAmountTotalUSDC = amount + premium;
 

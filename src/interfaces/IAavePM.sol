@@ -100,7 +100,6 @@ interface IAavePM {
     function getHealthFactorTargetMinimum() external pure returns (uint16 healthFactorTargetMinimum);
     function getSlippageTolerance() external view returns (uint16 slippageTolerance);
     function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
-    function getAaveHealthFactorDivisor() external pure returns (uint256 aaveHealthFactorDivisor);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function getRoleMembers(string memory _roleString) external view returns (address[] memory);
 }

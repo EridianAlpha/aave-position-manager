@@ -55,8 +55,8 @@ contract Rebalance is TokenSwaps, AaveFunctions {
             uint256 initialHealthFactor
         ) = IPool(aavePoolAddress).getUserAccountData(address(this));
 
-        // Scale the initial health factor to 2 decimal places.
-        uint256 initialHealthFactorScaled = initialHealthFactor / aavePM.getAaveHealthFactorDivisor();
+        // Scale the initial health factor to 2 decimal places by dividing by 1e16.
+        uint256 initialHealthFactorScaled = initialHealthFactor / 1e16;
 
         // Get the current health factor target.
         uint16 healthFactorTarget = aavePM.getHealthFactorTarget();
@@ -79,7 +79,7 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         // Safety check to ensure the health factor is above the minimum target.
         // TODO: Improve check.
         (,,,,, uint256 endHealthFactor) = IPool(aavePoolAddress).getUserAccountData(address(this));
-        uint256 endHealthFactorScaled = endHealthFactor / aavePM.getAaveHealthFactorDivisor();
+        uint256 endHealthFactorScaled = endHealthFactor / 1e16;
         if (endHealthFactorScaled < (aavePM.getHealthFactorTargetMinimum() - 1)) {
             // TODO: Move this error to CoreFunctions interface.
             revert IAavePM.AavePM__HealthFactorBelowMinimum();

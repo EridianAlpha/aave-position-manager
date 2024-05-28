@@ -68,12 +68,6 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
     ///      A contract upgrade is required to change this value.
     uint16 internal constant SLIPPAGE_TOLERANCE_MAXIMUM = 200; // 0.5%
 
-    /// @notice The divisor for the Aave Health Factor.
-    /// @dev The Aave Health Factor is a value with 18 decimal places.
-    ///      This divisor is used to scale the Health Factor to 2 decimal places.
-    //       Used to convert e.g. 2000003260332359246 into 200.
-    uint256 internal constant AAVE_HEALTH_FACTOR_DIVISOR = 1e16;
-
     // ================================================================
     // │                           MODIFIERS                          │
     // ================================================================
@@ -346,13 +340,6 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
     /// @return slippageToleranceMaximum The Slippage Tolerance maximum value.
     function getSlippageToleranceMaximum() public pure returns (uint16 slippageToleranceMaximum) {
         return HEALTH_FACTOR_TARGET_MINIMUM;
-    }
-
-    /// @notice Getter function to get the Aave Health Factor divisor.
-    /// @dev Public function to allow anyone to view the Aave Health Factor divisor value.
-    /// @return aaveHealthFactorDivisor The Aave Health Factor divisor value.
-    function getAaveHealthFactorDivisor() public pure returns (uint256 aaveHealthFactorDivisor) {
-        return AAVE_HEALTH_FACTOR_DIVISOR;
     }
 
     /// @notice Getter function to get the balance of the provided identifier.

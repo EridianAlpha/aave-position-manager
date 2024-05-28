@@ -63,7 +63,7 @@ interface IAavePM {
     ) external;
 
     // ================================================================
-    // │                     FUNCTIONS - UPDATES                     │
+    // │                     FUNCTIONS - UPDATES                      │
     // ================================================================
     function updateContractAddress(string memory identifier, address _newContractAddress) external;
     function updateTokenAddress(string memory identifier, address _newTokenAddress) external;

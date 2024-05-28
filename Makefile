@@ -106,25 +106,25 @@ deploy-script:
 	@forge script script/DeployAavePM.s.sol:DeployAavePM ${NETWORK_ARGS} -vvvv
 
 upgrade-script:
-	@forge script script/Interactions.s.sol:UpgradeAavePM ${NETWORK_ARGS} -vvvv
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "upgradeAavePM()"
 
 send-ETH-script: 
-	@forge script script/Interactions.s.sol:FundAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint256)" ${MAKE_CLI_INPUT_VALUE}
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "fundAavePM(uint256)" ${MAKE_CLI_INPUT_VALUE}
 
 update-hft-script:
-	@forge script script/Interactions.s.sol:UpdateHFTAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint16)" ${MAKE_CLI_INPUT_VALUE}
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "updateHFTAavePM(uint16)" ${MAKE_CLI_INPUT_VALUE}
 
 update-st-script:
-	@forge script script/Interactions.s.sol:UpdateSTAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint16)" ${MAKE_CLI_INPUT_VALUE}
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "updateSTAavePM(uint16)" ${MAKE_CLI_INPUT_VALUE}
 
 rebalance-script:
-	@forge script script/Interactions.s.sol:RebalanceAavePM ${NETWORK_ARGS} -vvvv
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "rebalanceAavePM()" 
 
 getContractBalance-script:
-	@forge script script/Interactions.s.sol:GetContractBalanceAavePM ${NETWORK_ARGS} -vvvv --sig "run(string)" ${MAKE_CLI_INPUT_VALUE}
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "getContractBalanceAavePM(string)" ${MAKE_CLI_INPUT_VALUE}
 
 getAaveAccountData-script:
-	@forge script script/Interactions.s.sol:GetAaveAccountDataAavePM ${NETWORK_ARGS} -vvvv
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "getAaveAccountDataAavePM(string)"
 
 # ================================================================
 # │                       COMBINED COMMANDS                      │

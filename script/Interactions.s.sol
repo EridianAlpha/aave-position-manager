@@ -11,7 +11,10 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 // ================================================================
 // │                             SETUP                            │
 // ================================================================
-contract Setup is Script {
+contract Interactions is Script {
+    // TODO: Write tests for this contract and remove the test function.
+    function test() public {} // Added to remove this whole contract from coverage report.
+
     AavePM public aavePM;
 
     constructor() {
@@ -19,76 +22,62 @@ contract Setup is Script {
         require(_aavePMAddressProxy != address(0), "ERC1967Proxy address is invalid");
         aavePM = AavePM(payable(_aavePMAddressProxy));
     }
-}
 
-// ================================================================
-// │                             FUND                             │
-// ================================================================
-contract FundAavePM is Script, Setup {
-    function run(uint256 value) public {
+    // ================================================================
+    // │                             FUND                             │
+    // ================================================================
+    function fundAavePM(uint256 value) public {
         vm.startBroadcast();
         (bool callSuccess,) = address(aavePM).call{value: value}("");
         if (!callSuccess) revert("Failed to send ETH to AavePM");
         vm.stopBroadcast();
     }
-}
 
-// ================================================================
-// │                            UPGRADE                           │
-// ================================================================
-contract UpgradeAavePM is Script, Setup {
-    function run() public {
+    // ================================================================
+    // │                            UPGRADE                           │
+    // ================================================================
+    function upgradeAavePM() public {
         vm.startBroadcast();
         AavePM newAavePM = new AavePM();
         aavePM.upgradeToAndCall(address(newAavePM), "");
         vm.stopBroadcast();
     }
-}
 
-// ================================================================
-// │                     FUNCTIONS - UPDATES                      │
-// ================================================================
-contract UpdateHFTAavePM is Script, Setup {
-    function run(uint16 value) public {
+    // ================================================================
+    // │                     FUNCTIONS - UPDATES                      │
+    // ================================================================
+    function updateHFTAavePM(uint16 value) public {
         vm.startBroadcast();
         aavePM.updateHealthFactorTarget(value);
         vm.stopBroadcast();
     }
-}
 
-contract UpdateSTAavePM is Script, Setup {
-    function run(uint16 value) public {
+    function updateSTAavePM(uint16 value) public {
         vm.startBroadcast();
         aavePM.updateSlippageTolerance(value);
         vm.stopBroadcast();
     }
-}
 
-// ================================================================
-// │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │
-// ================================================================
-contract RebalanceAavePM is Script, Setup {
-    function run() public {
+    // ================================================================
+    // │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │
+    // ================================================================
+    function rebalanceAavePM() public {
         vm.startBroadcast();
         aavePM.rebalance();
         vm.stopBroadcast();
     }
-}
 
-// ================================================================
-// │                       FUNCTIONS - GETTERS                    │
-// ================================================================
-contract GetContractBalanceAavePM is Script, Setup {
-    function run(string memory _identifier) public returns (uint256 contractBalance) {
+    // ================================================================
+    // │                       FUNCTIONS - GETTERS                    │
+    // ================================================================
+    function getContractBalanceAavePM(string memory _identifier) public returns (uint256 contractBalance) {
         vm.startBroadcast();
         contractBalance = aavePM.getContractBalance(_identifier);
         vm.stopBroadcast();
         return contractBalance;
     }
-}
 
-contract GetAaveAccountDataAavePM is Script, Setup {
-    function run()
+    function getAaveAccountDataAavePM()
         public
         returns (
             uint256 totalCollateralBase,

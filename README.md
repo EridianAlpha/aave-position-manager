@@ -45,19 +45,24 @@ A smart contract manager for Aave positions.
 
 #### 1.1.1. Owner Functions
 
-| Function | Restrictions | Description |
-| -------- | ------------ | ----------- |
+| Function              | Restrictions | Description                           |
+| --------------------- | ------------ | ------------------------------------- |
+| upgradeToAndCall      | `OWNER_ROLE` | Upgrade the contract                  |
+| updateContractAddress | `OWNER_ROLE` | Update the specified contract address |
+| updateTokenAddress    | `OWNER_ROLE` | Update the specified token address    |
+| updateUniswapV3Pool   | `OWNER_ROLE` | Update the specified Uniswap V3 pool  |
 
 #### 1.1.2. Manager Functions
 
 | Function                 | Restrictions   | Description                                                                 |
 | ------------------------ | -------------- | --------------------------------------------------------------------------- |
-| updateHealthFactorTarget | `MANAGER_ROLE` | Set the desired Health Factor target.                                       |
+| rebalance                | `MANAGER_ROLE` | Rebalance the Aave position to the desired Health Factor.                   |
 | borrowAndWithdrawUSDC    | `MANAGER_ROLE` | Borrow USDC from Aave and withdraw to the specified owner.                  |
 | withdrawWstETH           | `MANAGER_ROLE` | Withdraw all wstETH from the contract to the specified owner.               |
 | repayUSDC                | `MANAGER_ROLE` | Repay USDC to Aave using all the USDC in the contract.                      |
 | withdrawTokens           | `MANAGER_ROLE` | Withdraw all the specified tokens from the contract to the specified owner. |
-| rebalance                | `MANAGER_ROLE` | Rebalance the Aave position to the desired Health Factor.                   |
+| updateHealthFactorTarget | `MANAGER_ROLE` | Set the desired Health Factor target.                                       |
+| rescueEth                | `MANAGER_ROLE` | Rescue ETH from the contract to the specified owner.                        |
 
 ## 2. WebApp
 

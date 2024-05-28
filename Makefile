@@ -111,6 +111,9 @@ send-ETH-script:
 update-hft-script:
 	@forge script script/Interactions.s.sol:UpdateHFTAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint16)" ${MAKE_CLI_INPUT_VALUE}
 
+update-st-script:
+	@forge script script/Interactions.s.sol:UpdateSTAavePM ${NETWORK_ARGS} -vvvv --sig "run(uint16)" ${MAKE_CLI_INPUT_VALUE}
+
 rebalance-script:
 	@forge script script/Interactions.s.sol:RebalanceAavePM ${NETWORK_ARGS} -vvvv
 
@@ -125,6 +128,7 @@ getAaveAccountData-script:
 # ================================================================
 send-ETH: ask-for-value convert-value-to-wei store-value send-ETH-script remove-value
 update-hft: ask-for-value store-value update-hft-script remove-value
+update-st: ask-for-value store-value update-st-script remove-value
 getContractBalance: ask-for-value store-value getContractBalance-script remove-value
 
 # ================================================================
@@ -133,6 +137,7 @@ getContractBalance: ask-for-value store-value getContractBalance-script remove-v
 deploy-anvil: anvil-network deploy-script
 send-ETH-anvil: anvil-network send-ETH
 update-hft-anvil: anvil-network update-hft
+update-st-anvil: anvil-network update-st
 rebalance-anvil: anvil-network rebalance-script
 getContractBalance-anvil: anvil-network getContractBalance
 getAaveAccountData-anvil: anvil-network getAaveAccountData-script

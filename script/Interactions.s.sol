@@ -34,6 +34,14 @@ contract UpdateHFTAavePM is Script, Setup {
     }
 }
 
+contract UpdateSTAavePM is Script, Setup {
+    function run(uint16 value) public {
+        vm.startBroadcast();
+        aavePM.updateSlippageTolerance(value);
+        vm.stopBroadcast();
+    }
+}
+
 contract RebalanceAavePM is Script, Setup {
     function run() public {
         vm.startBroadcast();

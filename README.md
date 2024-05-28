@@ -6,31 +6,28 @@
 >
 > ---
 
-* [1. Overview](#1-overview)
-  * [1.1. Key Functions](#11-key-functions)
-    * [1.1.1. Owner Functions](#111-owner-functions)
-    * [1.1.2. Manager Functions](#112-manager-functions)
-* [2. WebApp](#2-webapp)
-* [3. Installation](#3-installation)
-  * [3.1. Clone repository](#31-clone-repository)
-  * [3.2. Install Dependencies](#32-install-dependencies)
-  * [3.3. Create `.env` file](#33-create-env-file)
-  * [3.4. Configure Ethernal (optional)](#34-configure-ethernal-optional)
-* [4. Testing](#4-testing)
-  * [4.1. Tests](#41-tests)
-  * [4.2. Coverage](#42-coverage)
-* [5. Deployment](#5-deployment)
-* [6. Upgrades](#6-upgrades)
-* [7. Interactions](#7-interactions)
-  * [7.1. Fund contract with ETH](#71-fund-contract-with-eth)
-  * [7.2. Wrap/Unwrap WETH](#72-wrapunwrap-weth)
-  * [7.3. Swap Tokens](#73-swap-tokens)
-  * [7.4. Update Health Factor Target](#74-update-health-factor-target)
-  * [7.5. Aave Supply wstETH](#75-aave-supply-wsteth)
-  * [7.6. Aave Borrow USDC](#76-aave-borrow-usdc)
-  * [7.7. Rebalance](#77-rebalance)
-* [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
-* [9. License](#9-license)
+- [1. Overview](#1-overview)
+  - [1.1. Key Functions](#11-key-functions)
+    - [1.1.1. Owner Functions](#111-owner-functions)
+    - [1.1.2. Manager Functions](#112-manager-functions)
+- [2. WebApp](#2-webapp)
+- [3. Installation](#3-installation)
+  - [3.1. Clone repository](#31-clone-repository)
+  - [3.2. Install Dependencies](#32-install-dependencies)
+  - [3.3. Create `.env` file](#33-create-env-file)
+  - [3.4. Configure Ethernal (optional)](#34-configure-ethernal-optional)
+- [4. Testing](#4-testing)
+  - [4.1. Tests](#41-tests)
+  - [4.2. Coverage](#42-coverage)
+- [5. Deployment](#5-deployment)
+- [6. Upgrades](#6-upgrades)
+- [7. Interactions](#7-interactions)
+  - [7.1. Fund contract with ETH](#71-fund-contract-with-eth)
+  - [7.2. Update Health Factor Target](#72-update-health-factor-target)
+  - [7.3. Update Slippage Tolerance](#73-update-slippage-tolerance)
+  - [7.4. Rebalance](#74-rebalance)
+- [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
+- [9. License](#9-license)
 
 ## 1. Overview
 
@@ -46,19 +43,19 @@ A smart contract manager for Aave positions.
 
 #### 1.1.1. Owner Functions
 
-| Function        | Restrictions | Description                    |
-| --------------- | ------------ | ------------------------------ |
-| setHealthFactor | `OWNER_ROLE` | Set the desired Health Factor. |
+| Function | Restrictions | Description |
+| -------- | ------------ | ----------- |
 
 #### 1.1.2. Manager Functions
 
-| Function              | Restrictions   | Description                                                                 |
-| --------------------- | -------------- | --------------------------------------------------------------------------- |
-| borrowAndWithdrawUSDC | `MANAGER_ROLE` | Borrow USDC from Aave and withdraw to the specified owner.                  |
-| withdrawWstETH        | `MANAGER_ROLE` | Withdraw all wstETH from the contract to the specified owner.               |
-| repayUSDC             | `MANAGER_ROLE` | Repay USDC to Aave using all the USDC in the contract.                      |
-| withdrawTokens        | `MANAGER_ROLE` | Withdraw all the specified tokens from the contract to the specified owner. |
-| rebalance             | `MANAGER_ROLE` | Rebalance the Aave position to the desired Health Factor.                   |
+| Function                 | Restrictions   | Description                                                                 |
+| ------------------------ | -------------- | --------------------------------------------------------------------------- |
+| updateHealthFactorTarget | `MANAGER_ROLE` | Set the desired Health Factor target.                                       |
+| borrowAndWithdrawUSDC    | `MANAGER_ROLE` | Borrow USDC from Aave and withdraw to the specified owner.                  |
+| withdrawWstETH           | `MANAGER_ROLE` | Withdraw all wstETH from the contract to the specified owner.               |
+| repayUSDC                | `MANAGER_ROLE` | Repay USDC to Aave using all the USDC in the contract.                      |
+| withdrawTokens           | `MANAGER_ROLE` | Withdraw all the specified tokens from the contract to the specified owner. |
+| rebalance                | `MANAGER_ROLE` | Rebalance the Aave position to the desired Health Factor.                   |
 
 ## 2. WebApp
 
@@ -121,7 +118,9 @@ make coverage-report
 
 ## 6. Upgrades
 
-Under development 🏗️
+| Chain | Command              |
+| ----- | -------------------- |
+| Anvil | `make upgrade-anvil` |
 
 ## 7. Interactions
 
@@ -135,55 +134,26 @@ Input value in ETH e.g. `0.15`.
 | ----- | --------------------- |
 | Anvil | `make send-ETH-anvil` |
 
-### 7.2. Wrap/Unwrap WETH
+### 7.2. Update Health Factor Target
 
-Wrap or unwrap all WETH to/from ETH.
-
-| Chain | Command                      |
-| ----- | ---------------------------- |
-| Anvil | `make wrap-ETH-WETH-anvil`   |
-| Anvil | `make unwrap-WETH-ETH-anvil` |
-
-### 7.3. Swap Tokens
-
-Swap tokens using UniswapV3.
-
-| Chain | Command                      |
-| ----- | ---------------------------- |
-| Anvil | `make swap-ETH-USDC-anvil`   |
-| Anvil | `make swap-USDC-WETH-anvil`  |
-| Anvil | `make swap-ETH-wstETH-anvil` |
-| Anvil | `make swap-wstETH-ETH-anvil` |
-
-### 7.4. Update Health Factor Target
-
-Input value to 2 decimal places e.g. `225`.
+Input value to 2 decimal places e.g. `225` for a Health Factor target of `2.25`.
 
 | Chain | Command                 |
 | ----- | ----------------------- |
 | Anvil | `make update-hft-anvil` |
 
-### 7.5. Aave Supply wstETH
+### 7.3. Update Slippage Tolerance
 
-Supplies all wstETH to Aave.
+Input value to 2 decimal places e.g. `200` for a Slippage Tolerance of `0.5%`.
 
-| Chain | Command                         |
-| ----- | ------------------------------- |
-| Anvil | `make aave-supply-wstETH-anvil` |
+| Chain | Command                |
+| ----- | ---------------------- |
+| Anvil | `make update-st-anvil` |
 
-### 7.6. Aave Borrow USDC
+### 7.4. Rebalance
 
-Borrows the specified amount of USDC from Aave. If the Health Factor is below the target, the borrow will fail.
-
-Input value in USDC e.g. `100`.
-
-| Chain | Command                       |
-| ----- | ----------------------------- |
-| Anvil | `make aave-borrow-USDC-anvil` |
-
-### 7.7. Rebalance
-
-Rebalances the Aave position to maintain the desired Health Factor.
+Rebalances the Aave position to maintain the desired Health Factor target.
+TODO: Add threshold details.
 
 | Chain | Command                |
 | ----- | ---------------------- |

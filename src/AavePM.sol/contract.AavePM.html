@@ -178,9 +178,9 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7d54d6cb4774b4049c2cd97c07e1947e6ae4c913/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d19c53af05240303ebf3eef4179958818b0faa99/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
-<a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="/src/Rebalance.sol/contract.Rebalance.html">Rebalance</a>, Initializable, AccessControlUpgradeable, UUPSUpgradeable</p>
+<a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="/src/Rebalance.sol/contract.Rebalance.html">Rebalance</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>A contract to manage positions on Aave.</p>
@@ -383,16 +383,6 @@ If the health factor is above the target, it borrows more USDC and reinvests.</e
 <tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
 </tbody></table>
 </div>
-<h3 id="getrolehash"><a class="header" href="#getrolehash">getRoleHash</a></h3>
-<p>Getter function to get the role hash of a specified role.</p>
-<p><em>Public function to allow anyone to generate a role hash.</em></p>
-<pre><code class="language-solidity">function getRoleHash(string memory role) public pure returns (bytes32 roleHash);
-</code></pre>
-<p><strong>Returns</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>roleHash</code></td><td><code>bytes32</code></td><td>The role hash corresponding to the given role.</td></tr>
-</tbody></table>
-</div>
 <h3 id="getcontractaddress"><a class="header" href="#getcontractaddress">getContractAddress</a></h3>
 <p>Generic getter function to get the contract address for a given identifier.</p>
 <p><em>Public function to allow anyone to view the contract address for the given identifier.</em></p>
@@ -493,8 +483,8 @@ If the health factor is above the target, it borrows more USDC and reinvests.</e
 </tbody></table>
 </div>
 <h3 id="getcontractbalance"><a class="header" href="#getcontractbalance">getContractBalance</a></h3>
-<p>Getter function to get the contract's balance.</p>
-<p><em>Public function to allow anyone to view the contract's balance.</em></p>
+<p>Getter function to get the balance of the provided identifier.</p>
+<p><em>Public function to allow anyone to view the balance of the provided identifier.</em></p>
 <pre><code class="language-solidity">function getContractBalance(string memory _identifier) public view returns (uint256 contractBalance);
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -504,32 +494,22 @@ If the health factor is above the target, it borrows more USDC and reinvests.</e
 </div>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>contractBalance</code></td><td><code>uint256</code></td><td>The contract's balance of the specified token identifier.</td></tr>
+<tr><td><code>contractBalance</code></td><td><code>uint256</code></td><td>The balance of the specified token identifier.</td></tr>
 </tbody></table>
 </div>
-<h3 id="getaaveaccountdata"><a class="header" href="#getaaveaccountdata">getAaveAccountData</a></h3>
-<p>Getter function to get the Aave user account data.</p>
-<p><em>Public function to allow anyone to view the Aave user account data.</em></p>
-<pre><code class="language-solidity">function getAaveAccountData()
-    public
-    view
-    returns (
-        uint256 totalCollateralBase,
-        uint256 totalDebtBase,
-        uint256 availableBorrowsBase,
-        uint256 currentLiquidationThreshold,
-        uint256 ltv,
-        uint256 healthFactor
-    );
+<h3 id="getrolemembers"><a class="header" href="#getrolemembers">getRoleMembers</a></h3>
+<p>Getter function to get all the members of a role.</p>
+<p><em>Public function to allow anyone to view the members of a role.</em></p>
+<pre><code class="language-solidity">function getRoleMembers(string memory _roleString) public view returns (address[] memory);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_roleString</code></td><td><code>string</code></td><td>The identifier for the role.</td></tr>
+</tbody></table>
+</div>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>totalCollateralBase</code></td><td><code>uint256</code></td><td>The total collateral in the user's account.</td></tr>
-<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt in the user's account.</td></tr>
-<tr><td><code>availableBorrowsBase</code></td><td><code>uint256</code></td><td>The available borrows in the user's account.</td></tr>
-<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold in the user's account.</td></tr>
-<tr><td><code>ltv</code></td><td><code>uint256</code></td><td>The loan-to-value ratio in the user's account.</td></tr>
-<tr><td><code>healthFactor</code></td><td><code>uint256</code></td><td>The health factor in the user's account.</td></tr>
+<tr><td><code>&lt;none&gt;</code></td><td><code>address[]</code></td><td>members The array of addresses that are members of the role.</td></tr>
 </tbody></table>
 </div>
                     </main>

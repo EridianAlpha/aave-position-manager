@@ -339,7 +339,7 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
     /// @dev Public function to allow anyone to view the Slippage Tolerance maximum value.
     /// @return slippageToleranceMaximum The Slippage Tolerance maximum value.
     function getSlippageToleranceMaximum() public pure returns (uint16 slippageToleranceMaximum) {
-        return HEALTH_FACTOR_TARGET_MINIMUM;
+        return SLIPPAGE_TOLERANCE_MAXIMUM;
     }
 
     /// @notice Getter function to get the balance of the provided identifier.

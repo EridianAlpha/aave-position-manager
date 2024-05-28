@@ -26,6 +26,8 @@
   - [7.2. Update Health Factor Target](#72-update-health-factor-target)
   - [7.3. Update Slippage Tolerance](#73-update-slippage-tolerance)
   - [7.4. Rebalance](#74-rebalance)
+  - [7.5. Get Contract Balance](#75-get-contract-balance)
+  - [7.6. Get Aave Account Data](#76-get-aave-account-data)
 - [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
 - [9. License](#9-license)
 
@@ -160,6 +162,22 @@ TODO: Add threshold details.
 | Chain | Command                |
 | ----- | ---------------------- |
 | Anvil | `make rebalance-anvil` |
+
+### 7.5. Get Contract Balance
+
+Input value as token identifier e.g. `USDC`.
+
+| Chain | Command                         |
+| ----- | ------------------------------- |
+| Anvil | `make getContractBalance-anvil` |
+
+### 7.6. Get Aave Account Data
+
+Returns the Aave account data for the contract.
+
+| Chain | Command                         |
+| ----- | ------------------------------- |
+| Anvil | `make getAaveAccountData-anvil` |
 
 ## 8. Build and Deploy Documentation
 

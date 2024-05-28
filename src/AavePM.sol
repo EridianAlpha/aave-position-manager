@@ -66,7 +66,7 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
     /// @dev The value is hardcoded in the contract to prevent terrible trades
     ///      from occurring due to a high slippage tolerance.
     ///      A contract upgrade is required to change this value.
-    uint16 internal constant SLIPPAGE_TOLERANCE_MAXIMUM = 200; // 0.5%
+    uint16 internal constant SLIPPAGE_TOLERANCE_MAXIMUM = 100; // 1.00%
 
     // ================================================================
     // │                           MODIFIERS                          │
@@ -220,9 +220,11 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
         // Should be different from the current s_slippageTolerance
         if (s_slippageTolerance == _slippageTolerance) revert AavePM__SlippageToleranceUnchanged();
 
-        // New _slippageTolerance must be less than the SLIPPAGE_TOLERANCE_MAXIMUM.
+        // New _slippageTolerance must be greater than the SLIPPAGE_TOLERANCE_MAXIMUM.
+        // The calculation for slippage tolerance to percentage is 100 / _slippageTolerance,
+        // so a higher value means a lower tolerance.
         // Failsafe to prevent terrible trades occurring due to a high slippage tolerance.
-        if (_slippageTolerance > SLIPPAGE_TOLERANCE_MAXIMUM) revert AavePM__SlippageToleranceAboveMaximum();
+        if (_slippageTolerance < SLIPPAGE_TOLERANCE_MAXIMUM) revert AavePM__SlippageToleranceAboveMaximum();
 
         emit SlippageToleranceUpdated(s_slippageTolerance, _slippageTolerance);
         s_slippageTolerance = _slippageTolerance;

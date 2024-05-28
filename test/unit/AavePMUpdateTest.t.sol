@@ -86,8 +86,11 @@ contract AavePMUpdateTests is AavePMTestSetup {
         aavePM.updateHealthFactorTarget(newHealthFactorTarget);
     }
 
-    function test_DecreaseSlippageTolerance() public {
+    function test_IncreaseSlippageTolerance() public {
         uint16 previousSlippageTolerance = aavePM.getSlippageTolerance();
+
+        // Calculation is 100 / slippageTolerance so subtracting from the previous value
+        // will increase the slippage tolerance.
         uint16 newSlippageTolerance = previousSlippageTolerance - SLIPPAGE_TOLERANCE_CHANGE;
 
         vm.expectEmit();
@@ -107,7 +110,9 @@ contract AavePMUpdateTests is AavePMTestSetup {
     }
 
     function test_UpdateSlippageToleranceAboveMaximum() public {
-        uint16 newSlippageTolerance = aavePM.getSlippageToleranceMaximum() + 1;
+        // Calculation is 100 / slippageToleranceMaximum,
+        // so subtract from the maximum to get the out of bounds value.
+        uint16 newSlippageTolerance = aavePM.getSlippageToleranceMaximum() - 1;
 
         vm.expectRevert(IAavePM.AavePM__SlippageToleranceAboveMaximum.selector);
         vm.prank(manager1);

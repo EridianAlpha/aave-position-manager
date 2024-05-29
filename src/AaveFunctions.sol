@@ -65,13 +65,13 @@ contract AaveFunctions is TokenSwaps {
     /// @param premium The fee charged for the flash loan.
     /// @param initiator The address of the contract that initiated the flash loan.
     /// @return bool True if the operation was successful.
-    function executeOperation(
+    function _executeOperation(
         address asset,
         uint256 amount,
         uint256 premium,
         address initiator,
         bytes calldata /* params */
-    ) external returns (bool) {
+    ) internal returns (bool) {
         IAavePM aavePM = IAavePM(address(this));
         address aavePoolAddress = aavePM.getContractAddress("aavePool");
         address wstETHAddress = aavePM.getTokenAddress("wstETH");

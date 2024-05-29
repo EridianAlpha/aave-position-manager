@@ -105,4 +105,28 @@ interface IAavePM {
     function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function getRoleMembers(string memory _roleString) external view returns (address[] memory);
+
+    // ================================================================
+    // │             INHERITED FUNCTIONS - ACCESS CONTROLS            │
+    // ================================================================
+    function getRoleAdmin(bytes32 role) external view returns (bytes32);
+    function getRoleMember(bytes32 role, uint256 index) external view returns (address);
+    function getRoleMemberCount(bytes32 role) external view returns (uint256);
+    function grantRole(bytes32 role, address account) external;
+    function hasRole(bytes32 role, address account) external view returns (bool);
+    function renounceRole(bytes32 role, address callerConfirmation) external;
+    function revokeRole(bytes32 role, address account) external;
+    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+
+    // ================================================================
+    // │                 INHERITED FUNCTIONS - UPGRADES               │
+    // ================================================================
+    function upgradeToAndCall(address newImplementation, bytes memory data) external payable;
+
+    // ================================================================
+    // │             INHERITED FUNCTIONS - AAVE FLASH LOAN            │
+    // ================================================================
+    function executeOperation(address asset, uint256 amount, uint256 premium, address initiator, bytes calldata params)
+        external
+        returns (bool);
 }

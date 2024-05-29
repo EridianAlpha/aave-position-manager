@@ -12,6 +12,8 @@ import {Rebalance} from "./Rebalance.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {AccessControlEnumerableUpgradeable} from
     "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
 
@@ -147,15 +149,6 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
         s_healthFactorTarget = initialHealthFactorTarget;
         s_slippageTolerance = initialSlippageTolerance;
     }
-
-    // ================================================================
-    // │                   FUNCTIONS - UUPS UPGRADES                  │
-    // ================================================================
-
-    /// @notice Internal function to authorize an upgrade.
-    /// @dev Caller must have `OWNER_ROLE`.
-    /// @param _newImplementation Address of the new contract implementation.
-    function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE) {}
 
     // ================================================================
     // │                      FUNCTIONS - UPDATES                     │
@@ -368,5 +361,122 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
             members[i] = getRoleMember(_role, i);
         }
         return members;
+    }
+
+    // ================================================================
+    // │             INHERITED FUNCTIONS - ACCESS CONTROLS            │
+    // ================================================================
+
+    /// @notice // TODO: Add comment
+    function getRoleMember(bytes32 role, uint256 index)
+        public
+        view
+        override(IAavePM, AccessControlEnumerableUpgradeable)
+        returns (address)
+    {
+        return AccessControlEnumerableUpgradeable.getRoleMember(role, index);
+    }
+
+    /// @notice // TODO: Add comment
+    function getRoleMemberCount(bytes32 role)
+        public
+        view
+        override(IAavePM, AccessControlEnumerableUpgradeable)
+        returns (uint256)
+    {
+        return AccessControlEnumerableUpgradeable.getRoleMemberCount(role);
+    }
+
+    /// @notice // TODO: Add comment
+    function getRoleAdmin(bytes32 role)
+        public
+        view
+        override(IAavePM, IAccessControl, AccessControlUpgradeable)
+        returns (bytes32)
+    {
+        return AccessControlUpgradeable.getRoleAdmin(role);
+    }
+
+    /// @notice // TODO: Add comment
+    function grantRole(bytes32 role, address account)
+        public
+        override(IAavePM, IAccessControl, AccessControlUpgradeable)
+    {
+        AccessControlUpgradeable.grantRole(role, account);
+    }
+
+    /// @notice // TODO: Add comment
+    function hasRole(bytes32 role, address account)
+        public
+        view
+        override(IAavePM, IAccessControl, AccessControlUpgradeable)
+        returns (bool)
+    {
+        return AccessControlUpgradeable.hasRole(role, account);
+    }
+
+    /// @notice // TODO: Add comment
+    function renounceRole(bytes32 role, address callerConfirmation)
+        public
+        override(IAavePM, IAccessControl, AccessControlUpgradeable)
+    {
+        AccessControlUpgradeable.renounceRole(role, callerConfirmation);
+    }
+
+    /// @notice // TODO: Add comment
+    function revokeRole(bytes32 role, address account)
+        public
+        override(IAavePM, IAccessControl, AccessControlUpgradeable)
+    {
+        AccessControlUpgradeable.revokeRole(role, account);
+    }
+
+    /// @notice // TODO: Add comment
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(IAavePM, AccessControlEnumerableUpgradeable)
+        returns (bool)
+    {
+        return AccessControlEnumerableUpgradeable.supportsInterface(interfaceId);
+    }
+
+    // ================================================================
+    // │                 INHERITED FUNCTIONS - UPGRADES               │
+    // ================================================================
+
+    /// @notice Internal function to authorize an upgrade.
+    /// @dev Caller must have `OWNER_ROLE`.
+    /// @param _newImplementation Address of the new contract implementation.
+    function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE) {}
+
+    /// @notice // TODO: Add comment
+    function upgradeToAndCall(address newImplementation, bytes memory data)
+        public
+        payable
+        override(IAavePM, UUPSUpgradeable)
+    {
+        UUPSUpgradeable.upgradeToAndCall(newImplementation, data);
+    }
+
+    // ================================================================
+    // │             INHERITED FUNCTIONS - AAVE FLASH LOAN            │
+    // ================================================================
+
+    /// @notice Flash loan callback function.
+    /// @dev This function is called by the Aave pool contract after the flash loan is executed.
+    ///      It is used to repay the flash loan and execute the operation.
+    ///      The function is called by the Aave pool contract and is not intended to be called directly.
+    /// @param asset The address of the asset being flash loaned.
+    /// @param amount The amount of the asset being flash loaned.
+    /// @param premium The fee charged for the flash loan.
+    /// @param initiator The address of the contract that initiated the flash loan.
+    /// @param params The parameters for the flash loan operation.
+    /// @return bool True if the operation was successful.
+    function executeOperation(address asset, uint256 amount, uint256 premium, address initiator, bytes calldata params)
+        external
+        returns (bool)
+    {
+        return _executeOperation(asset, amount, premium, initiator, params);
     }
 }

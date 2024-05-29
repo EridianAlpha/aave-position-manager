@@ -6,11 +6,9 @@ import "forge-std/Script.sol";
 
 contract InterfaceTest is Test, Script {
     function test_AllFunctionsImplementedInInterface_AavePM() public {
-        string memory accessControlFunctions =
-            "getRoleAdmin,hasRole,getRoleMember,getRoleMemberCount,grantRole,revokeRole,renounceRole,supportsInterface,DEFAULT_ADMIN_ROLE";
-
-        string memory uupsFunctions = "UPGRADE_INTERFACE_VERSION,proxiableUUID,upgradeToAndCall";
-
+        // Ignore constants
+        string memory accessControlFunctions = "DEFAULT_ADMIN_ROLE";
+        string memory uupsFunctions = "UPGRADE_INTERFACE_VERSION,proxiableUUID";
         string memory ignoreList = string(abi.encodePacked(accessControlFunctions, ",", uupsFunctions));
 
         // Command as an array with arguments

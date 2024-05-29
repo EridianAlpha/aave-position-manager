@@ -18,6 +18,8 @@ interface IAavePM {
     error AaveFunctions__FlashLoanMsgSenderUnauthorized();
     error AaveFunctions__FlashLoanInitiatorUnauthorized();
 
+    error TokenSwaps__NotEnoughTokensForSwap(string tokenInIdentifier);
+
     // ================================================================
     // │                           STRUCTS                            │
     // ================================================================

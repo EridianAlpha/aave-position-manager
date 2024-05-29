@@ -24,9 +24,6 @@ import {IERC20Extended} from "./interfaces/IERC20Extended.sol";
 
 /// @notice // TODO: Add comment
 contract TokenSwaps {
-    // TODO: Move errors to interface
-    error TokenSwaps__NotEnoughTokensForSwap(string tokenInIdentifier);
-
     /// @notice Swaps the contract's entire specified token balance using a UniswapV3 pool.
     /// @dev Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
     ///      Reverts if there are no tokens in the contract or if the transaction doesn't meet the `amountOutMinimum` criteria due to price movements.
@@ -53,7 +50,7 @@ contract TokenSwaps {
 
         // Check if the contract has enough tokens to swap
         uint256 currentBalance = aavePM.getContractBalance(_tokenInIdentifier);
-        if (currentBalance == 0) revert TokenSwaps__NotEnoughTokensForSwap(_tokenInIdentifier);
+        if (currentBalance == 0) revert IAavePM.TokenSwaps__NotEnoughTokensForSwap(_tokenInIdentifier);
 
         // Prepare the swap parameters
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({

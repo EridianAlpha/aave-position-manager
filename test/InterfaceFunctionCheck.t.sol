@@ -6,9 +6,9 @@ import "forge-std/Script.sol";
 
 contract InterfaceTest is Test, Script {
     function test_AllFunctionsImplementedInInterface_AavePM() public {
-        // Ignore constants
-        string memory accessControlFunctions = "DEFAULT_ADMIN_ROLE";
-        string memory uupsFunctions = "UPGRADE_INTERFACE_VERSION,proxiableUUID";
+        // Ignore list
+        string memory accessControlFunctions = "DEFAULT_ADMIN_ROLE"; // Constants
+        string memory uupsFunctions = "UPGRADE_INTERFACE_VERSION,proxiableUUID"; // Constants and function that can't be called through a proxy
         string memory ignoreList = string(abi.encodePacked(accessControlFunctions, ",", uupsFunctions));
 
         // Command as an array with arguments

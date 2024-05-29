@@ -36,14 +36,14 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
     // ================================================================
 
     // Addresses
-    address private s_creator; // Creator of the contract
-    mapping(string => address) private s_contractAddresses;
-    mapping(string => address) private s_tokenAddresses;
-    mapping(string => UniswapV3Pool) private s_uniswapV3Pools;
+    address internal s_creator; // Creator of the contract
+    mapping(string => address) internal s_contractAddresses;
+    mapping(string => address) internal s_tokenAddresses;
+    mapping(string => UniswapV3Pool) internal s_uniswapV3Pools;
 
     // Values
-    uint16 private s_healthFactorTarget;
-    uint16 private s_slippageTolerance;
+    uint16 internal s_healthFactorTarget;
+    uint16 internal s_slippageTolerance;
 
     // ================================================================
     // │                           CONSTANTS                          │

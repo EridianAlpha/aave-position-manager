@@ -47,10 +47,7 @@ contract TokenSwaps {
         // Get the token addresses from the identifiers.
         address tokenInAddress = aavePM.getTokenAddress(_tokenInIdentifier);
         address tokenOutAddress = aavePM.getTokenAddress(_tokenOutIdentifier);
-
-        // Check if the contract has enough tokens to swap
         uint256 currentBalance = aavePM.getContractBalance(_tokenInIdentifier);
-        if (currentBalance == 0) revert IAavePM.TokenSwaps__NotEnoughTokensForSwap(_tokenInIdentifier);
 
         // Prepare the swap parameters
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({

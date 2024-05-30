@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="rebalance"><a class="header" href="#rebalance">Rebalance</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/11ab7710b15eabc524e56efab9f1ace1f4959de1/src/Rebalance.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/1bb0e3540c3be52313d022dc1465ea59b441544c/src/Rebalance.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/TokenSwaps.sol/contract.TokenSwaps.html">TokenSwaps</a>, <a href="/src/AaveFunctions.sol/contract.AaveFunctions.html">AaveFunctions</a></p>
 <p>// TODO: Add comment</p>
@@ -192,15 +192,13 @@ If the health factor is below the target, it repays debt to increase the health 
 If the health factor is above the target, it borrows more USDC and reinvests.</em></p>
 <pre><code class="language-solidity">function _rebalance() internal;
 </code></pre>
+<h3 id="_convertexistingbalancetowstethandsupplytoaave"><a class="header" href="#_convertexistingbalancetowstethandsupplytoaave">_convertExistingBalanceToWstETHAndSupplyToAave</a></h3>
+<pre><code class="language-solidity">function _convertExistingBalanceToWstETHAndSupplyToAave(IAavePM aavePM, address aavePoolAddress, address wstETHAddress)
+    private;
+</code></pre>
 <h3 id="_repaydebt"><a class="header" href="#_repaydebt">_repayDebt</a></h3>
-<pre><code class="language-solidity">function _repayDebt(
-    IAavePM aavePM,
-    uint256 totalDebtBase,
-    uint256 maxBorrowUSDC,
-    address aavePoolAddress,
-    address usdcAddress,
-    address wstETHAddress
-) private;
+<pre><code class="language-solidity">function _repayDebt(uint256 totalDebtBase, uint256 maxBorrowUSDC, address aavePoolAddress, address usdcAddress)
+    private;
 </code></pre>
 <h3 id="_reinvest"><a class="header" href="#_reinvest">_reinvest</a></h3>
 <pre><code class="language-solidity">function _reinvest(

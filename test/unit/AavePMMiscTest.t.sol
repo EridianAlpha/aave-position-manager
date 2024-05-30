@@ -10,14 +10,14 @@ import {IAavePM} from "src/interfaces/IAavePM.sol";
 // ================================================================
 contract AavePMMiscTests is AavePMTestSetup {
     function test_CoverageForReceiveFunction() public {
-        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
-        require(success);
+        vm.prank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
         assertEq(address(aavePM).balance, SEND_VALUE);
     }
 
     function test_CoverageForFallbackFunction() public {
-        vm.expectRevert(IAavePM.AavePM__RescueEthFailed.selector);
-        (bool success,) = address(aavePM).call{value: SEND_VALUE}("123");
-        require(!success);
+        vm.prank(manager1);
+        vm.expectRevert(IAavePM.AavePM__FunctionDoesNotExist.selector);
+        sendEth(address(aavePM), SEND_VALUE, "123");
     }
 }

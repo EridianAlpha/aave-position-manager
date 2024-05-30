@@ -27,7 +27,7 @@ import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
 contract AavePMTokenSwapTests is AavePMTestSetup {
 // function test_SwapFailsNotEnoughTokens() public {
 //     bytes memory encodedRevert_NotEnoughTokensForSwap =
-//         abi.encodeWithSelector(IAavePM.AavePM__NotEnoughTokensForSwap.selector, "wstETH");
+//         abi.encodeWithSelector(IAavePM.TokenSwaps__NotEnoughTokensForSwap.selector, "wstETH");
 
 //     vm.expectRevert(encodedRevert_NotEnoughTokensForSwap);
 //     vm.prank(manager1);
@@ -37,8 +37,8 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
 // function test_SwapETHToWstETH() public {
 //     vm.startPrank(manager1);
 //     // Send some ETH to the contract and wrap it to WETH
-//     (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
-//     require(success, "Failed to send ETH to AavePM contract");
+//     sendEth(address(aavePM), SEND_VALUE)
+
 //     aavePM.wrapETHToWETH();
 
 //     // Call the swapTokens function
@@ -55,8 +55,8 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
 // function test_SwapWstETHToWETH() public {
 //     vm.startPrank(manager1);
 //     // Send some ETH to the contract and wrap it to WETH
-//     (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
-//     require(success, "Failed to send ETH to AavePM contract");
+//     sendEth(address(aavePM), SEND_VALUE)
+
 //     aavePM.wrapETHToWETH();
 
 //     // Call the swapTokens function to get wstETH
@@ -76,8 +76,8 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
 // function test_SwapETHToUSDC() public {
 //     vm.startPrank(manager1);
 //     // Send some ETH to the contract and wrap it to WETH
-//     (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
-//     require(success, "Failed to send ETH to AavePM contract");
+//     sendEth(address(aavePM), SEND_VALUE)
+
 //     aavePM.wrapETHToWETH();
 
 //     // Call the swapTokens function to convert ETH to USDC
@@ -94,8 +94,8 @@ contract AavePMTokenSwapTests is AavePMTestSetup {
 // function test_SwapUSDCToWETH() public {
 //     vm.startPrank(manager1);
 //     // Send some ETH to the contract and wrap it to WETH
-//     (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
-//     require(success, "Failed to send ETH to AavePM contract");
+//     sendEth(address(aavePM), SEND_VALUE)
+
 //     aavePM.wrapETHToWETH();
 
 //     // Call the swapTokens function to convert ETH to USDC

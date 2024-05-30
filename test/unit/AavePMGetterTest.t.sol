@@ -84,8 +84,7 @@ contract AavePMGetterTests is AavePMTestSetup {
     // function test_GetContractBalanceWstETH() public {
     //     vm.startPrank(manager1);
     //     // Send some ETH to the contract and wrap it to WETH
-    //     (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
-    //     require(success, "Failed to send ETH to AavePM contract");
+    //     sendEth(address(aavePM), SEND_VALUE);
     //     aavePM.wrapETHToWETH();
 
     //     // Call the swapTokens function to get wstETH

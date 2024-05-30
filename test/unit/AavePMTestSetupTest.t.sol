@@ -10,10 +10,11 @@ import {IAavePM} from "src/interfaces/IAavePM.sol";
 
 import {HelperConfig} from "script/HelperConfig.s.sol";
 import {DeployAavePM} from "script/DeployAavePM.s.sol";
+import {HelperFunctions} from "script/HelperFunctions.s.sol";
 
-contract AavePMTestSetup is Test, AavePM {
+contract AavePMTestSetup is Test, HelperFunctions, AavePM {
     // Added to remove this whole testing file from coverage report.
-    function test() public {}
+    function test() public override {}
 
     AavePM aavePM;
     HelperConfig helperConfig;
@@ -81,8 +82,8 @@ contract AavePMTestSetup is Test, AavePM {
         vm.deal(attacker1, STARTING_BALANCE);
 
         WETH = IERC20(aavePM.getTokenAddress("WETH"));
-        wstETH = IERC20(aavePM.getTokenAddress("wstETH"));
         USDC = IERC20(aavePM.getTokenAddress("USDC"));
+        wstETH = IERC20(aavePM.getTokenAddress("wstETH"));
         awstETH = IERC20(aavePM.getTokenAddress("awstETH"));
 
         encodedRevert_AccessControlUnauthorizedAccount_Owner = abi.encodeWithSelector(

@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="tokenswaps"><a class="header" href="#tokenswaps">TokenSwaps</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d19c53af05240303ebf3eef4179958818b0faa99/src/TokenSwaps.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/11ab7710b15eabc524e56efab9f1ace1f4959de1/src/TokenSwaps.sol">Git Source</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="_swaptokens"><a class="header" href="#_swaptokens">_swapTokens</a></h3>
@@ -223,13 +223,9 @@ Reverts if there are no tokens in the contract or if the transaction doesn't mee
     address tokenOutAddress
 ) private view returns (uint256 minOut);
 </code></pre>
-<h3 id="_converttowethifneeded"><a class="header" href="#_converttowethifneeded">_convertToWETHIfNeeded</a></h3>
+<h3 id="_isidentifiereth"><a class="header" href="#_isidentifiereth">_isIdentifierETH</a></h3>
 <p>// TODO: Add comment</p>
-<pre><code class="language-solidity">function _convertToWETHIfNeeded(string memory identifier) private pure returns (string memory);
-</code></pre>
-<h2 id="errors"><a class="header" href="#errors">Errors</a></h2>
-<h3 id="tokenswaps__notenoughtokensforswap"><a class="header" href="#tokenswaps__notenoughtokensforswap">TokenSwaps__NotEnoughTokensForSwap</a></h3>
-<pre><code class="language-solidity">error TokenSwaps__NotEnoughTokensForSwap(string tokenInIdentifier);
+<pre><code class="language-solidity">function _isIdentifierETH(string memory identifier) private pure returns (bool);
 </code></pre>
 
                     </main>

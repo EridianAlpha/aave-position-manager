@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d19c53af05240303ebf3eef4179958818b0faa99/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/11ab7710b15eabc524e56efab9f1ace1f4959de1/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -243,14 +243,43 @@
 <h3 id="getslippagetolerancemaximum"><a class="header" href="#getslippagetolerancemaximum">getSlippageToleranceMaximum</a></h3>
 <pre><code class="language-solidity">function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
 </code></pre>
-<h3 id="getaavehealthfactordivisor"><a class="header" href="#getaavehealthfactordivisor">getAaveHealthFactorDivisor</a></h3>
-<pre><code class="language-solidity">function getAaveHealthFactorDivisor() external pure returns (uint256 aaveHealthFactorDivisor);
-</code></pre>
 <h3 id="getcontractbalance"><a class="header" href="#getcontractbalance">getContractBalance</a></h3>
 <pre><code class="language-solidity">function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
 </code></pre>
 <h3 id="getrolemembers"><a class="header" href="#getrolemembers">getRoleMembers</a></h3>
 <pre><code class="language-solidity">function getRoleMembers(string memory _roleString) external view returns (address[] memory);
+</code></pre>
+<h3 id="getroleadmin"><a class="header" href="#getroleadmin">getRoleAdmin</a></h3>
+<pre><code class="language-solidity">function getRoleAdmin(bytes32 role) external view returns (bytes32);
+</code></pre>
+<h3 id="getrolemember"><a class="header" href="#getrolemember">getRoleMember</a></h3>
+<pre><code class="language-solidity">function getRoleMember(bytes32 role, uint256 index) external view returns (address);
+</code></pre>
+<h3 id="getrolemembercount"><a class="header" href="#getrolemembercount">getRoleMemberCount</a></h3>
+<pre><code class="language-solidity">function getRoleMemberCount(bytes32 role) external view returns (uint256);
+</code></pre>
+<h3 id="grantrole"><a class="header" href="#grantrole">grantRole</a></h3>
+<pre><code class="language-solidity">function grantRole(bytes32 role, address account) external;
+</code></pre>
+<h3 id="hasrole"><a class="header" href="#hasrole">hasRole</a></h3>
+<pre><code class="language-solidity">function hasRole(bytes32 role, address account) external view returns (bool);
+</code></pre>
+<h3 id="renouncerole"><a class="header" href="#renouncerole">renounceRole</a></h3>
+<pre><code class="language-solidity">function renounceRole(bytes32 role, address callerConfirmation) external;
+</code></pre>
+<h3 id="revokerole"><a class="header" href="#revokerole">revokeRole</a></h3>
+<pre><code class="language-solidity">function revokeRole(bytes32 role, address account) external;
+</code></pre>
+<h3 id="supportsinterface"><a class="header" href="#supportsinterface">supportsInterface</a></h3>
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) external view returns (bool);
+</code></pre>
+<h3 id="upgradetoandcall"><a class="header" href="#upgradetoandcall">upgradeToAndCall</a></h3>
+<pre><code class="language-solidity">function upgradeToAndCall(address newImplementation, bytes memory data) external payable;
+</code></pre>
+<h3 id="executeoperation"><a class="header" href="#executeoperation">executeOperation</a></h3>
+<pre><code class="language-solidity">function executeOperation(address asset, uint256 amount, uint256 premium, address initiator, bytes calldata params)
+    external
+    returns (bool);
 </code></pre>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
 <h3 id="ethrescued"><a class="header" href="#ethrescued">EthRescued</a></h3>
@@ -298,6 +327,15 @@
 </code></pre>
 <h3 id="aavepm__slippagetoleranceabovemaximum"><a class="header" href="#aavepm__slippagetoleranceabovemaximum">AavePM__SlippageToleranceAboveMaximum</a></h3>
 <pre><code class="language-solidity">error AavePM__SlippageToleranceAboveMaximum();
+</code></pre>
+<h3 id="aavefunctions__flashloanmsgsenderunauthorized"><a class="header" href="#aavefunctions__flashloanmsgsenderunauthorized">AaveFunctions__FlashLoanMsgSenderUnauthorized</a></h3>
+<pre><code class="language-solidity">error AaveFunctions__FlashLoanMsgSenderUnauthorized();
+</code></pre>
+<h3 id="aavefunctions__flashloaninitiatorunauthorized"><a class="header" href="#aavefunctions__flashloaninitiatorunauthorized">AaveFunctions__FlashLoanInitiatorUnauthorized</a></h3>
+<pre><code class="language-solidity">error AaveFunctions__FlashLoanInitiatorUnauthorized();
+</code></pre>
+<h3 id="tokenswaps__notenoughtokensforswap"><a class="header" href="#tokenswaps__notenoughtokensforswap">TokenSwaps__NotEnoughTokensForSwap</a></h3>
+<pre><code class="language-solidity">error TokenSwaps__NotEnoughTokensForSwap(string tokenInIdentifier);
 </code></pre>
 <h2 id="structs"><a class="header" href="#structs">Structs</a></h2>
 <h3 id="contractaddress"><a class="header" href="#contractaddress">ContractAddress</a></h3>

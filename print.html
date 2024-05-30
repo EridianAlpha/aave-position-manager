@@ -238,16 +238,21 @@
 <h3 id="11-key-functions"><a class="header" href="#11-key-functions">1.1. Key Functions</a></h3>
 <h4 id="111-owner-functions"><a class="header" href="#111-owner-functions">1.1.1. Owner Functions</a></h4>
 <div class="table-wrapper"><table><thead><tr><th>Function</th><th>Restrictions</th><th>Description</th></tr></thead><tbody>
+<tr><td>upgradeToAndCall</td><td><code>OWNER_ROLE</code></td><td>Upgrade the contract</td></tr>
+<tr><td>updateContractAddress</td><td><code>OWNER_ROLE</code></td><td>Update the specified contract address</td></tr>
+<tr><td>updateTokenAddress</td><td><code>OWNER_ROLE</code></td><td>Update the specified token address</td></tr>
+<tr><td>updateUniswapV3Pool</td><td><code>OWNER_ROLE</code></td><td>Update the specified Uniswap V3 pool</td></tr>
 </tbody></table>
 </div>
 <h4 id="112-manager-functions"><a class="header" href="#112-manager-functions">1.1.2. Manager Functions</a></h4>
 <div class="table-wrapper"><table><thead><tr><th>Function</th><th>Restrictions</th><th>Description</th></tr></thead><tbody>
-<tr><td>updateHealthFactorTarget</td><td><code>MANAGER_ROLE</code></td><td>Set the desired Health Factor target.</td></tr>
+<tr><td>rebalance</td><td><code>MANAGER_ROLE</code></td><td>Rebalance the Aave position to the desired Health Factor.</td></tr>
 <tr><td>borrowAndWithdrawUSDC</td><td><code>MANAGER_ROLE</code></td><td>Borrow USDC from Aave and withdraw to the specified owner.</td></tr>
 <tr><td>withdrawWstETH</td><td><code>MANAGER_ROLE</code></td><td>Withdraw all wstETH from the contract to the specified owner.</td></tr>
 <tr><td>repayUSDC</td><td><code>MANAGER_ROLE</code></td><td>Repay USDC to Aave using all the USDC in the contract.</td></tr>
 <tr><td>withdrawTokens</td><td><code>MANAGER_ROLE</code></td><td>Withdraw all the specified tokens from the contract to the specified owner.</td></tr>
-<tr><td>rebalance</td><td><code>MANAGER_ROLE</code></td><td>Rebalance the Aave position to the desired Health Factor.</td></tr>
+<tr><td>updateHealthFactorTarget</td><td><code>MANAGER_ROLE</code></td><td>Set the desired Health Factor target.</td></tr>
+<tr><td>rescueEth</td><td><code>MANAGER_ROLE</code></td><td>Rescue ETH from the contract to the specified owner.</td></tr>
 </tbody></table>
 </div>
 <h2 id="2-webapp"><a class="header" href="#2-webapp">2. WebApp</a></h2>
@@ -340,7 +345,7 @@ TODO: Add threshold details.</p>
 <li><a href="src/interfaces/IWETH9.sol/interface.IWETH9.html">IWETH9</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d19c53af05240303ebf3eef4179958818b0faa99/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/11ab7710b15eabc524e56efab9f1ace1f4959de1/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -405,14 +410,43 @@ TODO: Add threshold details.</p>
 <h3 id="getslippagetolerancemaximum"><a class="header" href="#getslippagetolerancemaximum">getSlippageToleranceMaximum</a></h3>
 <pre><code class="language-solidity">function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
 </code></pre>
-<h3 id="getaavehealthfactordivisor"><a class="header" href="#getaavehealthfactordivisor">getAaveHealthFactorDivisor</a></h3>
-<pre><code class="language-solidity">function getAaveHealthFactorDivisor() external pure returns (uint256 aaveHealthFactorDivisor);
-</code></pre>
 <h3 id="getcontractbalance"><a class="header" href="#getcontractbalance">getContractBalance</a></h3>
 <pre><code class="language-solidity">function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
 </code></pre>
 <h3 id="getrolemembers"><a class="header" href="#getrolemembers">getRoleMembers</a></h3>
 <pre><code class="language-solidity">function getRoleMembers(string memory _roleString) external view returns (address[] memory);
+</code></pre>
+<h3 id="getroleadmin"><a class="header" href="#getroleadmin">getRoleAdmin</a></h3>
+<pre><code class="language-solidity">function getRoleAdmin(bytes32 role) external view returns (bytes32);
+</code></pre>
+<h3 id="getrolemember"><a class="header" href="#getrolemember">getRoleMember</a></h3>
+<pre><code class="language-solidity">function getRoleMember(bytes32 role, uint256 index) external view returns (address);
+</code></pre>
+<h3 id="getrolemembercount"><a class="header" href="#getrolemembercount">getRoleMemberCount</a></h3>
+<pre><code class="language-solidity">function getRoleMemberCount(bytes32 role) external view returns (uint256);
+</code></pre>
+<h3 id="grantrole"><a class="header" href="#grantrole">grantRole</a></h3>
+<pre><code class="language-solidity">function grantRole(bytes32 role, address account) external;
+</code></pre>
+<h3 id="hasrole"><a class="header" href="#hasrole">hasRole</a></h3>
+<pre><code class="language-solidity">function hasRole(bytes32 role, address account) external view returns (bool);
+</code></pre>
+<h3 id="renouncerole"><a class="header" href="#renouncerole">renounceRole</a></h3>
+<pre><code class="language-solidity">function renounceRole(bytes32 role, address callerConfirmation) external;
+</code></pre>
+<h3 id="revokerole"><a class="header" href="#revokerole">revokeRole</a></h3>
+<pre><code class="language-solidity">function revokeRole(bytes32 role, address account) external;
+</code></pre>
+<h3 id="supportsinterface"><a class="header" href="#supportsinterface">supportsInterface</a></h3>
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) external view returns (bool);
+</code></pre>
+<h3 id="upgradetoandcall"><a class="header" href="#upgradetoandcall">upgradeToAndCall</a></h3>
+<pre><code class="language-solidity">function upgradeToAndCall(address newImplementation, bytes memory data) external payable;
+</code></pre>
+<h3 id="executeoperation"><a class="header" href="#executeoperation">executeOperation</a></h3>
+<pre><code class="language-solidity">function executeOperation(address asset, uint256 amount, uint256 premium, address initiator, bytes calldata params)
+    external
+    returns (bool);
 </code></pre>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
 <h3 id="ethrescued"><a class="header" href="#ethrescued">EthRescued</a></h3>
@@ -461,6 +495,15 @@ TODO: Add threshold details.</p>
 <h3 id="aavepm__slippagetoleranceabovemaximum"><a class="header" href="#aavepm__slippagetoleranceabovemaximum">AavePM__SlippageToleranceAboveMaximum</a></h3>
 <pre><code class="language-solidity">error AavePM__SlippageToleranceAboveMaximum();
 </code></pre>
+<h3 id="aavefunctions__flashloanmsgsenderunauthorized"><a class="header" href="#aavefunctions__flashloanmsgsenderunauthorized">AaveFunctions__FlashLoanMsgSenderUnauthorized</a></h3>
+<pre><code class="language-solidity">error AaveFunctions__FlashLoanMsgSenderUnauthorized();
+</code></pre>
+<h3 id="aavefunctions__flashloaninitiatorunauthorized"><a class="header" href="#aavefunctions__flashloaninitiatorunauthorized">AaveFunctions__FlashLoanInitiatorUnauthorized</a></h3>
+<pre><code class="language-solidity">error AaveFunctions__FlashLoanInitiatorUnauthorized();
+</code></pre>
+<h3 id="tokenswaps__notenoughtokensforswap"><a class="header" href="#tokenswaps__notenoughtokensforswap">TokenSwaps__NotEnoughTokensForSwap</a></h3>
+<pre><code class="language-solidity">error TokenSwaps__NotEnoughTokensForSwap(string tokenInIdentifier);
+</code></pre>
 <h2 id="structs"><a class="header" href="#structs">Structs</a></h2>
 <h3 id="contractaddress"><a class="header" href="#contractaddress">ContractAddress</a></h3>
 <pre><code class="language-solidity">struct ContractAddress {
@@ -482,7 +525,7 @@ TODO: Add threshold details.</p>
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ierc20extended"><a class="header" href="#ierc20extended">IERC20Extended</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d19c53af05240303ebf3eef4179958818b0faa99/src/interfaces/IERC20Extended.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/11ab7710b15eabc524e56efab9f1ace1f4959de1/src/interfaces/IERC20Extended.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 IERC20</p>
 <p>This interface extends the ERC20 interface with the decimals function.</p>
@@ -491,7 +534,7 @@ IERC20</p>
 <pre><code class="language-solidity">function decimals() external view returns (uint8);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iweth9"><a class="header" href="#iweth9">IWETH9</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d19c53af05240303ebf3eef4179958818b0faa99/src/interfaces/IWETH9.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/11ab7710b15eabc524e56efab9f1ace1f4959de1/src/interfaces/IWETH9.sol">Git Source</a></p>
 <p>This interface enables the wrapping and unwrapping of ETH to WETH.</p>
 <h2 id="functions-2"><a class="header" href="#functions-2">Functions</a></h2>
 <h3 id="deposit"><a class="header" href="#deposit">deposit</a></h3>
@@ -501,7 +544,7 @@ IERC20</p>
 <pre><code class="language-solidity">function withdraw(uint256 wad) external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavefunctions"><a class="header" href="#aavefunctions">AaveFunctions</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d19c53af05240303ebf3eef4179958818b0faa99/src/AaveFunctions.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/11ab7710b15eabc524e56efab9f1ace1f4959de1/src/AaveFunctions.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AaveFunctions.sol//src/TokenSwaps.sol/contract.TokenSwaps.html">TokenSwaps</a></p>
 <p>// TODO: Add comment</p>
@@ -540,13 +583,13 @@ TODO: Update comment.</p>
 <tr><td><code>repayAmount</code></td><td><code>uint256</code></td><td>The amount of USDC to repay. 8 decimal places to the dollar. e.g. 100000000 = $1.00.</td></tr>
 </tbody></table>
 </div>
-<h3 id="executeoperation"><a class="header" href="#executeoperation">executeOperation</a></h3>
+<h3 id="_executeoperation"><a class="header" href="#_executeoperation">_executeOperation</a></h3>
 <p>Flash loan callback function.</p>
 <p><em>This function is called by the Aave pool contract after the flash loan is executed.
 It is used to repay the flash loan and execute the operation.
 The function is called by the Aave pool contract and is not intended to be called directly.</em></p>
-<pre><code class="language-solidity">function executeOperation(address asset, uint256 amount, uint256 premium, address initiator, bytes calldata)
-    external
+<pre><code class="language-solidity">function _executeOperation(address asset, uint256 amount, uint256 premium, address initiator, bytes calldata)
+    internal
     returns (bool);
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -571,12 +614,8 @@ The function is called by the Aave pool contract and is not intended to be calle
     uint16 healthFactorTarget
 ) internal pure returns (uint256 maxBorrowUSDC);
 </code></pre>
-<h2 id="errors-1"><a class="header" href="#errors-1">Errors</a></h2>
-<h3 id="aavefunctions__flashloaninitiatorunauthorized"><a class="header" href="#aavefunctions__flashloaninitiatorunauthorized">AaveFunctions__FlashLoanInitiatorUnauthorized</a></h3>
-<pre><code class="language-solidity">error AaveFunctions__FlashLoanInitiatorUnauthorized();
-</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d19c53af05240303ebf3eef4179958818b0faa99/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/11ab7710b15eabc524e56efab9f1ace1f4959de1/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AavePM.sol//src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="src/AavePM.sol//src/Rebalance.sol/contract.Rebalance.html">Rebalance</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -584,55 +623,49 @@ EridianAlpha</p>
 <p>A contract to manage positions on Aave.</p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="s_creator"><a class="header" href="#s_creator">s_creator</a></h3>
-<pre><code class="language-solidity">address private s_creator;
+<pre><code class="language-solidity">address internal s_creator;
 </code></pre>
 <h3 id="s_contractaddresses"><a class="header" href="#s_contractaddresses">s_contractAddresses</a></h3>
-<pre><code class="language-solidity">mapping(string =&gt; address) private s_contractAddresses;
+<pre><code class="language-solidity">mapping(string =&gt; address) internal s_contractAddresses;
 </code></pre>
 <h3 id="s_tokenaddresses"><a class="header" href="#s_tokenaddresses">s_tokenAddresses</a></h3>
-<pre><code class="language-solidity">mapping(string =&gt; address) private s_tokenAddresses;
+<pre><code class="language-solidity">mapping(string =&gt; address) internal s_tokenAddresses;
 </code></pre>
 <h3 id="s_uniswapv3pools"><a class="header" href="#s_uniswapv3pools">s_uniswapV3Pools</a></h3>
-<pre><code class="language-solidity">mapping(string =&gt; UniswapV3Pool) private s_uniswapV3Pools;
+<pre><code class="language-solidity">mapping(string =&gt; UniswapV3Pool) internal s_uniswapV3Pools;
 </code></pre>
 <h3 id="s_healthfactortarget"><a class="header" href="#s_healthfactortarget">s_healthFactorTarget</a></h3>
-<pre><code class="language-solidity">uint16 private s_healthFactorTarget;
+<pre><code class="language-solidity">uint16 internal s_healthFactorTarget;
 </code></pre>
 <h3 id="s_slippagetolerance"><a class="header" href="#s_slippagetolerance">s_slippageTolerance</a></h3>
-<pre><code class="language-solidity">uint16 private s_slippageTolerance;
+<pre><code class="language-solidity">uint16 internal s_slippageTolerance;
 </code></pre>
 <h3 id="version"><a class="header" href="#version">VERSION</a></h3>
 <p>The version of the contract.</p>
 <p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
-<pre><code class="language-solidity">string private constant VERSION = &quot;0.0.1&quot;;
+<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
 </code></pre>
 <h3 id="owner_role"><a class="header" href="#owner_role">OWNER_ROLE</a></h3>
 <p>The role hashes for the contract.</p>
 <p><em>Two independent roles are defined: <code>OWNER_ROLE</code> and <code>MANAGER_ROLE</code>.</em></p>
-<pre><code class="language-solidity">bytes32 private constant OWNER_ROLE = keccak256(&quot;OWNER_ROLE&quot;);
+<pre><code class="language-solidity">bytes32 internal constant OWNER_ROLE = keccak256(&quot;OWNER_ROLE&quot;);
 </code></pre>
 <h3 id="manager_role"><a class="header" href="#manager_role">MANAGER_ROLE</a></h3>
-<pre><code class="language-solidity">bytes32 private constant MANAGER_ROLE = keccak256(&quot;MANAGER_ROLE&quot;);
+<pre><code class="language-solidity">bytes32 internal constant MANAGER_ROLE = keccak256(&quot;MANAGER_ROLE&quot;);
 </code></pre>
 <h3 id="health_factor_target_minimum"><a class="header" href="#health_factor_target_minimum">HEALTH_FACTOR_TARGET_MINIMUM</a></h3>
 <p>The minimum Health Factor target.</p>
 <p><em>The value is hardcoded in the contract to prevent the position from
 being liquidated cause by accidentally setting a low target.
 A contract upgrade is required to change this value.</em></p>
-<pre><code class="language-solidity">uint16 private constant HEALTH_FACTOR_TARGET_MINIMUM = 200;
+<pre><code class="language-solidity">uint16 internal constant HEALTH_FACTOR_TARGET_MINIMUM = 200;
 </code></pre>
 <h3 id="slippage_tolerance_maximum"><a class="header" href="#slippage_tolerance_maximum">SLIPPAGE_TOLERANCE_MAXIMUM</a></h3>
 <p>The maximum Slippage Tolerance.</p>
 <p><em>The value is hardcoded in the contract to prevent terrible trades
 from occurring due to a high slippage tolerance.
 A contract upgrade is required to change this value.</em></p>
-<pre><code class="language-solidity">uint16 private constant SLIPPAGE_TOLERANCE_MAXIMUM = 200;
-</code></pre>
-<h3 id="aave_health_factor_divisor"><a class="header" href="#aave_health_factor_divisor">AAVE_HEALTH_FACTOR_DIVISOR</a></h3>
-<p>The divisor for the Aave Health Factor.</p>
-<p><em>The Aave Health Factor is a value with 18 decimal places.
-This divisor is used to scale the Health Factor to 2 decimal places.</em></p>
-<pre><code class="language-solidity">uint256 private constant AAVE_HEALTH_FACTOR_DIVISOR = 1e16;
+<pre><code class="language-solidity">uint16 internal constant SLIPPAGE_TOLERANCE_MAXIMUM = 100;
 </code></pre>
 <h2 id="functions-4"><a class="header" href="#functions-4">Functions</a></h2>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
@@ -670,16 +703,17 @@ This divisor is used to scale the Health Factor to 2 decimal places.</em></p>
 <tr><td><code>initialSlippageTolerance</code></td><td><code>uint16</code></td><td>The initial slippage tolerance for token swaps.</td></tr>
 </tbody></table>
 </div>
-<h3 id="_authorizeupgrade"><a class="header" href="#_authorizeupgrade">_authorizeUpgrade</a></h3>
-<p>Internal function to authorize an upgrade.</p>
-<p><em>Caller must have <code>OWNER_ROLE</code>.</em></p>
-<pre><code class="language-solidity">function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE);
+<h3 id="_initialize"><a class="header" href="#_initialize">_initialize</a></h3>
+<p>// TODO: Add comment. Just the state setting logic</p>
+<pre><code class="language-solidity">function _initialize(
+    address owner,
+    ContractAddress[] memory contractAddresses,
+    TokenAddress[] memory tokenAddresses,
+    UniswapV3Pool[] memory uniswapV3Pools,
+    uint16 initialHealthFactorTarget,
+    uint16 initialSlippageTolerance
+) internal;
 </code></pre>
-<p><strong>Parameters</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>_newImplementation</code></td><td><code>address</code></td><td>Address of the new contract implementation.</td></tr>
-</tbody></table>
-</div>
 <h3 id="updatecontractaddress-1"><a class="header" href="#updatecontractaddress-1">updateContractAddress</a></h3>
 <p>Generic update function to set the contract address for a given identifier.</p>
 <p><em>Caller must have <code>OWNER_ROLE</code>.
@@ -870,16 +904,6 @@ If the health factor is above the target, it borrows more USDC and reinvests.</e
 <tr><td><code>slippageToleranceMaximum</code></td><td><code>uint16</code></td><td>The Slippage Tolerance maximum value.</td></tr>
 </tbody></table>
 </div>
-<h3 id="getaavehealthfactordivisor-1"><a class="header" href="#getaavehealthfactordivisor-1">getAaveHealthFactorDivisor</a></h3>
-<p>Getter function to get the Aave Health Factor divisor.</p>
-<p><em>Public function to allow anyone to view the Aave Health Factor divisor value.</em></p>
-<pre><code class="language-solidity">function getAaveHealthFactorDivisor() public pure returns (uint256 aaveHealthFactorDivisor);
-</code></pre>
-<p><strong>Returns</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>aaveHealthFactorDivisor</code></td><td><code>uint256</code></td><td>The Aave Health Factor divisor value.</td></tr>
-</tbody></table>
-</div>
 <h3 id="getcontractbalance-1"><a class="header" href="#getcontractbalance-1">getContractBalance</a></h3>
 <p>Getter function to get the balance of the provided identifier.</p>
 <p><em>Public function to allow anyone to view the balance of the provided identifier.</em></p>
@@ -909,8 +933,102 @@ If the health factor is above the target, it borrows more USDC and reinvests.</e
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>&lt;none&gt;</code></td><td><code>address[]</code></td><td>members The array of addresses that are members of the role.</td></tr>
 </tbody></table>
+</div>
+<h3 id="getrolemember-1"><a class="header" href="#getrolemember-1">getRoleMember</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function getRoleMember(bytes32 role, uint256 index)
+    public
+    view
+    override(IAavePM, AccessControlEnumerableUpgradeable)
+    returns (address);
+</code></pre>
+<h3 id="getrolemembercount-1"><a class="header" href="#getrolemembercount-1">getRoleMemberCount</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function getRoleMemberCount(bytes32 role)
+    public
+    view
+    override(IAavePM, AccessControlEnumerableUpgradeable)
+    returns (uint256);
+</code></pre>
+<h3 id="getroleadmin-1"><a class="header" href="#getroleadmin-1">getRoleAdmin</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function getRoleAdmin(bytes32 role)
+    public
+    view
+    override(IAavePM, IAccessControl, AccessControlUpgradeable)
+    returns (bytes32);
+</code></pre>
+<h3 id="grantrole-1"><a class="header" href="#grantrole-1">grantRole</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function grantRole(bytes32 role, address account) public override(IAavePM, IAccessControl, AccessControlUpgradeable);
+</code></pre>
+<h3 id="hasrole-1"><a class="header" href="#hasrole-1">hasRole</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function hasRole(bytes32 role, address account)
+    public
+    view
+    override(IAavePM, IAccessControl, AccessControlUpgradeable)
+    returns (bool);
+</code></pre>
+<h3 id="renouncerole-1"><a class="header" href="#renouncerole-1">renounceRole</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function renounceRole(bytes32 role, address callerConfirmation)
+    public
+    override(IAavePM, IAccessControl, AccessControlUpgradeable);
+</code></pre>
+<h3 id="revokerole-1"><a class="header" href="#revokerole-1">revokeRole</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function revokeRole(bytes32 role, address account) public override(IAavePM, IAccessControl, AccessControlUpgradeable);
+</code></pre>
+<h3 id="supportsinterface-1"><a class="header" href="#supportsinterface-1">supportsInterface</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId)
+    public
+    view
+    override(IAavePM, AccessControlEnumerableUpgradeable)
+    returns (bool);
+</code></pre>
+<h3 id="_authorizeupgrade"><a class="header" href="#_authorizeupgrade">_authorizeUpgrade</a></h3>
+<p>Internal function to authorize an upgrade.</p>
+<p><em>Caller must have <code>OWNER_ROLE</code>.</em></p>
+<pre><code class="language-solidity">function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_newImplementation</code></td><td><code>address</code></td><td>Address of the new contract implementation.</td></tr>
+</tbody></table>
+</div>
+<h3 id="upgradetoandcall-1"><a class="header" href="#upgradetoandcall-1">upgradeToAndCall</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function upgradeToAndCall(address newImplementation, bytes memory data)
+    public
+    payable
+    override(IAavePM, UUPSUpgradeable);
+</code></pre>
+<h3 id="executeoperation-1"><a class="header" href="#executeoperation-1">executeOperation</a></h3>
+<p>Flash loan callback function.</p>
+<p><em>This function is called by the Aave pool contract after the flash loan is executed.
+It is used to repay the flash loan and execute the operation.
+The function is called by the Aave pool contract and is not intended to be called directly.</em></p>
+<pre><code class="language-solidity">function executeOperation(address asset, uint256 amount, uint256 premium, address initiator, bytes calldata params)
+    external
+    returns (bool);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>asset</code></td><td><code>address</code></td><td>The address of the asset being flash loaned.</td></tr>
+<tr><td><code>amount</code></td><td><code>uint256</code></td><td>The amount of the asset being flash loaned.</td></tr>
+<tr><td><code>premium</code></td><td><code>uint256</code></td><td>The fee charged for the flash loan.</td></tr>
+<tr><td><code>initiator</code></td><td><code>address</code></td><td>The address of the contract that initiated the flash loan.</td></tr>
+<tr><td><code>params</code></td><td><code>bytes</code></td><td>The parameters for the flash loan operation.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>bool True if the operation was successful.</td></tr>
+</tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="rebalance-2"><a class="header" href="#rebalance-2">Rebalance</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d19c53af05240303ebf3eef4179958818b0faa99/src/Rebalance.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/11ab7710b15eabc524e56efab9f1ace1f4959de1/src/Rebalance.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/Rebalance.sol//src/TokenSwaps.sol/contract.TokenSwaps.html">TokenSwaps</a>, <a href="src/Rebalance.sol//src/AaveFunctions.sol/contract.AaveFunctions.html">AaveFunctions</a></p>
 <p>// TODO: Add comment</p>
@@ -945,7 +1063,7 @@ If the health factor is above the target, it borrows more USDC and reinvests.</e
 ) private;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="tokenswaps"><a class="header" href="#tokenswaps">TokenSwaps</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d19c53af05240303ebf3eef4179958818b0faa99/src/TokenSwaps.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/11ab7710b15eabc524e56efab9f1ace1f4959de1/src/TokenSwaps.sol">Git Source</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions-6"><a class="header" href="#functions-6">Functions</a></h2>
 <h3 id="_swaptokens"><a class="header" href="#_swaptokens">_swapTokens</a></h3>
@@ -990,13 +1108,9 @@ Reverts if there are no tokens in the contract or if the transaction doesn't mee
     address tokenOutAddress
 ) private view returns (uint256 minOut);
 </code></pre>
-<h3 id="_converttowethifneeded"><a class="header" href="#_converttowethifneeded">_convertToWETHIfNeeded</a></h3>
+<h3 id="_isidentifiereth"><a class="header" href="#_isidentifiereth">_isIdentifierETH</a></h3>
 <p>// TODO: Add comment</p>
-<pre><code class="language-solidity">function _convertToWETHIfNeeded(string memory identifier) private pure returns (string memory);
-</code></pre>
-<h2 id="errors-2"><a class="header" href="#errors-2">Errors</a></h2>
-<h3 id="tokenswaps__notenoughtokensforswap"><a class="header" href="#tokenswaps__notenoughtokensforswap">TokenSwaps__NotEnoughTokensForSwap</a></h3>
-<pre><code class="language-solidity">error TokenSwaps__NotEnoughTokensForSwap(string tokenInIdentifier);
+<pre><code class="language-solidity">function _isIdentifierETH(string memory identifier) private pure returns (bool);
 </code></pre>
 
                     </main>

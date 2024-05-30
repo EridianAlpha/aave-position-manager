@@ -6,7 +6,22 @@ import {console} from "forge-std/console.sol";
 import {Script, console} from "forge-std/Script.sol";
 
 contract HelperFunctions is Script {
-    function test() public {} // Added to remove this whole contract from coverage report.
+    function test() public virtual {} // Added to remove this whole contract from coverage report.
+
+    // Used in test contracts to simplify the process of sending ETH
+    function sendEth(address to, uint256 amount) public {
+        (bool success,) = to.call{value: amount}("");
+        string memory errorMessage = string(abi.encodePacked("Failed to send ETH to: ", addressToString(to)));
+        require(success, errorMessage);
+    }
+
+    // Overloaded function used in test contracts to simplify the process of sending ETH with data
+    function sendEth(address to, uint256 amount, bytes memory data) public {
+        (bool success,) = to.call{value: amount}(data);
+        string memory errorMessage =
+            string(abi.encodePacked("Failed to send ETH with data: ", bytesToString(data), "to: ", addressToString(to)));
+        require(success, errorMessage);
+    }
 
     function parseHexString(string memory _a) internal pure returns (address _parsedAddress) {
         bytes memory tmp = bytes(_a);

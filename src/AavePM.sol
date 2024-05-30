@@ -118,7 +118,7 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
         __AccessControlEnumerable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
-        _initialize(
+        _initializeState(
             owner,
             contractAddresses,
             tokenAddresses,
@@ -129,7 +129,7 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
     }
 
     /// @notice // TODO: Add comment. Just the state setting logic
-    function _initialize(
+    function _initializeState(
         address owner,
         ContractAddress[] memory contractAddresses,
         TokenAddress[] memory tokenAddresses,

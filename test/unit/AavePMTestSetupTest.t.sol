@@ -51,7 +51,7 @@ contract AavePMTestSetup is Test, HelperFunctions, AavePM {
 
         // Call the _initialize function to set up this test contract,
         // initialized with the same config as the AavePM contract
-        _initialize(
+        _initializeState(
             owner1,
             config.contractAddresses,
             config.tokenAddresses,

@@ -40,9 +40,12 @@ contract TokenSwaps {
         IAavePM aavePM = IAavePM(address(this));
         (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee) = aavePM.getUniswapV3Pool(_uniswapV3PoolIdentifier);
 
+        // If the input is ETH, wrap any ETH to WETH.
+        if (_isIdentifierETH(_tokenInIdentifier) && aavePM.getContractBalance("ETH") > 0) _wrapETHToWETH();
+
         // If ETH is input or output, convert the identifier to WETH.
-        _tokenInIdentifier = _convertToWETHIfNeeded(_tokenInIdentifier);
-        _tokenOutIdentifier = _convertToWETHIfNeeded(_tokenOutIdentifier);
+        _tokenInIdentifier = _isIdentifierETH(_tokenInIdentifier) ? "WETH" : _tokenInIdentifier;
+        _tokenOutIdentifier = _isIdentifierETH(_tokenOutIdentifier) ? "WETH" : _tokenOutIdentifier;
 
         // Get the token addresses from the identifiers.
         address tokenInAddress = aavePM.getTokenAddress(_tokenInIdentifier);
@@ -115,7 +118,7 @@ contract TokenSwaps {
     }
 
     /// @notice // TODO: Add comment
-    function _convertToWETHIfNeeded(string memory identifier) private pure returns (string memory) {
-        return (keccak256(abi.encodePacked(identifier)) == keccak256(abi.encodePacked("ETH"))) ? "WETH" : identifier;
+    function _isIdentifierETH(string memory identifier) private pure returns (bool) {
+        return (keccak256(abi.encodePacked(identifier)) == keccak256(abi.encodePacked("ETH"))) ? true : false;
     }
 }

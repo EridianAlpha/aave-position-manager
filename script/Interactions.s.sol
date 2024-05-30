@@ -73,8 +73,22 @@ contract Interactions is Script {
         vm.stopBroadcast();
     }
 
+    function aaveRepayAavePM() public {
+        vm.startBroadcast();
+        aavePM.aaveRepay();
+        vm.stopBroadcast();
+    }
+
+    function withdrawWstETHAavePM(uint256 value) public {
+        vm.startBroadcast();
+        // TODO: Change this hardcoded Anvil address to an input parameter.
+        aavePM.aaveWithdrawWstETH(value, 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+        vm.stopBroadcast();
+    }
+
     function borrowAndWithdrawUSDCAavePM(uint256 value) public {
         vm.startBroadcast();
+        // TODO: Change this hardcoded Anvil address to an input parameter.
         aavePM.borrowAndWithdrawUSDC(value, 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
         vm.stopBroadcast();
     }

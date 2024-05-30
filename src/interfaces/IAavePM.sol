@@ -90,7 +90,9 @@ interface IAavePM {
     // ================================================================
     function rebalance() external;
     function aaveSupply() external;
-    function borrowAndWithdrawUSDC(uint256 _amount, address _owner) external;
+    function aaveRepay() external;
+    function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress) external;
+    function borrowAndWithdrawUSDC(uint256 borrowAmount, address ownerAddress) external;
 
     // ================================================================
     // │                       FUNCTIONS - GETTERS                    │
@@ -109,7 +111,8 @@ interface IAavePM {
     function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function getRoleMembers(string memory _roleString) external view returns (address[] memory);
-    function getMaxBorrowAmountUSDC() external view returns (uint256 maxBorrowUSDC);
+    function getWithdrawnUSDCTotal() external view returns (uint256);
+    function getMaxBorrowAndWithdrawUSDCAmount() external view returns (uint256 maxBorrowUSDC);
 
     // ================================================================
     // │             INHERITED FUNCTIONS - ACCESS CONTROLS            │

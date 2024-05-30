@@ -1,28 +1,31 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
+import {console} from "forge-std/Test.sol";
 import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
 
+import {AavePM} from "src/AavePM.sol";
+
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // ================================================================
 // │                         REBALANCE TESTS                      │
 // ================================================================
 contract RebalanceTests is AavePMTestSetup {
-    function test_Rebalance() public {
-        vm.startPrank(manager1);
-        // Send some ETH to the contract
-        (bool success,) = address(aavePM).call{value: SEND_VALUE}("");
-        require(success, "Failed to send ETH to AavePM contract");
-
-        aavePM.rebalance();
-
-        (,,,,, uint256 endHealthFactor) =
-            IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address(aavePM));
+    function checkEndHealthFactor(address _address) public view {
+        (,,,,, uint256 endHealthFactor) = IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(_address);
         uint256 endHealthFactorScaled = endHealthFactor / 1e16;
 
         require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + REBALANCED_HEALTH_FACTOR_TOLERANCE));
         require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - REBALANCED_HEALTH_FACTOR_TOLERANCE));
+    }
+
+    function test_Rebalance() public {
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
+        aavePM.rebalance();
+        checkEndHealthFactor(address(aavePM));
         vm.stopPrank();
     }
 
@@ -34,17 +37,9 @@ contract RebalanceTests is AavePMTestSetup {
         aavePM.updateHealthFactorTarget(HEALTH_FACTOR_TARGET_MINIMUM);
 
         aavePM.rebalance();
-
-        (,,,,, uint256 endHealthFactor) =
-            IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address(aavePM));
-        uint256 endHealthFactorScaled = endHealthFactor / 1e16;
-
-        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + REBALANCED_HEALTH_FACTOR_TOLERANCE));
-        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - REBALANCED_HEALTH_FACTOR_TOLERANCE));
+        checkEndHealthFactor(address(aavePM));
         vm.stopPrank();
     }
-
-    // TODO: Add additional tests for the rebalance function for non-empty Aave accounts
 
     function test_RebalanceHealthFactorIncrease() public {
         test_Rebalance();
@@ -53,14 +48,26 @@ contract RebalanceTests is AavePMTestSetup {
         // Increase the health factor target
         aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() + HEALTH_FACTOR_TARGET_CHANGE);
         aavePM.rebalance();
-
-        (,,,,, uint256 endHealthFactor) =
-            IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address(aavePM));
-        uint256 endHealthFactorScaled = endHealthFactor / 1e16;
-
-        // TODO: These ranges should be set as a global test variable
-        require(endHealthFactorScaled <= (aavePM.getHealthFactorTarget() + REBALANCED_HEALTH_FACTOR_TOLERANCE));
-        require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - REBALANCED_HEALTH_FACTOR_TOLERANCE));
+        checkEndHealthFactor(address(aavePM));
         vm.stopPrank();
+    }
+
+    function test_Exposed_RebalanceWithUSDC() public {
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(this), SEND_VALUE);
+        vm.stopPrank();
+
+        // Call internal functions as the current test contract (no prank)
+        _rebalance();
+
+        // Send ETH and convert it to USDC
+        vm.startPrank(manager1);
+        sendEth(address(this), SEND_VALUE);
+        vm.stopPrank();
+
+        _swapTokens("USDC/ETH", "ETH", "USDC");
+        _rebalance();
+        checkEndHealthFactor(address(this));
     }
 }

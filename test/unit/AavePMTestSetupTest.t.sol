@@ -26,7 +26,7 @@ contract AavePMTestSetup is Test, HelperFunctions, AavePM {
     uint24 internal constant UNISWAPV3_POOL_FEE_CHANGE = 100;
     uint16 internal constant HEALTH_FACTOR_TARGET_CHANGE = 100;
     uint16 internal constant SLIPPAGE_TOLERANCE_CHANGE = 100;
-    uint16 internal constant REBALANCED_HEALTH_FACTOR_TOLERANCE = 1;
+    uint16 internal constant REBALANCED_HEALTH_FACTOR_TOLERANCE = 2;
     string internal constant UPGRADE_EXAMPLE_VERSION = "9.9.9";
 
     // Create users

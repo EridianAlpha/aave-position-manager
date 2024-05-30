@@ -42,40 +42,22 @@ contract AavePMTestSetup is Test, AavePM {
     IERC20 USDC;
     IERC20 awstETH;
 
-    mapping(string => address) s_contractAddresses;
-    mapping(string => address) s_tokenAddresses;
-    mapping(string => IAavePM.UniswapV3Pool) private s_uniswapV3Pools;
-    uint16 initialHealthFactorTarget;
-    uint16 initialSlippageTolerance;
-
     function setUp() external {
         DeployAavePM deployAavePM = new DeployAavePM();
 
         (aavePM, helperConfig) = deployAavePM.run();
         HelperConfig.NetworkConfig memory config = helperConfig.getActiveNetworkConfig();
 
-        IAavePM.ContractAddress[] memory contractAddresses = config.contractAddresses;
-        IAavePM.TokenAddress[] memory tokenAddresses = config.tokenAddresses;
-        IAavePM.UniswapV3Pool[] memory uniswapV3Pools = config.uniswapV3Pools;
-        initialHealthFactorTarget = config.initialHealthFactorTarget;
-        initialSlippageTolerance = config.initialSlippageTolerance;
-
-        // Convert the contractAddresses array to a mapping
-        for (uint256 i = 0; i < contractAddresses.length; i++) {
-            s_contractAddresses[contractAddresses[i].identifier] = contractAddresses[i].contractAddress;
-        }
-
-        // Convert the tokenAddresses array to a mapping
-        for (uint256 i = 0; i < tokenAddresses.length; i++) {
-            s_tokenAddresses[tokenAddresses[i].identifier] = tokenAddresses[i].tokenAddress;
-        }
-
-        // Convert the uniswapV3Pools array to a mapping.
-        for (uint256 i = 0; i < uniswapV3Pools.length; i++) {
-            s_uniswapV3Pools[uniswapV3Pools[i].identifier] = IAavePM.UniswapV3Pool(
-                uniswapV3Pools[i].identifier, uniswapV3Pools[i].poolAddress, uniswapV3Pools[i].fee
-            );
-        }
+        // Call the _initialize function to set up this test contract,
+        // initialized with the same config as the AavePM contract
+        _initialize(
+            owner1,
+            config.contractAddresses,
+            config.tokenAddresses,
+            config.uniswapV3Pools,
+            config.initialHealthFactorTarget,
+            config.initialSlippageTolerance
+        );
 
         // Add the owner1 user as the new owner and manager
         aavePM.grantRole(keccak256("OWNER_ROLE"), owner1);
@@ -89,6 +71,11 @@ contract AavePMTestSetup is Test, AavePM {
         aavePM.revokeRole(keccak256("MANAGER_ROLE"), address(this));
         aavePM.revokeRole(keccak256("OWNER_ROLE"), address(this));
 
+        // Set the starting balance of this contract (which is the AavePMTestSetup contract) to zero
+        // Then it can explicitly be sent funds when needed for testing
+        vm.deal(address(this), 0);
+
+        // Give all the users some starting balance
         vm.deal(owner1, STARTING_BALANCE);
         vm.deal(manager1, STARTING_BALANCE);
         vm.deal(attacker1, STARTING_BALANCE);

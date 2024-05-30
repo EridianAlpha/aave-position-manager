@@ -35,13 +35,8 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         address wstETHAddress = aavePM.getTokenAddress("wstETH");
         address usdcAddress = aavePM.getTokenAddress("USDC");
 
-        // Convert any existing tokens and supply to Aave.
-        if (aavePM.getContractBalance("ETH") > 0) _wrapETHToWETH();
-        if (aavePM.getContractBalance("USDC") > 0) _swapTokens("USDC/ETH", "USDC", "ETH");
-        if (aavePM.getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");
-        if (aavePM.getContractBalance("wstETH") > 0) {
-            _aaveSupply(aavePoolAddress, wstETHAddress, aavePM.getContractBalance("wstETH"));
-        }
+        // Convert any existing tokens to wstETH and supply to Aave.
+        _convertExistingBalanceToWstETHAndSupplyToAave(aavePM, aavePoolAddress, wstETHAddress);
 
         // Get the current Aave account data.
         (
@@ -68,7 +63,7 @@ contract Rebalance is TokenSwaps, AaveFunctions {
 
         if (initialHealthFactorScaled < (healthFactorTarget - healthFactorTargetRange)) {
             // If the health factor is below the target, repay debt to increase the health factor.
-            _repayDebt(aavePM, totalDebtBase, maxBorrowUSDC, aavePoolAddress, usdcAddress, wstETHAddress);
+            _repayDebt(totalDebtBase, maxBorrowUSDC, aavePoolAddress, usdcAddress);
         } else if (initialHealthFactorScaled > healthFactorTarget + healthFactorTargetRange) {
             // If the health factor is above the target, borrow more USDC and reinvest.
             _reinvest(aavePM, totalDebtBase, maxBorrowUSDC, aavePoolAddress, usdcAddress, wstETHAddress);
@@ -79,34 +74,32 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         (,,,,, uint256 endHealthFactor) = IPool(aavePoolAddress).getUserAccountData(address(this));
         uint256 endHealthFactorScaled = endHealthFactor / 1e16;
         if (endHealthFactorScaled < (aavePM.getHealthFactorTargetMinimum() - 1)) {
-            // TODO: Move this error to CoreFunctions interface.
             revert IAavePM.AavePM__HealthFactorBelowMinimum();
         }
     }
 
-    function _repayDebt(
+    function _convertExistingBalanceToWstETHAndSupplyToAave(
         IAavePM aavePM,
-        uint256 totalDebtBase,
-        uint256 maxBorrowUSDC,
         address aavePoolAddress,
-        address usdcAddress,
         address wstETHAddress
     ) private {
+        if (aavePM.getContractBalance("ETH") > 0) _wrapETHToWETH();
+        if (aavePM.getContractBalance("USDC") > 0) _swapTokens("USDC/ETH", "USDC", "ETH");
+        if (aavePM.getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");
+
+        uint256 wstETHBalance = aavePM.getContractBalance("wstETH");
+        if (wstETHBalance > 0) _aaveSupply(aavePoolAddress, wstETHAddress, wstETHBalance);
+    }
+
+    function _repayDebt(uint256 totalDebtBase, uint256 maxBorrowUSDC, address aavePoolAddress, address usdcAddress)
+        private
+    {
         // Calculate the repayment amount required to reach the target health factor.
         uint256 repaymentAmountUSDC = totalDebtBase - maxBorrowUSDC;
 
         // Take out a flash loan for the USDC amount needed to repay and rebalance the health factor.
         // flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
         IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaymentAmountUSDC / 1e2, bytes(""), 0);
-
-        // Deposit any remaining dust to Aave.
-        // TODO: Set a lower limit for dust so it doesn't cost more in gas to deposit than the amount.
-        if (aavePM.getContractBalance("wstETH") > 0) {
-            _aaveSupply(aavePoolAddress, wstETHAddress, aavePM.getContractBalance("wstETH"));
-        }
-        if (aavePM.getContractBalance("USDC") > 0) {
-            _aaveRepayDebt(aavePoolAddress, usdcAddress, aavePM.getContractBalance("USDC"));
-        }
     }
 
     function _reinvest(

@@ -4,6 +4,7 @@ pragma solidity 0.8.24;
 import {console} from "forge-std/Test.sol";
 import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
 
+import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {AavePM} from "src/AavePM.sol";
 
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
@@ -21,7 +22,16 @@ contract RebalanceTests is AavePMTestSetup {
         require(endHealthFactorScaled >= (aavePM.getHealthFactorTarget() - REBALANCED_HEALTH_FACTOR_TOLERANCE));
     }
 
+    function testFail_RebalanceEmptyContract() public {
+        // There's no check for this, as it would only happen if the contract is empty.
+        // It reverts on the borrow function.
+        vm.prank(manager1);
+        aavePM.rebalance();
+    }
+
     function test_Rebalance() public {
+        // Standard rebalance test.
+        // Used as the setup for other rebalance tests.
         vm.startPrank(manager1);
         sendEth(address(aavePM), SEND_VALUE);
         aavePM.rebalance();
@@ -29,7 +39,17 @@ contract RebalanceTests is AavePMTestSetup {
         vm.stopPrank();
     }
 
+    function test_RebalanceNoChanges() public {
+        // Setup contract using the standard rebalance test
+        test_Rebalance();
+        vm.startPrank(manager1);
+        aavePM.rebalance();
+        checkEndHealthFactor(address(aavePM));
+        vm.stopPrank();
+    }
+
     function test_RebalanceHealthFactorDecrease() public {
+        // Setup contract using the standard rebalance test
         test_Rebalance();
 
         vm.startPrank(manager1);
@@ -42,6 +62,7 @@ contract RebalanceTests is AavePMTestSetup {
     }
 
     function test_RebalanceHealthFactorIncrease() public {
+        // Setup contract using the standard rebalance test
         test_Rebalance();
 
         vm.startPrank(manager1);
@@ -69,5 +90,22 @@ contract RebalanceTests is AavePMTestSetup {
         _swapTokens("USDC/ETH", "ETH", "USDC");
         _rebalance();
         checkEndHealthFactor(address(this));
+    }
+
+    function testFail_Exposed_RebalanceHFBelowMinimum() public {
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(this), SEND_VALUE);
+        vm.stopPrank();
+
+        // As HEALTH_FACTOR_TARGET_MINIMUM is a constant, the best way to test this is to decrease the health factor target
+        // directly to below the minimum value and confirm that the check at the end of the _rebalance() function fails.
+        s_healthFactorTarget = HEALTH_FACTOR_TARGET_MINIMUM - 10;
+
+        // As this is an internal call reverting, vm.expectRevert() does not work:
+        // https://github.com/foundry-rs/foundry/issues/5806#issuecomment-1713846184
+        // So instead the entire test is set to testFail, but this means that the specific
+        // revert error message cannot be checked.
+        _rebalance();
     }
 }

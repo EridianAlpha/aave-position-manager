@@ -67,6 +67,18 @@ contract Interactions is Script {
         vm.stopBroadcast();
     }
 
+    function aaveSupplyAavePM() public {
+        vm.startBroadcast();
+        aavePM.aaveSupply();
+        vm.stopBroadcast();
+    }
+
+    function borrowAndWithdrawUSDCAavePM(uint256 value) public {
+        vm.startBroadcast();
+        aavePM.borrowAndWithdrawUSDC(value, 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+        vm.stopBroadcast();
+    }
+
     // ================================================================
     // │                       FUNCTIONS - GETTERS                    │
     // ================================================================

@@ -56,6 +56,20 @@ contract AaveFunctions is TokenSwaps {
         IPool(aavePoolAddress).repay(tokenAddress, repayAmount, 2, address(this));
     }
 
+    /// @notice TODO: Add comment
+    function _convertExistingBalanceToWstETHAndSupplyToAave(
+        IAavePM aavePM,
+        address aavePoolAddress,
+        address wstETHAddress
+    ) internal {
+        if (aavePM.getContractBalance("ETH") > 0) _wrapETHToWETH();
+        if (aavePM.getContractBalance("USDC") > 0) _swapTokens("USDC/ETH", "USDC", "ETH");
+        if (aavePM.getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");
+
+        uint256 wstETHBalance = aavePM.getContractBalance("wstETH");
+        if (wstETHBalance > 0) _aaveSupply(aavePoolAddress, wstETHAddress, wstETHBalance);
+    }
+
     /// @notice Flash loan callback function.
     /// @dev This function is called by the Aave pool contract after the flash loan is executed.
     ///      It is used to repay the flash loan and execute the operation.
@@ -118,7 +132,6 @@ contract AaveFunctions is TokenSwaps {
         /* 
         *   Calculate the maximum amount of USDC that can be borrowed.
         *       - Minus totalDebtBase from totalCollateralBase to get the actual collateral not including reinvested debt.
-        *       - At the end, minus totalDebtBase to get the remaining amount to borrow to reach the target health factor.
         *       - currentLiquidationThreshold is a percentage with 4 decimal places e.g. 8250 = 82.5%.
         *       - healthFactorTarget is a value with 2 decimal places e.g. 200 = 2.00.
         *       - totalCollateralBase is in USD base unit with 8 decimals to the dollar e.g. 100000000 = $1.00.

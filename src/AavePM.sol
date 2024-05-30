@@ -118,7 +118,25 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
         __AccessControlEnumerable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
+        _initialize(
+            owner,
+            contractAddresses,
+            tokenAddresses,
+            uniswapV3Pools,
+            initialHealthFactorTarget,
+            initialSlippageTolerance
+        );
+    }
 
+    /// @notice // TODO: Add comment. Just the state setting logic
+    function _initialize(
+        address owner,
+        ContractAddress[] memory contractAddresses,
+        TokenAddress[] memory tokenAddresses,
+        UniswapV3Pool[] memory uniswapV3Pools,
+        uint16 initialHealthFactorTarget,
+        uint16 initialSlippageTolerance
+    ) internal {
         s_creator = msg.sender;
 
         _grantRole(OWNER_ROLE, owner);

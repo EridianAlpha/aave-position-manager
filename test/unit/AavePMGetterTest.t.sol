@@ -36,7 +36,7 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetHealthFactorTarget() public {
-        assertEq(aavePM.getHealthFactorTarget(), initialHealthFactorTarget);
+        assertEq(aavePM.getHealthFactorTarget(), s_healthFactorTarget);
     }
 
     function test_getHealthFactorTargetMinimum() public {
@@ -44,7 +44,7 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetSlippageTolerance() public {
-        assertEq(aavePM.getSlippageTolerance(), initialSlippageTolerance);
+        assertEq(aavePM.getSlippageTolerance(), s_slippageTolerance);
     }
 
     function test_GetContractBalanceETH() public {

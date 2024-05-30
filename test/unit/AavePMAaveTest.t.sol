@@ -9,8 +9,8 @@ import {IAavePM} from "src/interfaces/IAavePM.sol";
 // │                           AAVE TESTS                         │
 // ================================================================
 contract AavePMAaveTests is AavePMTestSetup {
-    function flashLoanSetup() public returns (address, uint256, uint256, bytes memory) {
-        address asset = makeAddr("USDC");
+    function flashLoanSetup() public view returns (address, uint256, uint256, bytes memory) {
+        address asset = getTokenAddress("USDC");
         uint256 amount = 100;
         uint256 premium = 2;
         bytes memory params = abi.encode(asset, amount, premium);

@@ -95,8 +95,9 @@ contract AaveFunctions is TokenSwaps {
         // TODO: Why 1e20 ?
         uint256 wstETHToWithdraw = (repaymentAmountTotalUSDC * 1e20) / wstETHPrice;
 
-        // TODO: Calculate the slippage allowance - currently using 1005 (0.5%) slippage allowance
-        uint256 wstETHToWithdrawSlippageAllowance = (wstETHToWithdraw * 1005) / 1000;
+        // When calculating slippageAllowance, multiple by 10 to allow for 1 decimal place.
+        uint256 slippageAllowance = 1000 + (100 * 10) / aavePM.getSlippageTolerance();
+        uint256 wstETHToWithdrawSlippageAllowance = (wstETHToWithdraw * slippageAllowance) / 1000;
 
         // Withdraw the wstETH from Aave.
         _aaveWithdrawCollateral(aavePoolAddress, wstETHAddress, wstETHToWithdrawSlippageAllowance);

@@ -56,6 +56,22 @@ contract AaveFunctions is TokenSwaps {
         IPool(aavePoolAddress).repay(tokenAddress, repayAmount, 2, address(this));
     }
 
+    /// @notice // TODO: Add comment.
+    function _getTotalInterest(uint256 totalDebtBase, uint256 reinvestedDebtTotal, uint256 withdrawnUSDCTotal)
+        internal
+        pure
+        returns (uint256 interest)
+    {
+        interest = 0;
+        if (totalDebtBase - reinvestedDebtTotal - withdrawnUSDCTotal < 0) {
+            revert IAavePM.AavePM__NegativeInterestCalc();
+        } else {
+            uint256 interestInBaseUnits = (totalDebtBase - (reinvestedDebtTotal * 1e2) - (withdrawnUSDCTotal * 1e2));
+            interest = interestInBaseUnits / 1e2;
+        }
+        return interest;
+    }
+
     /// @notice // TODO: Add comment
     function _convertExistingBalanceToWstETHAndSupplyToAave(
         IAavePM aavePM,

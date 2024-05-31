@@ -7,6 +7,7 @@ pragma solidity 0.8.24;
 
 // Inherited Contract Imports
 import {Rebalance} from "./Rebalance.sol";
+import {BorrowAndWithdrawUSDC} from "./BorrowAndWithdrawUSDC.sol";
 
 // OpenZeppelin Imports
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -30,7 +31,14 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 /// @title AavePM - Aave Position Manager
 /// @author EridianAlpha
 /// @notice A contract to manage positions on Aave.
-contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable {
+contract AavePM is
+    IAavePM,
+    Rebalance,
+    BorrowAndWithdrawUSDC,
+    Initializable,
+    AccessControlEnumerableUpgradeable,
+    UUPSUpgradeable
+{
     // ================================================================
     // │                        STATE VARIABLES                       │
     // ================================================================
@@ -44,6 +52,8 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
     // Values
     uint16 internal s_healthFactorTarget;
     uint16 internal s_slippageTolerance;
+    uint256 internal s_withdrawnUSDCTotal = 0;
+    uint256 internal s_reinvestedDebtTotal = 0;
 
     // ================================================================
     // │                           CONSTANTS                          │
@@ -280,6 +290,40 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
         _rebalance();
     }
 
+    /// @notice // TODO: Add comment
+    function aaveSupply() public onlyRole(MANAGER_ROLE) {
+        _convertExistingBalanceToWstETHAndSupplyToAave(
+            IAavePM(address(this)), getContractAddress("aavePool"), getTokenAddress("wstETH")
+        );
+    }
+
+    /// @notice // TODO: Add comment
+    function aaveRepay() public onlyRole(MANAGER_ROLE) {
+        uint256 usdcBalance = getContractBalance("USDC");
+        _aaveRepayDebt(getContractAddress("aavePool"), getTokenAddress("USDC"), usdcBalance);
+
+        // TODO: When rebalance() is called, s_withdrawnUSDCTotal should be updated... but to what?
+        if (s_withdrawnUSDCTotal >= usdcBalance) {
+            s_withdrawnUSDCTotal -= usdcBalance;
+        } else {
+            s_withdrawnUSDCTotal = 0;
+        }
+    }
+
+    /// @notice // TODO: Add comment
+    function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
+        address wstETHAddress = getTokenAddress("wstETH");
+        _aaveWithdrawCollateral(getContractAddress("aavePool"), wstETHAddress, _amount);
+        IERC20(wstETHAddress).transfer(_owner, _amount);
+    }
+
+    /// @notice // TODO: Add comment
+    function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
+        // TODO: Add a return value to _borrowAndWithdrawUSDC so that it confirms the borrow was successful and the amount borrowed.
+        _borrowAndWithdrawUSDC(_amount, _owner);
+        s_withdrawnUSDCTotal += _amount;
+    }
+
     // ================================================================
     // │                       FUNCTIONS - GETTERS                    │
     // ================================================================
@@ -379,6 +423,28 @@ contract AavePM is IAavePM, Rebalance, Initializable, AccessControlEnumerableUpg
             members[i] = getRoleMember(_role, i);
         }
         return members;
+    }
+
+    /// @notice Getter function to get the total interest.
+    /// @dev Public function to allow anyone to view the total interest.
+    /// @return totalInterest The total interest.
+    function getTotalInterest() public view returns (uint256 totalInterest) {
+        (, uint256 totalDebtBase,,,,) = IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
+        return _getTotalInterest(totalDebtBase, getReinvestedDebtTotal(), getWithdrawnUSDCTotal());
+    }
+
+    /// @notice Getter function to get the total amount of USDC withdrawn.
+    /// @dev Public function to allow anyone to view the total amount of USDC withdrawn.
+    /// @return withdrawnUSDCTotal The total amount of USDC withdrawn.
+    function getWithdrawnUSDCTotal() public view returns (uint256 withdrawnUSDCTotal) {
+        return s_withdrawnUSDCTotal;
+    }
+
+    /// @notice Getter function to get the total amount of reinvested debt.
+    /// @dev Public function to allow anyone to view the total amount of reinvested debt.
+    /// @return reinvestedDebtTotal The total amount of reinvested debt.
+    function getReinvestedDebtTotal() public view returns (uint256 reinvestedDebtTotal) {
+        return s_reinvestedDebtTotal;
     }
 
     // ================================================================

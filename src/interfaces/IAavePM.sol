@@ -7,10 +7,11 @@ interface IAavePM {
     // ================================================================
     // │                            ERRORS                            │
     // ================================================================
-    error AavePM__FunctionDoesNotExist();
     error AavePM__RescueEthFailed();
-    error AavePM__RescueAddressNotAnOwner();
+    error AavePM__FunctionDoesNotExist();
+    error AavePM__NegativeInterestCalc();
     error AavePM__HealthFactorUnchanged();
+    error AavePM__RescueAddressNotAnOwner();
     error AavePM__HealthFactorBelowMinimum();
     error AavePM__SlippageToleranceUnchanged();
     error AavePM__SlippageToleranceAboveMaximum();
@@ -111,8 +112,9 @@ interface IAavePM {
     function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function getRoleMembers(string memory _roleString) external view returns (address[] memory);
-    function getWithdrawnUSDCTotal() external view returns (uint256);
-    function getMaxBorrowAndWithdrawUSDCAmount() external view returns (uint256 maxBorrowUSDC);
+    function getTotalInterest() external view returns (uint256 totalInterest);
+    function getWithdrawnUSDCTotal() external view returns (uint256 withdrawnUSDCTotal);
+    function getReinvestedDebtTotal() external view returns (uint256 reinvestedDebtTotal);
 
     // ================================================================
     // │             INHERITED FUNCTIONS - ACCESS CONTROLS            │

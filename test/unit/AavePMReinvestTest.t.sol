@@ -10,86 +10,92 @@ import {AavePM} from "src/AavePM.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // ================================================================
-// │                         REBALANCE TESTS                      │
+// │                         REINVEST TESTS                      │
 // ================================================================
-contract RebalanceTests is AavePMTestSetup {
-    function test_RebalanceEmptyContract() public {
+contract ReinvestTests is AavePMTestSetup {
+    function testFail_ReinvestEmptyContract() public {
         // There's no check for this, as it would only happen if the contract is empty.
+        // It reverts on the borrow function.
         vm.prank(manager1);
-        vm.expectRevert(IAavePM.AavePM__RebalanceNotRequired.selector);
-        aavePM.rebalance();
+        aavePM.reinvest();
     }
 
-    function test_RebalanceSetup() public {
-        // Used as the setup for other rebalance tests.
+    function test_Reinvest() public {
+        // Used as the setup for other reinvest tests.
         vm.startPrank(manager1);
         sendEth(address(aavePM), SEND_VALUE);
-
-        // Supply to start the position
-        aavePM.aaveSupply();
-
-        uint16 initialHealthFactorTarget = aavePM.getHealthFactorTarget();
-
-        // Decrease HF target to ensure rebalance is required
-        aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() - HEALTH_FACTOR_TARGET_CHANGE);
-
-        // Reinvest to get the HF to that new target
         aavePM.reinvest();
         checkEndHealthFactor(address(aavePM));
-
-        // Increase HF target to ensure rebalance is required
-        aavePM.updateHealthFactorTarget(initialHealthFactorTarget);
         vm.stopPrank();
     }
 
-    function test_RebalanceNoChanges() public {
-        // Setup contract using the standard rebalance test
-        test_RebalanceSetup();
+    function test_ReinvestNoChanges() public {
+        // Setup contract using the standard reinvest test
+        test_Reinvest();
         vm.startPrank(manager1);
-        aavePM.rebalance();
-        checkEndHealthFactor(address(aavePM));
+        vm.expectRevert(IAavePM.AavePM__ReinvestNotRequired.selector);
+        aavePM.reinvest();
         vm.stopPrank();
     }
 
-    function test_RebalanceHealthFactorDecrease() public {
+    function test_ReinvestHealthFactorDecrease() public {
         // Setup contract using the standard rebalance test
-        test_RebalanceSetup();
+        test_Reinvest();
 
         vm.startPrank(manager1);
         // Decrease the health factor target
         aavePM.updateHealthFactorTarget(HEALTH_FACTOR_TARGET_MINIMUM);
 
-        vm.expectRevert(IAavePM.AavePM__RebalanceNotRequired.selector);
-        aavePM.rebalance();
-        vm.stopPrank();
-    }
-
-    function test_RebalanceHealthFactorIncrease() public {
-        // Setup contract using the standard rebalance test
-        test_RebalanceSetup();
-
-        vm.startPrank(manager1);
-        // Increase the health factor target
-        aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() + HEALTH_FACTOR_TARGET_CHANGE);
-        aavePM.rebalance();
+        aavePM.reinvest();
         checkEndHealthFactor(address(aavePM));
         vm.stopPrank();
     }
 
-    function testFail_Exposed_RebalanceHFBelowMinimum() public {
+    function test_ReinvestHealthFactorIncrease() public {
+        // Setup contract using the standard rebalance test
+        test_Reinvest();
+
+        vm.startPrank(manager1);
+        // Increase the health factor target
+        aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() + HEALTH_FACTOR_TARGET_CHANGE);
+
+        vm.expectRevert(IAavePM.AavePM__ReinvestNotRequired.selector);
+        aavePM.reinvest();
+        vm.stopPrank();
+    }
+
+    function test_Exposed_ReinvestWithUSDC() public {
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(this), SEND_VALUE);
+        vm.stopPrank();
+
+        reinvest();
+
+        // Send ETH and convert it to USDC
+        vm.startPrank(manager1);
+        sendEth(address(this), SEND_VALUE);
+        vm.stopPrank();
+
+        _swapTokens("USDC/ETH", "ETH", "USDC");
+        reinvest();
+        checkEndHealthFactor(address(this));
+    }
+
+    function testFail_Exposed_ReinvestHFBelowMinimum() public {
         // Send ETH from manager1 to the contract
         vm.startPrank(manager1);
         sendEth(address(this), SEND_VALUE);
         vm.stopPrank();
 
         // As HEALTH_FACTOR_TARGET_MINIMUM is a constant, the best way to test this is to decrease the health factor target
-        // directly to below the minimum value and confirm that the check at the end of the _rebalance() function fails.
+        // directly to below the minimum value and confirm that the check at the end of the _reinvest() function fails.
         s_healthFactorTarget = HEALTH_FACTOR_TARGET_MINIMUM - 10;
 
         // As this is an internal call reverting, vm.expectRevert() does not work:
         // https://github.com/foundry-rs/foundry/issues/5806#issuecomment-1713846184
         // So instead the entire test is set to testFail, but this means that the specific
         // revert error message cannot be checked.
-        _rebalance();
+        reinvest();
     }
 }

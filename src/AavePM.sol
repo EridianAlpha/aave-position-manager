@@ -272,7 +272,7 @@ contract AavePM is
     /// @param rescueAddress The address to send the rescued ETH to.
     function rescueEth(address rescueAddress) external onlyRole(MANAGER_ROLE) {
         // Check if the rescueAddress is an owner
-        if (!hasRole(OWNER_ROLE, rescueAddress)) revert AavePM__RescueAddressNotAnOwner();
+        if (!hasRole(OWNER_ROLE, rescueAddress)) revert AavePM__AddressNotAnOwner();
 
         // * TRANSFER ETH *
         emit EthRescued(rescueAddress, getContractBalance("ETH"));
@@ -289,8 +289,15 @@ contract AavePM is
     ///      The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
     ///      It then deposits the wstETH into Aave.
     ///      If the health factor is below the target, it repays debt to increase the health factor.
-    ///      If the health factor is above the target, it borrows more USDC and reinvests.
     function rebalance() public onlyRole(MANAGER_ROLE) {
+        // Convert any existing tokens to wstETH and supply to Aave.
+        uint256 suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave(
+            this, getContractAddress("aavePool"), getTokenAddress("wstETH")
+        );
+        if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
+
+        // During a rebalance, I want to know how much debt was repaid.
+        // It will initially take off the reinvested debt, then from collateral.
         _rebalance();
     }
 

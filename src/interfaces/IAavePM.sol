@@ -8,10 +8,12 @@ interface IAavePM {
     // │                            ERRORS                            │
     // ================================================================
     error AavePM__RescueEthFailed();
+    error AavePM__AddressNotAnOwner();
+    error AavePM__ReinvestNotRequired();
+    error AavePM__RebalanceNotRequired();
     error AavePM__FunctionDoesNotExist();
     error AavePM__NegativeInterestCalc();
     error AavePM__HealthFactorUnchanged();
-    error AavePM__RescueAddressNotAnOwner();
     error AavePM__HealthFactorBelowMinimum();
     error AavePM__SlippageToleranceUnchanged();
     error AavePM__SlippageToleranceAboveMaximum();

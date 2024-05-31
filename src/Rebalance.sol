@@ -23,21 +23,14 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 contract Rebalance is TokenSwaps, AaveFunctions {
     /// @notice Rebalance the Aave position.
     /// @dev Caller must have `MANAGER_ROLE`.
-    ///      The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
-    ///      It then deposits the wstETH into Aave.
+    ///      The function rebalances the Aave position.
     ///      If the health factor is below the target, it repays debt to increase the health factor.
-    ///      If the health factor is above the target, it borrows more USDC and reinvests.
     function _rebalance() internal {
         IAavePM aavePM = IAavePM(address(this));
 
         // Get data from state
         address aavePoolAddress = aavePM.getContractAddress("aavePool");
-        address wstETHAddress = aavePM.getTokenAddress("wstETH");
         address usdcAddress = aavePM.getTokenAddress("USDC");
-
-        // Convert any existing tokens to wstETH and supply to Aave.
-        // TODO: This needs to update the collateral running total in the AavePM contract.
-        _convertExistingBalanceToWstETHAndSupplyToAave(aavePM, aavePoolAddress, wstETHAddress);
 
         // Get the current Aave account data.
         (
@@ -55,16 +48,21 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         // Get the current health factor target.
         uint16 healthFactorTarget = aavePM.getHealthFactorTarget();
 
-        // Calculate the maximum amount of USDC that can be borrowed.
-        uint256 maxBorrowUSDC =
-            _calculateMaxBorrowUSDC(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget);
-
         // TODO: Calculate this elsewhere.
         uint16 healthFactorTargetRange = 10;
 
         if (initialHealthFactorScaled < (healthFactorTarget - healthFactorTargetRange)) {
             // If the health factor is below the target, repay debt to increase the health factor.
-            _repayDebt(totalDebtBase, maxBorrowUSDC, aavePoolAddress, usdcAddress);
+            _repayDebt(
+                totalDebtBase,
+                aavePoolAddress,
+                usdcAddress,
+                totalCollateralBase,
+                currentLiquidationThreshold,
+                healthFactorTarget
+            );
+        } else {
+            revert IAavePM.AavePM__RebalanceNotRequired();
         }
 
         // Safety check to ensure the health factor is above the minimum target.
@@ -76,9 +74,18 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         }
     }
 
-    function _repayDebt(uint256 totalDebtBase, uint256 maxBorrowUSDC, address aavePoolAddress, address usdcAddress)
-        private
-    {
+    function _repayDebt(
+        uint256 totalDebtBase,
+        address aavePoolAddress,
+        address usdcAddress,
+        uint256 totalCollateralBase,
+        uint256 currentLiquidationThreshold,
+        uint16 healthFactorTarget
+    ) private {
+        // Calculate the maximum amount of USDC that can be borrowed.
+        uint256 maxBorrowUSDC =
+            _calculateMaxBorrowUSDC(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget);
+
         // Calculate the repayment amount required to reach the target health factor.
         uint256 repaymentAmountUSDC = totalDebtBase - maxBorrowUSDC;
 

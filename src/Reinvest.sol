@@ -46,10 +46,12 @@ contract Reinvest is TokenSwaps, AaveFunctions {
         // Get the current health factor target.
         uint16 healthFactorTarget = aavePM.getHealthFactorTarget();
 
+        // Set the initial reinvested debt to 0.
         reinvestedDebt = 0;
 
         // TODO: Calculate this elsewhere.
         uint16 healthFactorTargetRange = 10;
+
         if (initialHealthFactorScaled > healthFactorTarget + healthFactorTargetRange) {
             // If the health factor is above the target, borrow more USDC and reinvest.
             reinvestedDebt = _reinvestAction(
@@ -62,19 +64,23 @@ contract Reinvest is TokenSwaps, AaveFunctions {
                 currentLiquidationThreshold,
                 healthFactorTarget
             );
+        } else {
+            revert IAavePM.AavePM__ReinvestNotRequired();
         }
-        // TODO: Could add an else here to terminate early if the health factor is within the target range.
 
         // Safety check to ensure the health factor is above the minimum target.
         // TODO: Improve check.
         (uint256 endCollateralBase,,,,, uint256 endHealthFactor) =
             IPool(aavePoolAddress).getUserAccountData(address(this));
         uint256 endHealthFactorScaled = endHealthFactor / 1e16;
+
         if (endHealthFactorScaled < (aavePM.getHealthFactorTargetMinimum() - 1)) {
             revert IAavePM.AavePM__HealthFactorBelowMinimum();
         }
 
+        // Set the initial reinvested collateral to 0.
         reinvestedCollateral = 0;
+
         if (endCollateralBase > initialCollateralBase) {
             reinvestedCollateral += (endCollateralBase - initialCollateralBase) / 1e2;
         }

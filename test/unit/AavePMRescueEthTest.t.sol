@@ -29,7 +29,7 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         aavePM.rescueEth(attacker1);
 
         // Check rescueAddress is an owner
-        vm.expectRevert(IAavePM.AavePM__RescueAddressNotAnOwner.selector);
+        vm.expectRevert(IAavePM.AavePM__AddressNotAnOwner.selector);
         vm.prank(manager1);
         aavePM.rescueEth(manager1);
 

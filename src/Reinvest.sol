@@ -25,35 +25,26 @@ contract Reinvest is TokenSwaps, AaveFunctions {
     function _reinvest() internal returns (uint256 reinvestedDebt, uint256 reinvestedCollateral) {
         IAavePM aavePM = IAavePM(address(this));
 
-        // Get data from state
-        address aavePoolAddress = aavePM.getContractAddress("aavePool");
-        address wstETHAddress = aavePM.getTokenAddress("wstETH");
-        address usdcAddress = aavePM.getTokenAddress("USDC");
+        // Set the initial reinvested debt and reinvested collateral to 0.
+        reinvestedDebt = 0;
+        reinvestedCollateral = 0;
 
-        // Get the current Aave account data.
         (
             uint256 initialCollateralBase,
             uint256 totalDebtBase,
-            ,
             uint256 currentLiquidationThreshold,
-            ,
-            uint256 initialHealthFactor
-        ) = IPool(aavePoolAddress).getUserAccountData(address(this));
-
-        // Scale the initial health factor to 2 decimal places by dividing by 1e16.
-        uint256 initialHealthFactorScaled = initialHealthFactor / 1e16;
-
-        // Get the current health factor target.
-        uint16 healthFactorTarget = aavePM.getHealthFactorTarget();
-
-        // Set the initial reinvested debt to 0.
-        reinvestedDebt = 0;
+            uint256 initialHealthFactorScaled,
+            uint16 healthFactorTarget,
+            address aavePoolAddress,
+            address wstETHAddress,
+            address usdcAddress
+        ) = _getCurrentPositionValues(aavePM);
 
         // TODO: Calculate this elsewhere.
         uint16 healthFactorTargetRange = 10;
 
+        // If the health factor is above the target, borrow more USDC and reinvest.
         if (initialHealthFactorScaled > healthFactorTarget + healthFactorTargetRange) {
-            // If the health factor is above the target, borrow more USDC and reinvest.
             reinvestedDebt = _reinvestAction(
                 aavePM,
                 totalDebtBase,
@@ -69,21 +60,15 @@ contract Reinvest is TokenSwaps, AaveFunctions {
         }
 
         // Safety check to ensure the health factor is above the minimum target.
-        // TODO: Improve check.
-        (uint256 endCollateralBase,,,,, uint256 endHealthFactor) =
-            IPool(aavePoolAddress).getUserAccountData(address(this));
-        uint256 endHealthFactorScaled = endHealthFactor / 1e16;
+        // It is also used to calculate the reinvested collateral by returning the updated position values.
+        (uint256 endCollateralBase,,,,,) = _checkHealthFactorAboveMinimum(aavePM, aavePoolAddress);
 
-        if (endHealthFactorScaled < (aavePM.getHealthFactorTargetMinimum() - 1)) {
-            revert IAavePM.AavePM__HealthFactorBelowMinimum();
-        }
-
-        // Set the initial reinvested collateral to 0.
-        reinvestedCollateral = 0;
-
+        // Calculate the reinvested collateral by comparing the initial and end collateral values.
         if (endCollateralBase > initialCollateralBase) {
             reinvestedCollateral += (endCollateralBase - initialCollateralBase) / 1e2;
         }
+
+        // Return the reinvested debt and reinvested collateral so the state can be updated on the AavePM contract.
         return (reinvestedDebt, reinvestedCollateral);
     }
 

@@ -57,6 +57,79 @@ contract AaveFunctions is TokenSwaps {
     }
 
     /// @notice // TODO: Add comment.
+    /// @dev This function is used to avoid code duplication in the Reinvest and Rebalance contracts.
+    function _getCurrentPositionValues(IAavePM aavePM)
+        internal
+        view
+        returns (
+            uint256 initialCollateralBase,
+            uint256 totalDebtBase,
+            uint256 currentLiquidationThreshold,
+            uint256 initialHealthFactorScaled,
+            uint16 healthFactorTarget,
+            address aavePoolAddress,
+            address wstETHAddress,
+            address usdcAddress
+        )
+    {
+        // Get data from state
+        aavePoolAddress = aavePM.getContractAddress("aavePool");
+        wstETHAddress = aavePM.getTokenAddress("wstETH");
+        usdcAddress = aavePM.getTokenAddress("USDC");
+
+        // Solidity does not allow you to mix inline type definitions and
+        // existing variable assignments in tuple destructuring.
+        // So declare this variable here as it's the only one not assigned as a return value.
+        uint256 initialHealthFactor;
+
+        // Get the current Aave account data.
+        (initialCollateralBase, totalDebtBase,, currentLiquidationThreshold,, initialHealthFactor) =
+            IPool(aavePoolAddress).getUserAccountData(address(this));
+
+        // Scale the initial health factor to 2 decimal places by dividing by 1e16.
+        initialHealthFactorScaled = initialHealthFactor / 1e16;
+
+        // Get the current health factor target.
+        healthFactorTarget = aavePM.getHealthFactorTarget();
+
+        return (
+            initialCollateralBase,
+            totalDebtBase,
+            currentLiquidationThreshold,
+            initialHealthFactorScaled,
+            healthFactorTarget,
+            aavePoolAddress,
+            wstETHAddress,
+            usdcAddress
+        );
+    }
+
+    /// @notice // TODO: Add comment.
+    function _checkHealthFactorAboveMinimum(IAavePM aavePM, address aavePoolAddress)
+        internal
+        view
+        returns (
+            uint256 totalCollateralBase,
+            uint256 totalDebtBase,
+            uint256 availableBorrowsBase,
+            uint256 currentLiquidationThreshold,
+            uint256 ltv,
+            uint256 healthFactor
+        )
+    {
+        // TODO: Improve check.
+        (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor) =
+            IPool(aavePoolAddress).getUserAccountData(address(this));
+        uint256 healthFactorScaled = healthFactor / 1e16;
+        if (healthFactorScaled < (aavePM.getHealthFactorTargetMinimum() - 1)) {
+            revert IAavePM.AavePM__HealthFactorBelowMinimum();
+        }
+
+        return
+            (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor);
+    }
+
+    /// @notice // TODO: Add comment.
     function _getTotalDebtInterest(uint256 totalDebtBase, uint256 reinvestedDebtTotal, uint256 withdrawnUSDCTotal)
         internal
         pure

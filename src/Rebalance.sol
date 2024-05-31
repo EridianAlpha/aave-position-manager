@@ -28,31 +28,23 @@ contract Rebalance is TokenSwaps, AaveFunctions {
     function _rebalance() internal {
         IAavePM aavePM = IAavePM(address(this));
 
-        // Get data from state
-        address aavePoolAddress = aavePM.getContractAddress("aavePool");
-        address usdcAddress = aavePM.getTokenAddress("USDC");
-
-        // Get the current Aave account data.
         (
             uint256 totalCollateralBase,
             uint256 totalDebtBase,
-            ,
             uint256 currentLiquidationThreshold,
+            uint256 initialHealthFactorScaled,
+            uint16 healthFactorTarget,
+            address aavePoolAddress,
+            /* address wstETHAddress */
             ,
-            uint256 initialHealthFactor
-        ) = IPool(aavePoolAddress).getUserAccountData(address(this));
-
-        // Scale the initial health factor to 2 decimal places by dividing by 1e16.
-        uint256 initialHealthFactorScaled = initialHealthFactor / 1e16;
-
-        // Get the current health factor target.
-        uint16 healthFactorTarget = aavePM.getHealthFactorTarget();
+            address usdcAddress
+        ) = _getCurrentPositionValues(aavePM);
 
         // TODO: Calculate this elsewhere.
         uint16 healthFactorTargetRange = 10;
 
+        // If the health factor is below the target, repay debt to increase the health factor.
         if (initialHealthFactorScaled < (healthFactorTarget - healthFactorTargetRange)) {
-            // If the health factor is below the target, repay debt to increase the health factor.
             _repayDebt(
                 totalDebtBase,
                 aavePoolAddress,
@@ -66,12 +58,9 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         }
 
         // Safety check to ensure the health factor is above the minimum target.
-        // TODO: Improve check.
-        (,,,,, uint256 endHealthFactor) = IPool(aavePoolAddress).getUserAccountData(address(this));
-        uint256 endHealthFactorScaled = endHealthFactor / 1e16;
-        if (endHealthFactorScaled < (aavePM.getHealthFactorTargetMinimum() - 1)) {
-            revert IAavePM.AavePM__HealthFactorBelowMinimum();
-        }
+        // It is also used to calculate the ?? by returning the updated position values.
+        /* (uint256 endCollateralBase,,,,,) = */
+        _checkHealthFactorAboveMinimum(aavePM, aavePoolAddress);
     }
 
     function _repayDebt(

@@ -7,6 +7,7 @@ interface IAavePM {
     // ================================================================
     // │                            ERRORS                            │
     // ================================================================
+    error AavePM__NoDebtToRepay();
     error AavePM__RescueEthFailed();
     error AavePM__AddressNotAnOwner();
     error AavePM__ReinvestNotRequired();

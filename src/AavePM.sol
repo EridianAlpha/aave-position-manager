@@ -298,6 +298,7 @@ contract AavePM is
         // If any collateral was supplied, update the total.
         if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
 
+        // TODO: Calculate what states to update
         // During a rebalance, I want to know how much debt was repaid.
         // It will initially take off the reinvested debt, then from collateral.
         _rebalance();
@@ -330,22 +331,30 @@ contract AavePM is
     /// @notice // TODO: Add comment
     function aaveRepay() public onlyRole(MANAGER_ROLE) {
         uint256 usdcBalance = getContractBalance("USDC");
+        if (usdcBalance == 0) revert AavePM__NoDebtToRepay();
+
         _aaveRepayDebt(getContractAddress("aavePool"), getTokenAddress("USDC"), usdcBalance);
 
-        // TODO: When aaveRepay() is called, s_withdrawnUSDCTotal should be updated to reflect the repayment, up to 0.
+        // When a debt repayment is made, s_withdrawnUSDCTotal should be updated to reflect the repayment, up to 0.
+        // and any excess should be taken off the s_reinvestedDebtTotal.
         if (s_withdrawnUSDCTotal >= usdcBalance) {
             s_withdrawnUSDCTotal -= usdcBalance;
+        } else if (s_withdrawnUSDCTotal + s_reinvestedDebtTotal >= usdcBalance) {
+            s_reinvestedDebtTotal -= (usdcBalance - s_withdrawnUSDCTotal);
+            s_withdrawnUSDCTotal = 0;
         } else {
+            s_reinvestedDebtTotal = 0;
             s_withdrawnUSDCTotal = 0;
         }
     }
 
     /// @notice // TODO: Add comment
     function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
-        // TODO: Update s_suppliedCollateralTotal to reflect the withdrawal.
         address wstETHAddress = getTokenAddress("wstETH");
         _aaveWithdrawCollateral(getContractAddress("aavePool"), wstETHAddress, _amount);
         IERC20(wstETHAddress).transfer(_owner, _amount);
+
+        // TODO: Update s_suppliedCollateralTotal to reflect the withdrawal.
     }
 
     /// @notice // TODO: Add comment

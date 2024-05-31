@@ -89,7 +89,7 @@ interface IAavePM {
     function rescueEth(address rescueAddress) external;
 
     // ================================================================
-    // │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │
+    // │                   FUNCTIONS - CORE FUNCTIONS                 │
     // ================================================================
     function rebalance() external;
     function reinvest() external;

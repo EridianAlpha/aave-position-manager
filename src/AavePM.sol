@@ -281,7 +281,7 @@ contract AavePM is
     }
 
     // ================================================================
-    // │            FUNCTIONS - REBALANCE, DEPOSIT, WITHDRAW          │
+    // │                   FUNCTIONS - CORE FUNCTIONS                 │
     // ================================================================
 
     /// @notice Rebalance the Aave position.
@@ -294,6 +294,8 @@ contract AavePM is
         uint256 suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave(
             this, getContractAddress("aavePool"), getTokenAddress("wstETH")
         );
+
+        // If any collateral was supplied, update the total.
         if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
 
         // During a rebalance, I want to know how much debt was repaid.
@@ -307,6 +309,8 @@ contract AavePM is
         uint256 suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave(
             this, getContractAddress("aavePool"), getTokenAddress("wstETH")
         );
+
+        // If any collateral was supplied, update the total.
         if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
 
         // Reinvest any excess debt or collateral.

@@ -36,6 +36,7 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         address usdcAddress = aavePM.getTokenAddress("USDC");
 
         // Convert any existing tokens to wstETH and supply to Aave.
+        // TODO: This needs to update the collateral running total in the AavePM contract.
         _convertExistingBalanceToWstETHAndSupplyToAave(aavePM, aavePoolAddress, wstETHAddress);
 
         // Get the current Aave account data.
@@ -64,9 +65,6 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         if (initialHealthFactorScaled < (healthFactorTarget - healthFactorTargetRange)) {
             // If the health factor is below the target, repay debt to increase the health factor.
             _repayDebt(totalDebtBase, maxBorrowUSDC, aavePoolAddress, usdcAddress);
-        } else if (initialHealthFactorScaled > healthFactorTarget + healthFactorTargetRange) {
-            // If the health factor is above the target, borrow more USDC and reinvest.
-            _reinvest(aavePM, totalDebtBase, maxBorrowUSDC, aavePoolAddress, usdcAddress, wstETHAddress);
         }
 
         // Safety check to ensure the health factor is above the minimum target.
@@ -87,26 +85,5 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         // Take out a flash loan for the USDC amount needed to repay and rebalance the health factor.
         // flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
         IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaymentAmountUSDC / 1e2, bytes(""), 0);
-    }
-
-    function _reinvest(
-        IAavePM aavePM,
-        uint256 totalDebtBase,
-        uint256 maxBorrowUSDC,
-        address aavePoolAddress,
-        address usdcAddress,
-        address wstETHAddress
-    ) private {
-        // Calculate the additional amount to borrow to reach the target health factor.
-        uint256 additionalBorrowUSDC = maxBorrowUSDC - totalDebtBase;
-
-        // _aaveBorrow input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount.
-        uint256 borrowAmountUSDC = additionalBorrowUSDC / 1e2;
-        _aaveBorrow(aavePoolAddress, usdcAddress, borrowAmountUSDC);
-
-        // Swap borrowed USDC ➜ WETH ➜ wstETH then supply to Aave.
-        _swapTokens("USDC/ETH", "USDC", "ETH");
-        _swapTokens("wstETH/ETH", "ETH", "wstETH");
-        _aaveSupply(aavePoolAddress, wstETHAddress, aavePM.getContractBalance("wstETH"));
     }
 }

@@ -57,13 +57,13 @@ contract AaveFunctions is TokenSwaps {
     }
 
     /// @notice // TODO: Add comment.
-    function _getTotalInterest(uint256 totalDebtBase, uint256 reinvestedDebtTotal, uint256 withdrawnUSDCTotal)
+    function _getTotalDebtInterest(uint256 totalDebtBase, uint256 reinvestedDebtTotal, uint256 withdrawnUSDCTotal)
         internal
         pure
         returns (uint256 interest)
     {
         interest = 0;
-        if (totalDebtBase - reinvestedDebtTotal - withdrawnUSDCTotal < 0) {
+        if ((totalDebtBase - (reinvestedDebtTotal * 1e2) - (withdrawnUSDCTotal * 1e2)) < 0) {
             revert IAavePM.AavePM__NegativeInterestCalc();
         } else {
             uint256 interestInBaseUnits = (totalDebtBase - (reinvestedDebtTotal * 1e2) - (withdrawnUSDCTotal * 1e2));
@@ -72,18 +72,51 @@ contract AaveFunctions is TokenSwaps {
         return interest;
     }
 
+    /// @notice // TODO: Add comment.
+    function _getTotalCollateralDelta(
+        uint256 totalCollateralBase,
+        uint256 reinvestedCollateralTotal,
+        uint256 suppliedCollateralTotal
+    ) internal pure returns (uint256 delta, bool isPositive) {
+        int256 result =
+            int256(totalCollateralBase - (reinvestedCollateralTotal * 1e2) - (suppliedCollateralTotal * 1e2));
+        if (result < 0) {
+            delta = uint256(-result) / 1e2;
+            isPositive = false;
+        } else {
+            delta = uint256(result) / 1e2;
+            isPositive = true;
+        }
+        return (delta, isPositive);
+    }
+
     /// @notice // TODO: Add comment
     function _convertExistingBalanceToWstETHAndSupplyToAave(
         IAavePM aavePM,
         address aavePoolAddress,
         address wstETHAddress
-    ) internal {
+    ) internal returns (uint256 suppliedCollateral) {
         if (aavePM.getContractBalance("ETH") > 0) _wrapETHToWETH();
         if (aavePM.getContractBalance("USDC") > 0) _swapTokens("USDC/ETH", "USDC", "ETH");
         if (aavePM.getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");
 
         uint256 wstETHBalance = aavePM.getContractBalance("wstETH");
-        if (wstETHBalance > 0) _aaveSupply(aavePoolAddress, wstETHAddress, wstETHBalance);
+        if (wstETHBalance > 0) {
+            // Get collateral before
+            (uint256 initialCollateralBase,,,,,) = IPool(aavePoolAddress).getUserAccountData(address(this));
+
+            _aaveSupply(aavePoolAddress, wstETHAddress, wstETHBalance);
+
+            // Get collateral after
+            (uint256 endCollateralBase,,,,,) = IPool(aavePoolAddress).getUserAccountData(address(this));
+
+            // Calculate the amount of wstETH supplied to Aave.
+            suppliedCollateral = 0;
+            if (endCollateralBase - initialCollateralBase > 0) {
+                suppliedCollateral = (endCollateralBase - initialCollateralBase) / 1e2;
+            }
+            return suppliedCollateral;
+        }
     }
 
     /// @notice Flash loan callback function.

@@ -7,6 +7,7 @@ pragma solidity 0.8.24;
 
 // Inherited Contract Imports
 import {Rebalance} from "./Rebalance.sol";
+import {Reinvest} from "./Reinvest.sol";
 import {BorrowAndWithdrawUSDC} from "./BorrowAndWithdrawUSDC.sol";
 
 // OpenZeppelin Imports
@@ -34,6 +35,7 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 contract AavePM is
     IAavePM,
     Rebalance,
+    Reinvest,
     BorrowAndWithdrawUSDC,
     Initializable,
     AccessControlEnumerableUpgradeable,
@@ -54,6 +56,8 @@ contract AavePM is
     uint16 internal s_slippageTolerance;
     uint256 internal s_withdrawnUSDCTotal = 0;
     uint256 internal s_reinvestedDebtTotal = 0;
+    uint256 internal s_suppliedCollateralTotal = 0;
+    uint256 internal s_reinvestedCollateralTotal = 0;
 
     // ================================================================
     // │                           CONSTANTS                          │
@@ -291,10 +295,25 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
+    function reinvest() public onlyRole(MANAGER_ROLE) {
+        // Convert any existing tokens to wstETH and supply to Aave.
+        uint256 suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave(
+            this, getContractAddress("aavePool"), getTokenAddress("wstETH")
+        );
+        if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
+
+        // Reinvest any excess debt or collateral.
+        (uint256 reinvestedDebt, uint256 reinvestedCollateral) = _reinvest();
+        if (reinvestedDebt > 0) s_reinvestedDebtTotal += reinvestedDebt;
+        if (reinvestedCollateral > 0) s_reinvestedCollateralTotal += reinvestedCollateral;
+    }
+
+    /// @notice // TODO: Add comment
     function aaveSupply() public onlyRole(MANAGER_ROLE) {
-        _convertExistingBalanceToWstETHAndSupplyToAave(
+        uint256 suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave(
             IAavePM(address(this)), getContractAddress("aavePool"), getTokenAddress("wstETH")
         );
+        if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
     }
 
     /// @notice // TODO: Add comment
@@ -302,7 +321,7 @@ contract AavePM is
         uint256 usdcBalance = getContractBalance("USDC");
         _aaveRepayDebt(getContractAddress("aavePool"), getTokenAddress("USDC"), usdcBalance);
 
-        // TODO: When rebalance() is called, s_withdrawnUSDCTotal should be updated... but to what?
+        // TODO: When aaveRepay() is called, s_withdrawnUSDCTotal should be updated to reflect the repayment, up to 0.
         if (s_withdrawnUSDCTotal >= usdcBalance) {
             s_withdrawnUSDCTotal -= usdcBalance;
         } else {
@@ -312,6 +331,7 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
+        // TODO: Update s_suppliedCollateralTotal to reflect the withdrawal.
         address wstETHAddress = getTokenAddress("wstETH");
         _aaveWithdrawCollateral(getContractAddress("aavePool"), wstETHAddress, _amount);
         IERC20(wstETHAddress).transfer(_owner, _amount);
@@ -425,12 +445,12 @@ contract AavePM is
         return members;
     }
 
-    /// @notice Getter function to get the total interest.
-    /// @dev Public function to allow anyone to view the total interest.
-    /// @return totalInterest The total interest.
-    function getTotalInterest() public view returns (uint256 totalInterest) {
+    /// @notice Getter function to get the total debt interest.
+    /// @dev Public function to allow anyone to view the total debt interest.
+    /// @return totalDebtInterest The total debt interest.
+    function getTotalDebtInterest() public view returns (uint256 totalDebtInterest) {
         (, uint256 totalDebtBase,,,,) = IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
-        return _getTotalInterest(totalDebtBase, getReinvestedDebtTotal(), getWithdrawnUSDCTotal());
+        return _getTotalDebtInterest(totalDebtBase, getReinvestedDebtTotal(), getWithdrawnUSDCTotal());
     }
 
     /// @notice Getter function to get the total amount of USDC withdrawn.
@@ -445,6 +465,30 @@ contract AavePM is
     /// @return reinvestedDebtTotal The total amount of reinvested debt.
     function getReinvestedDebtTotal() public view returns (uint256 reinvestedDebtTotal) {
         return s_reinvestedDebtTotal;
+    }
+
+    /// @notice Getter function to get the total collateral delta.
+    /// @dev Public function to allow anyone to view the total collateral delta.
+    /// @return totalCollateralDelta The total collateral delta.
+    /// @return isPositive A boolean indicating if the total collateral delta is positive.
+    function getTotalCollateralDelta() public view returns (uint256 totalCollateralDelta, bool isPositive) {
+        (uint256 totalCollateralBase,,,,,) = IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
+        return
+            _getTotalCollateralDelta(totalCollateralBase, getReinvestedCollateralTotal(), getSuppliedCollateralTotal());
+    }
+
+    /// @notice Getter function to get the total amount of supplied collateral.
+    /// @dev Public function to allow anyone to view the total amount of supplied collateral.
+    /// @return suppliedCollateralTotal The total amount of supplied collateral.
+    function getSuppliedCollateralTotal() public view returns (uint256 suppliedCollateralTotal) {
+        return s_suppliedCollateralTotal;
+    }
+
+    /// @notice Getter function to get the total amount of reinvested collateral.
+    /// @dev Public function to allow anyone to view the total amount of reinvested collateral.
+    /// @return reinvestedCollateralTotal The total amount of reinvested collateral.
+    function getReinvestedCollateralTotal() public view returns (uint256 reinvestedCollateralTotal) {
+        return s_reinvestedCollateralTotal;
     }
 
     // ================================================================

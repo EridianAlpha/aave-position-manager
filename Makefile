@@ -120,6 +120,9 @@ update-st-script:
 rebalance-script:
 	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "rebalanceAavePM()"
 
+reinvest-script:
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "reinvestAavePM()"
+
 supply-script:
 	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "aaveSupplyAavePM()"
 
@@ -157,6 +160,7 @@ send-ETH-anvil: anvil-network send-ETH
 update-hft-anvil: anvil-network update-hft
 update-st-anvil: anvil-network update-st
 rebalance-anvil: anvil-network rebalance-script
+reinvest-anvil: anvil-network reinvest-script
 supply-anvil: anvil-network supply-script
 repay-anvil: anvil-network repay-script
 withdrawWstETH-anvil: anvil-network withdrawWstETH

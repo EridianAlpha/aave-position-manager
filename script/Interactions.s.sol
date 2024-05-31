@@ -67,6 +67,12 @@ contract Interactions is Script {
         vm.stopBroadcast();
     }
 
+    function reinvestAavePM() public {
+        vm.startBroadcast();
+        aavePM.reinvest();
+        vm.stopBroadcast();
+    }
+
     function aaveSupplyAavePM() public {
         vm.startBroadcast();
         aavePM.aaveSupply();

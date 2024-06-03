@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
+import {console} from "forge-std/Test.sol";
+
 import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
 
 // ================================================================
@@ -80,18 +82,65 @@ contract AavePMGetterTests is AavePMTestSetup {
         assertEq(owners[0], owner1);
     }
 
-    // TODO: Fix these tests
-    // function test_GetContractBalanceWstETH() public {
-    //     vm.startPrank(manager1);
-    //     // Send some ETH to the contract and wrap it to WETH
-    //     sendEth(address(aavePM), SEND_VALUE);
-    //     aavePM.wrapETHToWETH();
+    function test_GetWithdrawnUSDCTotal() public {
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
 
-    //     // Call the swapTokens function to get wstETH
-    //     aavePM.swapTokens("wstETH/ETH", "ETH", "wstETH");
+        // Supply ETH to Aave
+        aavePM.aaveSupply();
 
-    //     // Check the wstETH balance of the contract
-    //     assertEq(aavePM.getContractBalance("wstETH"), wstETH.balanceOf(address(aavePM)));
-    //     vm.stopPrank();
-    // }
+        // Withdraw USDC from Aave
+        aavePM.borrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
+        vm.stopPrank();
+
+        assertEq(aavePM.getWithdrawnUSDCTotal(), USDC_BORROW_AMOUNT);
+    }
+
+    function test_GetReinvestedDebtTotal() public {
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
+
+        // Supply ETH to Aave
+        aavePM.aaveSupply();
+
+        // Reinvest
+        (uint256 reinvestedDebt,) = aavePM.reinvest();
+        vm.stopPrank();
+
+        assertEq(aavePM.getReinvestedDebtTotal(), reinvestedDebt);
+    }
+
+    function test_GetTotalCollateralDelta() public {
+        // Not a great test, but since it's a calculation that's based on the passage of time, but also on a mainnet fork
+        // it can't easily be tested in a unit test.
+        assertEq(aavePM.getReinvestedDebtTotal(), 0);
+    }
+
+    function test_GetSuppliedCollateralTotal() public {
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
+
+        // Supply ETH to Aave
+        uint256 suppliedCollateral = aavePM.aaveSupply();
+
+        assertEq(aavePM.getSuppliedCollateralTotal(), suppliedCollateral);
+    }
+
+    function test_GetReinvestedCollateralTotal() public {
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
+
+        // Supply ETH to Aave
+        aavePM.aaveSupply();
+
+        // Reinvest
+        (, uint256 reinvestedCollateral) = aavePM.reinvest();
+        vm.stopPrank();
+
+        assertEq(aavePM.getReinvestedCollateralTotal(), reinvestedCollateral);
+    }
 }

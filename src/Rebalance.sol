@@ -25,11 +25,11 @@ contract Rebalance is TokenSwaps, AaveFunctions {
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      The function rebalances the Aave position.
     ///      If the health factor is below the target, it repays debt to increase the health factor.
-    function _rebalance() internal {
+    function _rebalance() internal returns (uint256 repaymentAmountUSDC, uint256 soldCollateral) {
         IAavePM aavePM = IAavePM(address(this));
 
         (
-            uint256 totalCollateralBase,
+            uint256 initialCollateralBase,
             uint256 totalDebtBase,
             uint256 currentLiquidationThreshold,
             uint256 initialHealthFactorScaled,
@@ -45,11 +45,11 @@ contract Rebalance is TokenSwaps, AaveFunctions {
 
         // If the health factor is below the target, repay debt to increase the health factor.
         if (initialHealthFactorScaled < (healthFactorTarget - healthFactorTargetRange)) {
-            _repayDebt(
+            repaymentAmountUSDC = _repayDebt(
                 totalDebtBase,
                 aavePoolAddress,
                 usdcAddress,
-                totalCollateralBase,
+                initialCollateralBase,
                 currentLiquidationThreshold,
                 healthFactorTarget
             );
@@ -59,8 +59,17 @@ contract Rebalance is TokenSwaps, AaveFunctions {
 
         // Safety check to ensure the health factor is above the minimum target.
         // It is also used to calculate the ?? by returning the updated position values.
-        /* (uint256 endCollateralBase,,,,,) = */
-        _checkHealthFactorAboveMinimum();
+        (uint256 endCollateralBase,,,,,) = _checkHealthFactorAboveMinimum();
+
+        // Calculate the sold collateral by comparing the initial and end collateral values.
+        if (endCollateralBase < initialCollateralBase) {
+            soldCollateral = (initialCollateralBase - endCollateralBase) / 1e2;
+        } else {
+            soldCollateral = 0;
+        }
+
+        // Return the reinvested debt and reinvested collateral so the state can be updated on the AavePM contract.
+        return (repaymentAmountUSDC, soldCollateral);
     }
 
     function _repayDebt(
@@ -70,16 +79,18 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         uint256 totalCollateralBase,
         uint256 currentLiquidationThreshold,
         uint16 healthFactorTarget
-    ) private {
+    ) private returns (uint256 repaymentAmountUSDC) {
         // Calculate the maximum amount of USDC that can be borrowed.
         uint256 maxBorrowUSDC =
             _calculateMaxBorrowUSDC(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget);
 
         // Calculate the repayment amount required to reach the target health factor.
-        uint256 repaymentAmountUSDC = totalDebtBase - maxBorrowUSDC;
+        repaymentAmountUSDC = (totalDebtBase - maxBorrowUSDC) / 1e2;
 
         // Take out a flash loan for the USDC amount needed to repay and rebalance the health factor.
         // flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
-        IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaymentAmountUSDC / 1e2, bytes(""), 0);
+        IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaymentAmountUSDC, bytes(""), 0);
+
+        return repaymentAmountUSDC;
     }
 }

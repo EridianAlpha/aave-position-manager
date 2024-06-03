@@ -293,10 +293,20 @@ contract AavePM is
         // Convert any existing tokens to wstETH and supply to Aave.
         aaveSupply();
 
-        // TODO: Calculate what states to update
-        // During a rebalance, I want to know how much debt was repaid.
-        // It will initially take off the reinvested debt, then from collateral.
-        _rebalance();
+        // During a rebalance, I want to know how much debt was repaid and how much collateral was sold.
+        (uint256 repaymentAmountUSDC, uint256 soldCollateral) = _rebalance();
+
+        if (repaymentAmountUSDC > 0 && s_reinvestedDebtTotal >= repaymentAmountUSDC) {
+            s_reinvestedDebtTotal -= repaymentAmountUSDC;
+        } else {
+            s_reinvestedDebtTotal = 0;
+        }
+
+        if (soldCollateral > 0 && s_reinvestedCollateralTotal >= soldCollateral) {
+            s_reinvestedCollateralTotal -= soldCollateral;
+        } else {
+            s_reinvestedCollateralTotal = 0;
+        }
     }
 
     /// @notice // TODO: Add comment
@@ -328,10 +338,11 @@ contract AavePM is
 
         // When a debt repayment is made, s_withdrawnUSDCTotal should be updated to reflect the repayment, up to 0.
         // and any excess should be taken off the s_reinvestedDebtTotal.
-        if (s_withdrawnUSDCTotal >= usdcBalance) {
+        uint256 initialWithdrawnUSDCTotal = s_withdrawnUSDCTotal;
+        if (initialWithdrawnUSDCTotal >= usdcBalance) {
             s_withdrawnUSDCTotal -= usdcBalance;
-        } else if (s_withdrawnUSDCTotal + s_reinvestedDebtTotal >= usdcBalance) {
-            s_reinvestedDebtTotal -= (usdcBalance - s_withdrawnUSDCTotal);
+        } else if (initialWithdrawnUSDCTotal + s_reinvestedDebtTotal >= usdcBalance) {
+            s_reinvestedDebtTotal -= (usdcBalance - initialWithdrawnUSDCTotal);
             s_withdrawnUSDCTotal = 0;
         } else {
             s_reinvestedDebtTotal = 0;
@@ -341,11 +352,35 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
+        address aavePoolAddress = getContractAddress("aavePool");
+
+        // Get the collateral base value before withdrawing.
+        (uint256 initialCollateralBase,,,,,) = IPool(aavePoolAddress).getUserAccountData(address(this));
+
         address wstETHAddress = getTokenAddress("wstETH");
-        _aaveWithdrawCollateral(getContractAddress("aavePool"), wstETHAddress, _amount);
+        _aaveWithdrawCollateral(aavePoolAddress, wstETHAddress, _amount);
         IERC20(wstETHAddress).transfer(_owner, _amount);
 
-        // TODO: Update s_suppliedCollateralTotal to reflect the withdrawal.
+        // Get the collateral base value after withdrawing.
+        (uint256 endCollateralBase,,,,,) = IPool(aavePoolAddress).getUserAccountData(address(this));
+
+        uint256 initialSuppliedCollateral = getSuppliedCollateralTotal();
+
+        if (endCollateralBase < initialCollateralBase) {
+            uint256 collateralDeltaBase = initialCollateralBase - endCollateralBase;
+            if (initialSuppliedCollateral >= collateralDeltaBase / 1e2) {
+                s_suppliedCollateralTotal -= collateralDeltaBase / 1e2;
+            } else if (initialSuppliedCollateral + s_reinvestedCollateralTotal >= collateralDeltaBase / 1e2) {
+                s_suppliedCollateralTotal = 0;
+                s_reinvestedCollateralTotal -= (collateralDeltaBase / 1e2 - initialSuppliedCollateral);
+            } else {
+                s_suppliedCollateralTotal = 0;
+                s_reinvestedCollateralTotal = 0;
+            }
+        }
+
+        // Check to ensure the health factor is above the minimum target.
+        _checkHealthFactorAboveMinimum();
     }
 
     /// @notice // TODO: Add comment
@@ -353,6 +388,9 @@ contract AavePM is
         // TODO: Add a return value to _borrowAndWithdrawUSDC so that it confirms the borrow was successful and the amount borrowed.
         _borrowAndWithdrawUSDC(_amount, _owner);
         s_withdrawnUSDCTotal += _amount;
+
+        // Check to ensure the health factor is above the minimum target.
+        _checkHealthFactorAboveMinimum();
     }
 
     // ================================================================
@@ -454,14 +492,6 @@ contract AavePM is
             members[i] = getRoleMember(_role, i);
         }
         return members;
-    }
-
-    /// @notice Getter function to get the total debt interest.
-    /// @dev Public function to allow anyone to view the total debt interest.
-    /// @return totalDebtInterest The total debt interest.
-    function getTotalDebtInterest() public view returns (uint256 totalDebtInterest) {
-        (, uint256 totalDebtBase,,,,) = IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
-        return _getTotalDebtInterest(totalDebtBase, getReinvestedDebtTotal(), getWithdrawnUSDCTotal());
     }
 
     /// @notice Getter function to get the total amount of USDC withdrawn.

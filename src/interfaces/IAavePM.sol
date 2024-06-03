@@ -116,7 +116,6 @@ interface IAavePM {
     function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
     function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
     function getRoleMembers(string memory _roleString) external view returns (address[] memory);
-    function getTotalDebtInterest() external view returns (uint256 totalDebtInterest);
     function getWithdrawnUSDCTotal() external view returns (uint256 withdrawnUSDCTotal);
     function getReinvestedDebtTotal() external view returns (uint256 reinvestedDebtTotal);
     function getTotalCollateralDelta() external view returns (uint256 totalCollateralDelta, bool isPositive);

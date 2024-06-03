@@ -131,22 +131,6 @@ contract AaveFunctions is TokenSwaps {
     }
 
     /// @notice // TODO: Add comment.
-    function _getTotalDebtInterest(uint256 totalDebtBase, uint256 reinvestedDebtTotal, uint256 withdrawnUSDCTotal)
-        internal
-        pure
-        returns (uint256 interest)
-    {
-        interest = 0;
-        if ((totalDebtBase - (reinvestedDebtTotal * 1e2) - (withdrawnUSDCTotal * 1e2)) < 0) {
-            revert IAavePM.AavePM__NegativeInterestCalc();
-        } else {
-            uint256 interestInBaseUnits = (totalDebtBase - (reinvestedDebtTotal * 1e2) - (withdrawnUSDCTotal * 1e2));
-            interest = interestInBaseUnits / 1e2;
-        }
-        return interest;
-    }
-
-    /// @notice // TODO: Add comment.
     function _getTotalCollateralDelta(
         uint256 totalCollateralBase,
         uint256 reinvestedCollateralTotal,

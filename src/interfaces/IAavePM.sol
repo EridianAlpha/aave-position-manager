@@ -93,8 +93,8 @@ interface IAavePM {
     // │                   FUNCTIONS - CORE FUNCTIONS                 │
     // ================================================================
     function rebalance() external;
-    function reinvest() external;
-    function aaveSupply() external;
+    function reinvest() external returns (uint256 reinvestedDebt, uint256 reinvestedCollateral);
+    function aaveSupply() external returns (uint256 suppliedCollateral);
     function aaveRepay() external;
     function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress) external;
     function borrowAndWithdrawUSDC(uint256 borrowAmount, address ownerAddress) external;

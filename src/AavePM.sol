@@ -291,12 +291,7 @@ contract AavePM is
     ///      If the health factor is below the target, it repays debt to increase the health factor.
     function rebalance() public onlyRole(MANAGER_ROLE) {
         // Convert any existing tokens to wstETH and supply to Aave.
-        uint256 suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave(
-            this, getContractAddress("aavePool"), getTokenAddress("wstETH")
-        );
-
-        // If any collateral was supplied, update the total.
-        if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
+        aaveSupply();
 
         // TODO: Calculate what states to update
         // During a rebalance, I want to know how much debt was repaid.
@@ -305,27 +300,23 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function reinvest() public onlyRole(MANAGER_ROLE) {
+    function reinvest() public onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt, uint256 reinvestedCollateral) {
         // Convert any existing tokens to wstETH and supply to Aave.
-        uint256 suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave(
-            this, getContractAddress("aavePool"), getTokenAddress("wstETH")
-        );
-
-        // If any collateral was supplied, update the total.
-        if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
+        aaveSupply();
 
         // Reinvest any excess debt or collateral.
-        (uint256 reinvestedDebt, uint256 reinvestedCollateral) = _reinvest();
+        (reinvestedDebt, reinvestedCollateral) = _reinvest();
         if (reinvestedDebt > 0) s_reinvestedDebtTotal += reinvestedDebt;
         if (reinvestedCollateral > 0) s_reinvestedCollateralTotal += reinvestedCollateral;
+
+        // TODO: Emit an event with suppliedCollateral, reinvestedDebt, reinvestedCollateral
     }
 
     /// @notice // TODO: Add comment
-    function aaveSupply() public onlyRole(MANAGER_ROLE) {
-        uint256 suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave(
-            IAavePM(address(this)), getContractAddress("aavePool"), getTokenAddress("wstETH")
-        );
+    function aaveSupply() public onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral) {
+        suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave();
         if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
+        // TODO: Add event to emit the suppliedCollateral
     }
 
     /// @notice // TODO: Add comment

@@ -164,11 +164,11 @@ contract AaveFunctions is TokenSwaps {
     }
 
     /// @notice // TODO: Add comment
-    function _convertExistingBalanceToWstETHAndSupplyToAave(
-        IAavePM aavePM,
-        address aavePoolAddress,
-        address wstETHAddress
-    ) internal returns (uint256 suppliedCollateral) {
+    function _convertExistingBalanceToWstETHAndSupplyToAave() internal returns (uint256 suppliedCollateral) {
+        IAavePM aavePM = IAavePM(address(this));
+        address aavePoolAddress = aavePM.getContractAddress("aavePool");
+        address wstETHAddress = aavePM.getTokenAddress("wstETH");
+
         if (aavePM.getContractBalance("ETH") > 0) _wrapETHToWETH();
         if (aavePM.getContractBalance("USDC") > 0) _swapTokens("USDC/ETH", "USDC", "ETH");
         if (aavePM.getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");

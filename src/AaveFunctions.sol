@@ -151,13 +151,12 @@ contract AaveFunctions is TokenSwaps {
         uint256 reinvestedCollateralTotal,
         uint256 suppliedCollateralTotal
     ) internal pure returns (uint256 delta, bool isPositive) {
-        int256 result =
-            int256(totalCollateralBase - (reinvestedCollateralTotal * 1e2) - (suppliedCollateralTotal * 1e2));
-        if (result < 0) {
-            delta = uint256(-result) / 1e2;
+        uint256 reinvestedAndSuppliedCollateralBase = (reinvestedCollateralTotal + suppliedCollateralTotal) * 1e2;
+        if (totalCollateralBase < reinvestedAndSuppliedCollateralBase) {
+            delta = (reinvestedAndSuppliedCollateralBase - totalCollateralBase) / 1e2;
             isPositive = false;
         } else {
-            delta = uint256(result) / 1e2;
+            delta = (totalCollateralBase - reinvestedAndSuppliedCollateralBase) / 1e2;
             isPositive = true;
         }
         return (delta, isPositive);

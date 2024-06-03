@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
+import {console} from "forge-std/Test.sol";
 
+import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
 import {IAavePM} from "src/interfaces/IAavePM.sol";
 
 // ================================================================
@@ -32,5 +33,39 @@ contract AavePMAaveTests is AavePMTestSetup {
         vm.startPrank(s_contractAddresses["aavePool"]);
         vm.expectRevert(IAavePM.AaveFunctions__FlashLoanInitiatorUnauthorized.selector);
         aavePM.executeOperation(asset, amount, premium, attacker1, params);
+    }
+
+    function test_Exposed_GetTotalCollateralDelta() public {
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(this), SEND_VALUE);
+        vm.stopPrank();
+
+        // TODO: These are all magic numbers, but I'm not sure where else to put them while keeping the tests understandable.
+
+        // Collateral $1000, reinvested collateral debt $0, supplied collateral $500
+        (uint256 delta1, bool isPositive1) = _getTotalCollateralDelta(1000 * 1e8, 0 * 1e6, 500 * 1e6);
+        assertEq(delta1, 500 * 1e6);
+        assertTrue(isPositive1);
+
+        // Collateral $1000, reinvested collateral $0, supplied collateral $1500
+        (uint256 delta2, bool isPositive2) = _getTotalCollateralDelta(1000 * 1e8, 0, 1000 * 1e6);
+        assertEq(delta2, 0);
+        assertTrue(isPositive2);
+
+        // Collateral $1000, reinvested collateral $0, supplied collateral $1500
+        (uint256 delta3, bool isPositive3) = _getTotalCollateralDelta(1000 * 1e8, 0, 1500 * 1e6);
+        assertEq(delta3, 500 * 1e6);
+        assertFalse(isPositive3);
+
+        // Collateral $1000, reinvested collateral $200, supplied collateral $300
+        (uint256 delta4, bool isPositive4) = _getTotalCollateralDelta(1000 * 1e8, 200 * 1e6, 300 * 1e6);
+        assertEq(delta4, 500 * 1e6);
+        assertTrue(isPositive4);
+
+        // Collateral $1000, reinvested collateral $200, supplied collateral $1000
+        (uint256 delta5, bool isPositive5) = _getTotalCollateralDelta(1000 * 1e8, 200 * 1e6, 1000 * 1e6);
+        assertEq(delta5, 200 * 1e6);
+        assertFalse(isPositive5);
     }
 }

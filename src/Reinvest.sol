@@ -61,7 +61,7 @@ contract Reinvest is TokenSwaps, AaveFunctions {
 
         // Safety check to ensure the health factor is above the minimum target.
         // It is also used to calculate the reinvested collateral by returning the updated position values.
-        (uint256 endCollateralBase,,,,,) = _checkHealthFactorAboveMinimum(aavePM, aavePoolAddress);
+        (uint256 endCollateralBase,,,,,) = _checkHealthFactorAboveMinimum();
 
         // Calculate the reinvested collateral by comparing the initial and end collateral values.
         if (endCollateralBase > initialCollateralBase) {

@@ -36,7 +36,6 @@ contract AaveFunctions is TokenSwaps {
     /// @notice Withdraw wstETH from Aave.
     ///      // TODO: Update comment.
     function _aaveWithdrawCollateral(address aavePoolAddress, address tokenAddress, uint256 withdrawAmount) internal {
-        // TODO: This should have a HF check to make sure that this withdrawal doesn't drop the HF below the target.
         IPool(aavePoolAddress).withdraw(tokenAddress, withdrawAmount, address(this));
     }
 
@@ -44,7 +43,6 @@ contract AaveFunctions is TokenSwaps {
     ///      // TODO: Update comment.
     /// @param borrowAmount The amount of USDC to borrow. 8 decimal places to the dollar. e.g. 100000000 = $1.00.
     function _aaveBorrow(address aavePoolAddress, address tokenAddress, uint256 borrowAmount) internal {
-        // TODO: This should have a HF check to make sure that this borrow doesn't drop the HF below the target.
         IPool(aavePoolAddress).borrow(tokenAddress, borrowAmount, 2, 0, address(this));
     }
 
@@ -105,7 +103,7 @@ contract AaveFunctions is TokenSwaps {
     }
 
     /// @notice // TODO: Add comment.
-    function _checkHealthFactorAboveMinimum(IAavePM aavePM, address aavePoolAddress)
+    function _checkHealthFactorAboveMinimum()
         internal
         view
         returns (
@@ -117,6 +115,9 @@ contract AaveFunctions is TokenSwaps {
             uint256 healthFactor
         )
     {
+        IAavePM aavePM = IAavePM(address(this));
+        address aavePoolAddress = aavePM.getContractAddress("aavePool");
+
         // TODO: Improve check.
         (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor) =
             IPool(aavePoolAddress).getUserAccountData(address(this));

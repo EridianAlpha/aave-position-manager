@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/96dee688229972018bcdd507d16665e5b12b78e4/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/dc0b05bdee42d7e220f3fc15f77dc7db57d34166/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -214,10 +214,10 @@
 <pre><code class="language-solidity">function rebalance() external;
 </code></pre>
 <h3 id="reinvest"><a class="header" href="#reinvest">reinvest</a></h3>
-<pre><code class="language-solidity">function reinvest() external;
+<pre><code class="language-solidity">function reinvest() external returns (uint256 reinvestedDebt, uint256 reinvestedCollateral);
 </code></pre>
 <h3 id="aavesupply"><a class="header" href="#aavesupply">aaveSupply</a></h3>
-<pre><code class="language-solidity">function aaveSupply() external;
+<pre><code class="language-solidity">function aaveSupply() external returns (uint256 suppliedCollateral);
 </code></pre>
 <h3 id="aaverepay"><a class="header" href="#aaverepay">aaveRepay</a></h3>
 <pre><code class="language-solidity">function aaveRepay() external;
@@ -263,9 +263,6 @@
 </code></pre>
 <h3 id="getrolemembers"><a class="header" href="#getrolemembers">getRoleMembers</a></h3>
 <pre><code class="language-solidity">function getRoleMembers(string memory _roleString) external view returns (address[] memory);
-</code></pre>
-<h3 id="gettotaldebtinterest"><a class="header" href="#gettotaldebtinterest">getTotalDebtInterest</a></h3>
-<pre><code class="language-solidity">function getTotalDebtInterest() external view returns (uint256 totalDebtInterest);
 </code></pre>
 <h3 id="getwithdrawnusdctotal"><a class="header" href="#getwithdrawnusdctotal">getWithdrawnUSDCTotal</a></h3>
 <pre><code class="language-solidity">function getWithdrawnUSDCTotal() external view returns (uint256 withdrawnUSDCTotal);

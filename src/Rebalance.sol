@@ -58,7 +58,7 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         }
 
         // Safety check to ensure the health factor is above the minimum target.
-        // It is also used to calculate the ?? by returning the updated position values.
+        // It is also used to calculate the soldCollateral by returning the updated position values.
         (uint256 endCollateralBase,,,,,) = _checkHealthFactorAboveMinimum();
 
         // Calculate the sold collateral by comparing the initial and end collateral values.

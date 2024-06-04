@@ -250,7 +250,7 @@ contract AaveFunctions is TokenSwaps {
         */
         maxBorrowUSDC = (
             ((totalCollateralBase - totalDebtBase) * currentLiquidationThreshold)
-                / ((healthFactorTarget * 1e2) - currentLiquidationThreshold)
+                / ((uint256(healthFactorTarget) * 1e2) - currentLiquidationThreshold)
         );
     }
 }

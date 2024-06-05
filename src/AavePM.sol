@@ -377,8 +377,8 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
-        uint256 repayedReinvestedDebt = _borrowAndWithdrawUSDC(_amount, _owner);
-        s_withdrawnUSDCTotal += _amount;
+        (uint256 borrowAmountUSDC, uint256 repayedReinvestedDebt) = _borrowAndWithdrawUSDC(_amount, _owner);
+        s_withdrawnUSDCTotal += borrowAmountUSDC;
 
         if (repayedReinvestedDebt != 0) {
             if (s_reinvestedDebtTotal > repayedReinvestedDebt) {

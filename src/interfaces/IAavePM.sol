@@ -18,7 +18,6 @@ interface IAavePM {
     error AavePM__HealthFactorBelowMinimum();
     error AavePM__SlippageToleranceUnchanged();
     error AavePM__SlippageToleranceAboveMaximum();
-    error AavePM__BorrowRequestedGreaterThanMaximumAvailable();
 
     error AaveFunctions__FlashLoanMsgSenderUnauthorized();
     error AaveFunctions__FlashLoanInitiatorUnauthorized();

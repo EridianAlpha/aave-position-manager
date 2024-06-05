@@ -25,7 +25,7 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
     /// @notice // TODO: Add comment
     function _borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
         internal
-        returns (uint256 repayedReinvestedDebt)
+        returns (uint256, uint256 repayedReinvestedDebt)
     {
         IAavePM aavePM = IAavePM(address(this));
 
@@ -36,8 +36,10 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         (uint256 totalCollateralBase, uint256 totalDebtBase,, uint256 currentLiquidationThreshold,,) =
             IPool(aavePoolAddress).getUserAccountData(address(this));
 
+        // Ensure the requested borrow amount is less than or equal to the maximum available
+        // and allows for the maximum amount of USDC to be borrowed without throwing an error
         if (borrowAmountUSDC > aavePM.getMaxBorrowAndWithdrawUSDCAmount()) {
-            revert IAavePM.AavePM__BorrowRequestedGreaterThanMaximumAvailable();
+            borrowAmountUSDC = aavePM.getMaxBorrowAndWithdrawUSDCAmount();
         }
 
         uint256 healthFactorTarget = aavePM.getHealthFactorTarget();
@@ -56,28 +58,9 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         } else {
             // The requested borrow amount would put the HF below the target
             // so repaying some reinvested debt is required
-
-            /* 
-            *   Calculate the maximum amount of USDC that can be borrowed.
-            *       - Solve for x to find the amount of reinvested debt to repay
-            *       - flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
-            *       - As the result is negative, case as int256 to avoid underflow and then recast to uint256 and invert after the calculation
-            * 
-            *                          (totalCollateralBase - x) * currentLiquidationThreshold
-            *   Health Factor Target = -------------------------------------------------------
-            *                                   totalDebtBase - x + borrowAmountUSDC
-            */
-            int256 calcRepayedReinvestedDebt = (
-                (
-                    int256(totalCollateralBase) * int256(currentLiquidationThreshold / 1e2)
-                        - int256(totalDebtBase) * int256(healthFactorTarget)
-                        - int256(borrowAmountUSDC) * 1e2 * int256(healthFactorTarget)
-                ) / (int256(currentLiquidationThreshold / 1e2) - int256(healthFactorTarget))
-            ) / 1e2;
-
-            // Invert the value if it's negative
-            repayedReinvestedDebt =
-                uint256(calcRepayedReinvestedDebt < 0 ? -calcRepayedReinvestedDebt : calcRepayedReinvestedDebt);
+            repayedReinvestedDebt = _borrowCalculation(
+                totalCollateralBase, totalDebtBase, currentLiquidationThreshold, borrowAmountUSDC, healthFactorTarget
+            );
 
             // Flashloan to repay the dept and increase the Health Factor
             IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repayedReinvestedDebt, bytes(""), 0);
@@ -87,6 +70,36 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         }
 
         IERC20(usdcAddress).transfer(_owner, borrowAmountUSDC);
-        return repayedReinvestedDebt;
+        return (borrowAmountUSDC, repayedReinvestedDebt);
+    }
+
+    function _borrowCalculation(
+        uint256 totalCollateralBase,
+        uint256 totalDebtBase,
+        uint256 currentLiquidationThreshold,
+        uint256 borrowAmountUSDC,
+        uint256 healthFactorTarget
+    ) private pure returns (uint256 repayedReinvestedDebt) {
+        /* 
+        *   Calculate the maximum amount of USDC that can be borrowed.
+        *       - Solve for x to find the amount of reinvested debt to repay
+        *       - flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
+        *       - As the result is negative, case as int256 to avoid underflow and then recast to uint256 and invert after the calculation
+        * 
+        *                          (totalCollateralBase - x) * currentLiquidationThreshold
+        *   Health Factor Target = -------------------------------------------------------
+        *                                   totalDebtBase - x + borrowAmountUSDC
+        */
+        int256 calcRepayedReinvestedDebt = (
+            (
+                int256(totalCollateralBase) * int256(currentLiquidationThreshold / 1e2)
+                    - int256(totalDebtBase) * int256(healthFactorTarget)
+                    - int256(borrowAmountUSDC) * 1e2 * int256(healthFactorTarget)
+            ) / (int256(currentLiquidationThreshold / 1e2) - int256(healthFactorTarget))
+        ) / 1e2;
+
+        // Invert the value if it's negative
+        repayedReinvestedDebt =
+            uint256(calcRepayedReinvestedDebt < 0 ? -calcRepayedReinvestedDebt : calcRepayedReinvestedDebt);
     }
 }

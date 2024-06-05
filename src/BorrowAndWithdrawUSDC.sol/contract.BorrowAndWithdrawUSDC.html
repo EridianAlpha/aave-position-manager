@@ -178,14 +178,25 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="borrowandwithdrawusdc"><a class="header" href="#borrowandwithdrawusdc">BorrowAndWithdrawUSDC</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/dc0b05bdee42d7e220f3fc15f77dc7db57d34166/src/BorrowAndWithdrawUSDC.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/1c7e8c67e430cb3758e042b8fe0c8b941bf35efa/src/BorrowAndWithdrawUSDC.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/TokenSwaps.sol/contract.TokenSwaps.html">TokenSwaps</a>, <a href="/src/AaveFunctions.sol/contract.AaveFunctions.html">AaveFunctions</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="_borrowandwithdrawusdc"><a class="header" href="#_borrowandwithdrawusdc">_borrowAndWithdrawUSDC</a></h3>
 <p>// TODO: Add comment</p>
-<pre><code class="language-solidity">function _borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner) internal;
+<pre><code class="language-solidity">function _borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
+    internal
+    returns (uint256 repaidReinvestedDebt);
+</code></pre>
+<h3 id="_borrowcalculation"><a class="header" href="#_borrowcalculation">_borrowCalculation</a></h3>
+<pre><code class="language-solidity">function _borrowCalculation(
+    uint256 totalCollateralBase,
+    uint256 totalDebtBase,
+    uint256 currentLiquidationThreshold,
+    uint256 borrowAmountUSDC,
+    uint256 healthFactorTarget
+) private pure returns (uint256 repaidReinvestedDebt);
 </code></pre>
 
                     </main>

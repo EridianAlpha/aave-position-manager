@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="rebalance"><a class="header" href="#rebalance">Rebalance</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/dc0b05bdee42d7e220f3fc15f77dc7db57d34166/src/Rebalance.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/1c7e8c67e430cb3758e042b8fe0c8b941bf35efa/src/Rebalance.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/TokenSwaps.sol/contract.TokenSwaps.html">TokenSwaps</a>, <a href="/src/AaveFunctions.sol/contract.AaveFunctions.html">AaveFunctions</a></p>
 <p>// TODO: Add comment</p>
@@ -188,7 +188,7 @@
 <p><em>Caller must have <code>MANAGER_ROLE</code>.
 The function rebalances the Aave position.
 If the health factor is below the target, it repays debt to increase the health factor.</em></p>
-<pre><code class="language-solidity">function _rebalance() internal returns (uint256 repaymentAmountUSDC, uint256 soldCollateral);
+<pre><code class="language-solidity">function _rebalance() internal returns (uint256 repaymentAmountUSDC);
 </code></pre>
 <h3 id="_repaydebt"><a class="header" href="#_repaydebt">_repayDebt</a></h3>
 <pre><code class="language-solidity">function _repayDebt(

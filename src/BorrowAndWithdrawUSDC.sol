@@ -51,11 +51,12 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         // Set the initial repayed reinvested debt to 0
         repayedReinvestedDebt = 0;
 
-        if (healthFactorAfterBorrowOnlyScaled > healthFactorTarget) {
+        // TODO: Improve check
+        if (healthFactorAfterBorrowOnlyScaled > healthFactorTarget - 2) {
             // The HF is above target after borrow of USDC only,
             // so the USDC can be borrowed without repaying reinvested debt
             _aaveBorrow(aavePoolAddress, usdcAddress, borrowAmountUSDC);
-        } else {
+        } else if (aavePM.getReinvestedDebtTotal() > 0) {
             // The requested borrow amount would put the HF below the target
             // so repaying some reinvested debt is required
             repayedReinvestedDebt = _borrowCalculation(

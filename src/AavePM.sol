@@ -534,11 +534,13 @@ contract AavePM is
         uint256 reinvestedDebt = getReinvestedDebtTotal();
 
         // TODO: Add checks for underflow on the minus operations.
-        maxBorrowAndWithdrawUSDCAmount = (
-            ((totalCollateralBase - (reinvestedDebt * 1e2)) * currentLiquidationThreshold) / (healthFactorTarget * 1e2)
-        ) - (totalDebtBase - (reinvestedDebt * 1e2));
 
-        return maxBorrowAndWithdrawUSDCAmount / 1e2;
+        int256 calcMaxBorrowAndWithdrawUSDCAmount = (
+            ((int256(totalCollateralBase) - (int256(reinvestedDebt) * 1e2)) * int256(currentLiquidationThreshold))
+                / (int256(uint256(healthFactorTarget)) * 1e2)
+        ) - (int256(totalDebtBase) - (int256(reinvestedDebt) * 1e2));
+
+        return calcMaxBorrowAndWithdrawUSDCAmount > 0 ? uint256(calcMaxBorrowAndWithdrawUSDCAmount) / 1e2 : 0;
     }
 
     // ================================================================

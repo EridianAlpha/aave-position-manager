@@ -22,12 +22,11 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 /// @notice // TODO: Add comment
 contract Reinvest is TokenSwaps, AaveFunctions {
     /// @notice // TODO: Add comment
-    function _reinvest() internal returns (uint256 reinvestedDebt, uint256 reinvestedCollateral) {
+    function _reinvest() internal returns (uint256 reinvestedDebt) {
         IAavePM aavePM = IAavePM(address(this));
 
-        // Set the initial reinvested debt and reinvested collateral to 0.
+        // Set the initial reinvested debt to 0.
         reinvestedDebt = 0;
-        reinvestedCollateral = 0;
 
         (
             uint256 initialCollateralBase,
@@ -60,16 +59,10 @@ contract Reinvest is TokenSwaps, AaveFunctions {
         }
 
         // Safety check to ensure the health factor is above the minimum target.
-        // It is also used to calculate the reinvested collateral by returning the updated position values.
-        (uint256 endCollateralBase,,,,,) = _checkHealthFactorAboveMinimum();
-
-        // Calculate the reinvested collateral by comparing the initial and end collateral values.
-        if (endCollateralBase > initialCollateralBase) {
-            reinvestedCollateral += (endCollateralBase - initialCollateralBase) / 1e2;
-        }
+        _checkHealthFactorAboveMinimum();
 
         // Return the reinvested debt and reinvested collateral so the state can be updated on the AavePM contract.
-        return (reinvestedDebt, reinvestedCollateral);
+        return (reinvestedDebt);
     }
 
     function _reinvestAction(

@@ -106,7 +106,7 @@ contract AavePMGetterTests is AavePMTestSetup {
         aavePM.aaveSupply();
 
         // Reinvest
-        (uint256 reinvestedDebt,) = aavePM.reinvest();
+        (uint256 reinvestedDebt) = aavePM.reinvest();
         vm.stopPrank();
 
         assertEq(aavePM.getReinvestedDebtTotal(), reinvestedDebt);
@@ -127,20 +127,5 @@ contract AavePMGetterTests is AavePMTestSetup {
         uint256 suppliedCollateral = aavePM.aaveSupply();
 
         assertEq(aavePM.getSuppliedCollateralTotal(), suppliedCollateral);
-    }
-
-    function test_GetReinvestedCollateralTotal() public {
-        // Send ETH from manager1 to the contract
-        vm.startPrank(manager1);
-        sendEth(address(aavePM), SEND_VALUE);
-
-        // Supply ETH to Aave
-        aavePM.aaveSupply();
-
-        // Reinvest
-        (, uint256 reinvestedCollateral) = aavePM.reinvest();
-        vm.stopPrank();
-
-        assertEq(aavePM.getReinvestedCollateralTotal(), reinvestedCollateral);
     }
 }

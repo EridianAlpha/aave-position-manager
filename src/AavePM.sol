@@ -57,7 +57,6 @@ contract AavePM is
     uint256 internal s_withdrawnUSDCTotal = 0;
     uint256 internal s_reinvestedDebtTotal = 0;
     uint256 internal s_suppliedCollateralTotal = 0;
-    uint256 internal s_reinvestedCollateralTotal = 0;
 
     // ================================================================
     // │                           CONSTANTS                          │
@@ -294,30 +293,23 @@ contract AavePM is
         aaveSupply();
 
         // During a rebalance, I want to know how much debt was repaid and how much collateral was sold.
-        (uint256 repaymentAmountUSDC, uint256 soldCollateral) = _rebalance();
+        (uint256 repaymentAmountUSDC) = _rebalance();
 
         if (repaymentAmountUSDC > 0 && s_reinvestedDebtTotal >= repaymentAmountUSDC) {
             s_reinvestedDebtTotal -= repaymentAmountUSDC;
         } else {
             s_reinvestedDebtTotal = 0;
         }
-
-        if (soldCollateral > 0 && s_reinvestedCollateralTotal >= soldCollateral) {
-            s_reinvestedCollateralTotal -= soldCollateral;
-        } else {
-            s_reinvestedCollateralTotal = 0;
-        }
     }
 
     /// @notice // TODO: Add comment
-    function reinvest() public onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt, uint256 reinvestedCollateral) {
+    function reinvest() public onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt) {
         // Convert any existing tokens to wstETH and supply to Aave.
         aaveSupply();
 
         // Reinvest any excess debt or collateral.
-        (reinvestedDebt, reinvestedCollateral) = _reinvest();
+        (reinvestedDebt) = _reinvest();
         if (reinvestedDebt > 0) s_reinvestedDebtTotal += reinvestedDebt;
-        if (reinvestedCollateral > 0) s_reinvestedCollateralTotal += reinvestedCollateral;
 
         // TODO: Emit an event with suppliedCollateral, reinvestedDebt, reinvestedCollateral
     }
@@ -370,12 +362,12 @@ contract AavePM is
             uint256 collateralDeltaBase = initialCollateralBase - endCollateralBase;
             if (initialSuppliedCollateral >= collateralDeltaBase / 1e2) {
                 s_suppliedCollateralTotal -= collateralDeltaBase / 1e2;
-            } else if (initialSuppliedCollateral + s_reinvestedCollateralTotal >= collateralDeltaBase / 1e2) {
+            } else if (initialSuppliedCollateral + s_reinvestedDebtTotal >= collateralDeltaBase / 1e2) {
                 s_suppliedCollateralTotal = 0;
-                s_reinvestedCollateralTotal -= (collateralDeltaBase / 1e2 - initialSuppliedCollateral);
+                s_reinvestedDebtTotal -= (collateralDeltaBase / 1e2 - initialSuppliedCollateral);
             } else {
                 s_suppliedCollateralTotal = 0;
-                s_reinvestedCollateralTotal = 0;
+                s_reinvestedDebtTotal = 0;
             }
         }
 
@@ -385,9 +377,16 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
-        // TODO: Add a return value to _borrowAndWithdrawUSDC so that it confirms the borrow was successful and the amount borrowed.
-        _borrowAndWithdrawUSDC(_amount, _owner);
+        uint256 repayedReinvestedDebt = _borrowAndWithdrawUSDC(_amount, _owner);
         s_withdrawnUSDCTotal += _amount;
+
+        if (repayedReinvestedDebt != 0) {
+            if (s_reinvestedDebtTotal > repayedReinvestedDebt) {
+                s_reinvestedDebtTotal -= repayedReinvestedDebt;
+            } else {
+                s_reinvestedDebtTotal = 0;
+            }
+        }
 
         // Check to ensure the health factor is above the minimum target.
         _checkHealthFactorAboveMinimum();
@@ -514,8 +513,7 @@ contract AavePM is
     /// @return isPositive A boolean indicating if the total collateral delta is positive.
     function getTotalCollateralDelta() public view returns (uint256 totalCollateralDelta, bool isPositive) {
         (uint256 totalCollateralBase,,,,,) = IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
-        return
-            _getTotalCollateralDelta(totalCollateralBase, getReinvestedCollateralTotal(), getSuppliedCollateralTotal());
+        return _getTotalCollateralDelta(totalCollateralBase, getReinvestedDebtTotal(), getSuppliedCollateralTotal());
     }
 
     /// @notice Getter function to get the total amount of supplied collateral.
@@ -525,11 +523,22 @@ contract AavePM is
         return s_suppliedCollateralTotal;
     }
 
-    /// @notice Getter function to get the total amount of reinvested collateral.
-    /// @dev Public function to allow anyone to view the total amount of reinvested collateral.
-    /// @return reinvestedCollateralTotal The total amount of reinvested collateral.
-    function getReinvestedCollateralTotal() public view returns (uint256 reinvestedCollateralTotal) {
-        return s_reinvestedCollateralTotal;
+    /// @notice // TODO: Add comment
+    function getMaxBorrowAndWithdrawUSDCAmount() public view returns (uint256 maxBorrowAndWithdrawUSDCAmount) {
+        address aavePoolAddress = getContractAddress("aavePool");
+        (uint256 totalCollateralBase, uint256 totalDebtBase,, uint256 currentLiquidationThreshold,,) =
+            IPool(aavePoolAddress).getUserAccountData(address(this));
+
+        // Get the current health factor target and reinvested debt.
+        uint16 healthFactorTarget = getHealthFactorTarget();
+        uint256 reinvestedDebt = getReinvestedDebtTotal();
+
+        // TODO: Add checks for underflow on the minus operations.
+        maxBorrowAndWithdrawUSDCAmount = (
+            ((totalCollateralBase - (reinvestedDebt * 1e2)) * currentLiquidationThreshold) / (healthFactorTarget * 1e2)
+        ) - (totalDebtBase - (reinvestedDebt * 1e2));
+
+        return maxBorrowAndWithdrawUSDCAmount / 1e2;
     }
 
     // ================================================================

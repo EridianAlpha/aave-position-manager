@@ -133,10 +133,10 @@ contract AaveFunctions is TokenSwaps {
     /// @notice // TODO: Add comment.
     function _getTotalCollateralDelta(
         uint256 totalCollateralBase,
-        uint256 reinvestedCollateralTotal,
+        uint256 reinvestedDebtTotal,
         uint256 suppliedCollateralTotal
     ) internal pure returns (uint256 delta, bool isPositive) {
-        uint256 reinvestedAndSuppliedCollateralBase = (reinvestedCollateralTotal + suppliedCollateralTotal) * 1e2;
+        uint256 reinvestedAndSuppliedCollateralBase = (reinvestedDebtTotal + suppliedCollateralTotal) * 1e2;
         if (totalCollateralBase < reinvestedAndSuppliedCollateralBase) {
             delta = (reinvestedAndSuppliedCollateralBase - totalCollateralBase) / 1e2;
             isPositive = false;

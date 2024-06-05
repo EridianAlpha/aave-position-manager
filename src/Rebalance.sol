@@ -25,7 +25,7 @@ contract Rebalance is TokenSwaps, AaveFunctions {
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      The function rebalances the Aave position.
     ///      If the health factor is below the target, it repays debt to increase the health factor.
-    function _rebalance() internal returns (uint256 repaymentAmountUSDC, uint256 soldCollateral) {
+    function _rebalance() internal returns (uint256 repaymentAmountUSDC) {
         IAavePM aavePM = IAavePM(address(this));
 
         (
@@ -58,18 +58,10 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         }
 
         // Safety check to ensure the health factor is above the minimum target.
-        // It is also used to calculate the soldCollateral by returning the updated position values.
-        (uint256 endCollateralBase,,,,,) = _checkHealthFactorAboveMinimum();
-
-        // Calculate the sold collateral by comparing the initial and end collateral values.
-        if (endCollateralBase < initialCollateralBase) {
-            soldCollateral = (initialCollateralBase - endCollateralBase) / 1e2;
-        } else {
-            soldCollateral = 0;
-        }
+        _checkHealthFactorAboveMinimum();
 
         // Return the reinvested debt and reinvested collateral so the state can be updated on the AavePM contract.
-        return (repaymentAmountUSDC, soldCollateral);
+        return (repaymentAmountUSDC);
     }
 
     function _repayDebt(

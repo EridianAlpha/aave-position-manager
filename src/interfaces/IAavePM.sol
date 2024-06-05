@@ -18,6 +18,7 @@ interface IAavePM {
     error AavePM__HealthFactorBelowMinimum();
     error AavePM__SlippageToleranceUnchanged();
     error AavePM__SlippageToleranceAboveMaximum();
+    error AavePM__BorrowRequestedGreaterThanMaximumAvailable();
 
     error AaveFunctions__FlashLoanMsgSenderUnauthorized();
     error AaveFunctions__FlashLoanInitiatorUnauthorized();
@@ -93,7 +94,7 @@ interface IAavePM {
     // │                   FUNCTIONS - CORE FUNCTIONS                 │
     // ================================================================
     function rebalance() external;
-    function reinvest() external returns (uint256 reinvestedDebt, uint256 reinvestedCollateral);
+    function reinvest() external returns (uint256 reinvestedDebt);
     function aaveSupply() external returns (uint256 suppliedCollateral);
     function aaveRepay() external;
     function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress) external;
@@ -120,7 +121,7 @@ interface IAavePM {
     function getReinvestedDebtTotal() external view returns (uint256 reinvestedDebtTotal);
     function getTotalCollateralDelta() external view returns (uint256 totalCollateralDelta, bool isPositive);
     function getSuppliedCollateralTotal() external view returns (uint256 depositedCollateralTotal);
-    function getReinvestedCollateralTotal() external view returns (uint256 reinvestedCollateralTotal);
+    function getMaxBorrowAndWithdrawUSDCAmount() external view returns (uint256 maxBorrowAndWithdrawUSDCAmount);
 
     // ================================================================
     // │             INHERITED FUNCTIONS - ACCESS CONTROLS            │

@@ -25,7 +25,7 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
     /// @notice // TODO: Add comment
     function _borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
         internal
-        returns (uint256, uint256 repayedReinvestedDebt)
+        returns (uint256, uint256 repaidReinvestedDebt)
     {
         IAavePM aavePM = IAavePM(address(this));
 
@@ -48,8 +48,8 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         uint256 healthFactorAfterBorrowOnlyScaled =
             ((totalCollateralBase * currentLiquidationThreshold) / (totalDebtBase + borrowAmountUSDC * 1e2)) / 1e2;
 
-        // Set the initial repayed reinvested debt to 0
-        repayedReinvestedDebt = 0;
+        // Set the initial repaid reinvested debt to 0
+        repaidReinvestedDebt = 0;
 
         // TODO: Improve check
         if (healthFactorAfterBorrowOnlyScaled > healthFactorTarget - 2) {
@@ -59,19 +59,19 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         } else if (aavePM.getReinvestedDebtTotal() > 0) {
             // The requested borrow amount would put the HF below the target
             // so repaying some reinvested debt is required
-            repayedReinvestedDebt = _borrowCalculation(
+            repaidReinvestedDebt = _borrowCalculation(
                 totalCollateralBase, totalDebtBase, currentLiquidationThreshold, borrowAmountUSDC, healthFactorTarget
             );
 
             // Flashloan to repay the dept and increase the Health Factor
-            IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repayedReinvestedDebt, bytes(""), 0);
+            IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaidReinvestedDebt, bytes(""), 0);
 
             // Borrow the requested amount of USDC
             _aaveBorrow(aavePoolAddress, usdcAddress, borrowAmountUSDC);
         }
 
         IERC20(usdcAddress).transfer(_owner, borrowAmountUSDC);
-        return (borrowAmountUSDC, repayedReinvestedDebt);
+        return (borrowAmountUSDC, repaidReinvestedDebt);
     }
 
     function _borrowCalculation(
@@ -80,7 +80,7 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         uint256 currentLiquidationThreshold,
         uint256 borrowAmountUSDC,
         uint256 healthFactorTarget
-    ) private pure returns (uint256 repayedReinvestedDebt) {
+    ) private pure returns (uint256 repaidReinvestedDebt) {
         /* 
         *   Calculate the maximum amount of USDC that can be borrowed.
         *       - Solve for x to find the amount of reinvested debt to repay
@@ -91,7 +91,7 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         *   Health Factor Target = -------------------------------------------------------
         *                                   totalDebtBase - x + borrowAmountUSDC
         */
-        int256 calcRepayedReinvestedDebt = (
+        int256 calcRepaidReinvestedDebt = (
             (
                 int256(totalCollateralBase) * int256(currentLiquidationThreshold / 1e2)
                     - int256(totalDebtBase) * int256(healthFactorTarget)
@@ -100,7 +100,7 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         ) / 1e2;
 
         // Invert the value if it's negative
-        repayedReinvestedDebt =
-            uint256(calcRepayedReinvestedDebt < 0 ? -calcRepayedReinvestedDebt : calcRepayedReinvestedDebt);
+        repaidReinvestedDebt =
+            uint256(calcRepaidReinvestedDebt < 0 ? -calcRepaidReinvestedDebt : calcRepaidReinvestedDebt);
     }
 }

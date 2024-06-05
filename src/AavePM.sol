@@ -344,6 +344,8 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
+        // TODO: Improve this function so it doesn't allow withdrawals below the target HF, not just the minimum
+        //       Then this will only be used once debt has been repaid
         address aavePoolAddress = getContractAddress("aavePool");
 
         // Get the collateral base value before withdrawing.
@@ -377,12 +379,13 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
-        (uint256 borrowAmountUSDC, uint256 repayedReinvestedDebt) = _borrowAndWithdrawUSDC(_amount, _owner);
+        (uint256 borrowAmountUSDC, uint256 repaidReinvestedDebt) = _borrowAndWithdrawUSDC(_amount, _owner);
+
         s_withdrawnUSDCTotal += borrowAmountUSDC;
 
-        if (repayedReinvestedDebt != 0) {
-            if (s_reinvestedDebtTotal > repayedReinvestedDebt) {
-                s_reinvestedDebtTotal -= repayedReinvestedDebt;
+        if (repaidReinvestedDebt != 0) {
+            if (s_reinvestedDebtTotal > repaidReinvestedDebt) {
+                s_reinvestedDebtTotal -= repaidReinvestedDebt;
             } else {
                 s_reinvestedDebtTotal = 0;
             }

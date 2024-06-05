@@ -379,9 +379,19 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
-        (uint256 borrowAmountUSDC, uint256 repaidReinvestedDebt) = _borrowAndWithdrawUSDC(_amount, _owner);
+        // Check the available borrow and withdraw amount is greater than 0
+        uint256 maxBorrowAndWithdrawUSDCAmount = getMaxBorrowAndWithdrawUSDCAmount();
+        if (maxBorrowAndWithdrawUSDCAmount == 0) revert IAavePM.AavePM__ZeroBorrowAndWithdrawUSDCAvailable();
 
-        s_withdrawnUSDCTotal += borrowAmountUSDC;
+        // Ensure the requested borrow amount is less than or equal to the maximum available
+        // and allows for the maximum amount of USDC to be borrowed without throwing an error
+        if (_amount > maxBorrowAndWithdrawUSDCAmount) {
+            _amount = maxBorrowAndWithdrawUSDCAmount;
+        }
+
+        (uint256 repaidReinvestedDebt) = _borrowAndWithdrawUSDC(_amount, _owner);
+
+        s_withdrawnUSDCTotal += _amount;
 
         if (repaidReinvestedDebt != 0) {
             if (s_reinvestedDebtTotal > repaidReinvestedDebt) {
@@ -544,6 +554,23 @@ contract AavePM is
         ) - (int256(totalDebtBase) - (int256(reinvestedDebt) * 1e2));
 
         return calcMaxBorrowAndWithdrawUSDCAmount > 0 ? uint256(calcMaxBorrowAndWithdrawUSDCAmount) / 1e2 : 0;
+    }
+
+    /// @notice // TODO: Add comment
+    function getReinvestableAmount() public view returns (uint256 reinvestableAmount) {
+        (uint256 totalCollateralBase, uint256 totalDebtBase,, uint256 currentLiquidationThreshold,,) =
+            IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
+
+        uint256 maxBorrowUSDC = _calculateMaxBorrowUSDC(
+            totalCollateralBase, totalDebtBase, currentLiquidationThreshold, getHealthFactorTarget()
+        );
+
+        // Calculate the additional amount to borrow to reach the target health factor.
+        if (maxBorrowUSDC > totalDebtBase) {
+            return reinvestableAmount = (maxBorrowUSDC - totalDebtBase) / 1e2;
+        } else {
+            return reinvestableAmount = 0;
+        }
     }
 
     // ================================================================

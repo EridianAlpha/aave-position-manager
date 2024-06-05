@@ -18,6 +18,7 @@ interface IAavePM {
     error AavePM__HealthFactorBelowMinimum();
     error AavePM__SlippageToleranceUnchanged();
     error AavePM__SlippageToleranceAboveMaximum();
+    error AavePM__ZeroBorrowAndWithdrawUSDCAvailable();
 
     error AaveFunctions__FlashLoanMsgSenderUnauthorized();
     error AaveFunctions__FlashLoanInitiatorUnauthorized();
@@ -121,6 +122,7 @@ interface IAavePM {
     function getTotalCollateralDelta() external view returns (uint256 totalCollateralDelta, bool isPositive);
     function getSuppliedCollateralTotal() external view returns (uint256 depositedCollateralTotal);
     function getMaxBorrowAndWithdrawUSDCAmount() external view returns (uint256 maxBorrowAndWithdrawUSDCAmount);
+    function getReinvestableAmount() external view returns (uint256 reinvestableAmount);
 
     // ================================================================
     // │             INHERITED FUNCTIONS - ACCESS CONTROLS            │

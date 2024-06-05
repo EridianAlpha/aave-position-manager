@@ -17,7 +17,7 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // ================================================================
-// │                       ?? CONTRACT                     │
+// │               BORROW AND WITHDRAW USDC CONTRACT              │
 // ================================================================
 
 /// @notice // TODO: Add comment
@@ -25,22 +25,15 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
     /// @notice // TODO: Add comment
     function _borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
         internal
-        returns (uint256, uint256 repaidReinvestedDebt)
+        returns (uint256 repaidReinvestedDebt)
     {
         IAavePM aavePM = IAavePM(address(this));
 
         // Get data from state
         address aavePoolAddress = aavePM.getContractAddress("aavePool");
         address usdcAddress = aavePM.getTokenAddress("USDC");
-
         (uint256 totalCollateralBase, uint256 totalDebtBase,, uint256 currentLiquidationThreshold,,) =
             IPool(aavePoolAddress).getUserAccountData(address(this));
-
-        // Ensure the requested borrow amount is less than or equal to the maximum available
-        // and allows for the maximum amount of USDC to be borrowed without throwing an error
-        if (borrowAmountUSDC > aavePM.getMaxBorrowAndWithdrawUSDCAmount()) {
-            borrowAmountUSDC = aavePM.getMaxBorrowAndWithdrawUSDCAmount();
-        }
 
         uint256 healthFactorTarget = aavePM.getHealthFactorTarget();
 
@@ -71,7 +64,7 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         }
 
         IERC20(usdcAddress).transfer(_owner, borrowAmountUSDC);
-        return (borrowAmountUSDC, repaidReinvestedDebt);
+        return (repaidReinvestedDebt);
     }
 
     function _borrowCalculation(

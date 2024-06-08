@@ -292,7 +292,7 @@ contract AavePM is
         // Convert any existing tokens to wstETH and supply to Aave.
         aaveSupply();
 
-        // During a rebalance, I want to know how much debt was repaid and how much collateral was sold.
+        // Perform rebalance.
         (uint256 repaymentAmountUSDC) = _rebalance();
 
         if (repaymentAmountUSDC > 0 && s_reinvestedDebtTotal >= repaymentAmountUSDC) {

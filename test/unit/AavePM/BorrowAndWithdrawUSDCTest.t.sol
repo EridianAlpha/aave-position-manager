@@ -107,6 +107,46 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         vm.stopPrank();
     }
 
+    function test_BorrowAndWithdrawUSDCMaxBorrow() public {
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
+
+        // Supply the ETH sent to the contract to Aave
+        aavePM.aaveSupply();
+
+        // Reinvest the ETH supplied to Aave
+        aavePM.reinvest();
+
+        // Store the max borrow amount
+        uint256 maxBorrowAndWithdrawUSDCAmount = aavePM.getMaxBorrowAndWithdrawUSDCAmount();
+
+        // Try to borrow more USDC than is available
+        aavePM.borrowAndWithdrawUSDC(maxBorrowAndWithdrawUSDCAmount + USDC_BORROW_AMOUNT, owner1);
+
+        // Check the USDC balance of owner1
+        assertEq(USDC.balanceOf(owner1), maxBorrowAndWithdrawUSDCAmount);
+
+        // Check the withdrawn USDC total of the contract
+        assertEq(aavePM.getWithdrawnUSDCTotal(), maxBorrowAndWithdrawUSDCAmount);
+
+        // Check health factor
+        checkEndHealthFactor(address(aavePM));
+        vm.stopPrank();
+    }
+
+    function test_BorrowAndWithdrawUSDCZeroBorrow() public {
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
+
+        // Supply the ETH sent to the contract to Aave
+        aavePM.aaveSupply();
+
+        // Try to borrow 0 USDC
+        vm.expectRevert(IAavePM.AavePM__ZeroBorrowAmount.selector);
+        aavePM.borrowAndWithdrawUSDC(0, owner1);
+        vm.stopPrank();
+    }
+
     // This test isn't something that can happen on in production since the internal function can't be
     // accessed externally, but it is used to check the branch coverage of the flash loan.
     function testFail_Exposed_BorrowAndWithdrawUSDCWithReinvestedFlashLoanChecks() public {

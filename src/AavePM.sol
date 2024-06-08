@@ -382,29 +382,38 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
-        // Confirm withdrawal address is an owner
+        // Confirm withdrawal address is an owner.
         if (!hasRole(OWNER_ROLE, _owner)) revert AavePM__AddressNotAnOwner();
 
-        // Check the available borrow and withdraw amount is greater than 0
+        // Check the requested borrow amount is greater than 0.
+        if (_amount == 0) revert AavePM__ZeroBorrowAmount();
+
+        // Check the available borrow and withdraw amount is greater than 0.
         uint256 maxBorrowAndWithdrawUSDCAmount = getMaxBorrowAndWithdrawUSDCAmount();
         if (maxBorrowAndWithdrawUSDCAmount == 0) revert IAavePM.AavePM__ZeroBorrowAndWithdrawUSDCAvailable();
 
+        // Initialize a boolean as false to check if the maximum amount is withdrawn.
+        bool maxWithdraw = false;
+
         // Ensure the requested borrow amount is less than or equal to the maximum available
-        // and allows for the maximum amount of USDC to be borrowed without throwing an error
-        if (_amount > maxBorrowAndWithdrawUSDCAmount) {
+        // and allows for the maximum amount of USDC to be borrowed without throwing an error.
+        if (_amount >= maxBorrowAndWithdrawUSDCAmount) {
             _amount = maxBorrowAndWithdrawUSDCAmount;
+            maxWithdraw = true;
         }
 
+        // Borrow the requested amount of USDC and withdraw it to the owner.
         (uint256 repaidReinvestedDebt) = _borrowAndWithdrawUSDC(_amount, _owner);
 
+        // Update the total withdrawn USDC amount.
         s_withdrawnUSDCTotal += _amount;
 
-        if (repaidReinvestedDebt != 0) {
-            if (s_reinvestedDebtTotal > repaidReinvestedDebt) {
-                s_reinvestedDebtTotal -= repaidReinvestedDebt;
-            } else {
-                s_reinvestedDebtTotal = 0;
-            }
+        if (!maxWithdraw) {
+            // Update the total reinvested debt amount if the maximum amount is not withdrawn.
+            if (s_reinvestedDebtTotal > repaidReinvestedDebt) s_reinvestedDebtTotal -= repaidReinvestedDebt;
+        } else {
+            // Ensures a clean reset of the reinvested debt total if the maximum amount is withdrawn.
+            s_reinvestedDebtTotal = 0;
         }
 
         // Check to ensure the health factor is above the minimum target.

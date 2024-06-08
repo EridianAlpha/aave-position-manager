@@ -344,6 +344,9 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
+        // Confirm withdrawal address is an owner
+        if (!hasRole(OWNER_ROLE, _owner)) revert AavePM__AddressNotAnOwner();
+
         // TODO: Improve this function so it doesn't allow withdrawals below the target HF, not just the minimum
         //       Then this will only be used once debt has been repaid
         address aavePoolAddress = getContractAddress("aavePool");
@@ -379,6 +382,9 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
+        // Confirm withdrawal address is an owner
+        if (!hasRole(OWNER_ROLE, _owner)) revert AavePM__AddressNotAnOwner();
+
         // Check the available borrow and withdraw amount is greater than 0
         uint256 maxBorrowAndWithdrawUSDCAmount = getMaxBorrowAndWithdrawUSDCAmount();
         if (maxBorrowAndWithdrawUSDCAmount == 0) revert IAavePM.AavePM__ZeroBorrowAndWithdrawUSDCAvailable();

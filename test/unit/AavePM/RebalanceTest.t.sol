@@ -76,6 +76,28 @@ contract RebalanceTests is AavePMTestSetup {
         vm.stopPrank();
     }
 
+    function test_RebalanceHealthFactorIncreaseAndWithdrawUSDC() public {
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
+
+        // Supply to start the position
+        aavePM.aaveSupply();
+
+        // Borrow the maximum amount of USDC to get the Health Factor to the target
+        aavePM.borrowAndWithdrawUSDC(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), owner1);
+
+        // Increase the health factor target
+        aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() + HEALTH_FACTOR_TARGET_CHANGE);
+
+        // Rebalance
+        aavePM.rebalance();
+
+        // Check the end health factor
+        checkEndHealthFactor(address(aavePM));
+        vm.stopPrank();
+    }
+
     function testFail_Exposed_RebalanceHFBelowMinimum() public {
         // Send ETH from manager1 to the contract
         vm.startPrank(manager1);

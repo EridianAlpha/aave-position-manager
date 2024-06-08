@@ -5,6 +5,8 @@ import {console} from "forge-std/Test.sol";
 
 import {AavePMTestSetup} from "test/unit/AavePM/TestSetupTest.t.sol";
 
+import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
+
 // ================================================================
 // │                         GETTER TESTS                         │
 // ================================================================
@@ -113,9 +115,11 @@ contract AavePMGetterTests is AavePMTestSetup {
     }
 
     function test_GetTotalCollateralDelta() public {
-        // Not a great test, but since it's a calculation that's based on the passage of time, but also on a mainnet fork
-        // it can't easily be tested in a unit test.
-        assertEq(aavePM.getReinvestedDebtTotal(), 0);
+        // Not a great test, but since it's a calculation that's based on the passage of time,
+        // so on a mainnet fork it can't easily be tested in a unit test.
+        (uint256 totalCollateralDelta, bool isPositive) = aavePM.getTotalCollateralDelta();
+        assertEq(totalCollateralDelta, 0);
+        assertTrue(isPositive);
     }
 
     function test_GetSuppliedCollateralTotal() public {
@@ -127,5 +131,33 @@ contract AavePMGetterTests is AavePMTestSetup {
         uint256 suppliedCollateral = aavePM.aaveSupply();
 
         assertEq(aavePM.getSuppliedCollateralTotal(), suppliedCollateral);
+    }
+
+    // TODO: Implement this test
+    // function test_GetMaxBorrowAndWithdrawUSDCAmount() public {
+    // }
+
+    function test_GetReinvestableAmount() public {
+        // Check initial reinvestable amount is 0.
+        assertEq(aavePM.getReinvestableAmount(), 0);
+
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
+
+        // Supply ETH to Aave
+        aavePM.aaveSupply();
+
+        uint256 reinvestableAmount = aavePM.getReinvestableAmount();
+
+        (uint256 totalCollateralBase, uint256 totalDebtBase,, uint256 currentLiquidationThreshold,,) =
+            IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address((aavePM)));
+
+        uint256 reinvestableAmountCalc = _calculateMaxBorrowUSDC(
+            totalCollateralBase, totalDebtBase, currentLiquidationThreshold, aavePM.getHealthFactorTarget()
+        );
+
+        assertEq(reinvestableAmount, reinvestableAmountCalc / 1e2);
+        vm.stopPrank();
     }
 }

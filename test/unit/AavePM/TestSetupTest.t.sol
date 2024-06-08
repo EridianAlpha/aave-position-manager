@@ -23,7 +23,7 @@ contract AavePMTestSetup is Test, HelperFunctions, AavePM {
     uint256 internal constant GAS_PRICE = 1;
     uint256 internal constant STARTING_BALANCE = 10 ether;
     uint256 internal constant SEND_VALUE = 1 ether;
-    uint256 internal constant USDC_BORROW_AMOUNT = 100;
+    uint256 internal constant USDC_BORROW_AMOUNT = 100000000; // 100 USDC in 1e6 scale
     uint24 internal constant UNISWAPV3_POOL_FEE_CHANGE = 100;
     uint16 internal constant HEALTH_FACTOR_TARGET_CHANGE = 20;
     uint16 internal constant SLIPPAGE_TOLERANCE_CHANGE = 100;

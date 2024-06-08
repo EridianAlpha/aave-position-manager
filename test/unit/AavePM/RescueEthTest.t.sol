@@ -24,8 +24,8 @@ contract AavePMRescueEthTest is AavePMTestSetup {
         rescueEth_SetUp();
 
         // Check non-managers can't call rescueEth
-        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Manager);
         vm.prank(attacker1);
+        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Manager);
         aavePM.rescueEth(attacker1);
 
         // Check rescueAddress is an owner

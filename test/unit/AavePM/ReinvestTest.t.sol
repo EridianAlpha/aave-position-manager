@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import {console} from "forge-std/Test.sol";
-import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
+import {AavePMTestSetup} from "test/unit/AavePM/TestSetupTest.t.sol";
 
 import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {AavePM} from "src/AavePM.sol";

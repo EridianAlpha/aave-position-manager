@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
+import {AavePMTestSetup} from "test/unit/AavePM/TestSetupTest.t.sol";
 
 import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";

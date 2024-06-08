@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import {IAavePM} from "src/interfaces/IAavePM.sol";
-import {AavePMTestSetup} from "test/unit/AavePMTestSetupTest.t.sol";
+import {AavePMTestSetup} from "test/unit/AavePM/TestSetupTest.t.sol";
 
 // ================================================================
 // │                         UPDATE TESTS                         │

@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/6043fdb67f0451c9c9696f6080fa1481688fc1a5/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/82380edd12311af8638d44e77d07aaf2695907fa/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="/src/Rebalance.sol/contract.Rebalance.html">Rebalance</a>, <a href="/src/Reinvest.sol/contract.Reinvest.html">Reinvest</a>, <a href="/src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html">BorrowAndWithdrawUSDC</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -240,6 +240,10 @@ A contract upgrade is required to change this value.</em></p>
 <pre><code class="language-solidity">uint16 internal constant SLIPPAGE_TOLERANCE_MAXIMUM = 100;
 </code></pre>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
+<h3 id="checkowner"><a class="header" href="#checkowner">checkOwner</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">modifier checkOwner(address _owner);
+</code></pre>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
 <p>Constructor implemented but unused.</p>
 <p><em>Contract is upgradeable and therefore the constructor is not used.</em></p>
@@ -340,24 +344,6 @@ Emits a <code>SlippageToleranceUpdated</code> event.</em></p>
 <tr><td><code>_slippageTolerance</code></td><td><code>uint16</code></td><td>The new Slippage Tolerance.</td></tr>
 </tbody></table>
 </div>
-<h3 id="rescueeth"><a class="header" href="#rescueeth">rescueEth</a></h3>
-<p>Rescue all ETH from the contract.</p>
-<p><em>This function is intended for emergency use.
-In normal operation, the contract shouldn't hold ETH,
-as it is used to swap for wstETH.
-It is called without an argument to rescue the entire balance.
-Caller must have <code>MANAGER_ROLE</code>.
-The use of nonReentrant isn't required due to the <code>rescueAddress</code> check for the <code>OWNER_ROLE</code>
-and it drains 100% of the ETH balance anyway.
-Throws <code>AavePM__RescueEthFailed</code> if the ETH transfer fails.
-Emits a <code>RescueEth</code> event.</em></p>
-<pre><code class="language-solidity">function rescueEth(address rescueAddress) external onlyRole(MANAGER_ROLE);
-</code></pre>
-<p><strong>Parameters</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>rescueAddress</code></td><td><code>address</code></td><td>The address to send the rescued ETH to.</td></tr>
-</tbody></table>
-</div>
 <h3 id="rebalance"><a class="header" href="#rebalance">rebalance</a></h3>
 <p>Rebalance the Aave position.</p>
 <p><em>Caller must have <code>MANAGER_ROLE</code>.
@@ -370,21 +356,47 @@ If the health factor is below the target, it repays debt to increase the health 
 <p>// TODO: Add comment</p>
 <pre><code class="language-solidity">function reinvest() public onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt);
 </code></pre>
-<h3 id="aavesupply"><a class="header" href="#aavesupply">aaveSupply</a></h3>
+<h3 id="deleverage"><a class="header" href="#deleverage">deleverage</a></h3>
 <p>// TODO: Add comment</p>
-<pre><code class="language-solidity">function aaveSupply() public onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral);
+<pre><code class="language-solidity">function deleverage() public onlyRole(MANAGER_ROLE);
 </code></pre>
-<h3 id="aaverepay"><a class="header" href="#aaverepay">aaveRepay</a></h3>
+<h3 id="aavesupplyfromcontractbalance"><a class="header" href="#aavesupplyfromcontractbalance">aaveSupplyFromContractBalance</a></h3>
 <p>// TODO: Add comment</p>
-<pre><code class="language-solidity">function aaveRepay() public onlyRole(MANAGER_ROLE);
+<pre><code class="language-solidity">function aaveSupplyFromContractBalance() public onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral);
 </code></pre>
+<h3 id="aaverepayusdcfromcontractbalance"><a class="header" href="#aaverepayusdcfromcontractbalance">aaveRepayUSDCFromContractBalance</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function aaveRepayUSDCFromContractBalance() public onlyRole(MANAGER_ROLE);
+</code></pre>
+<h3 id="rescueeth"><a class="header" href="#rescueeth">rescueEth</a></h3>
+<p>Rescue all ETH from the contract.</p>
+<p><em>This function is intended for emergency use.
+In normal operation, the contract shouldn't hold ETH,
+as it is used to swap for wstETH.
+It is called without an argument to rescue the entire balance.
+Caller must have <code>MANAGER_ROLE</code>.
+The use of nonReentrant isn't required due to the <code>rescueAddress</code> check for the <code>OWNER_ROLE</code>
+and it drains 100% of the ETH balance anyway.
+Throws <code>AavePM__RescueEthFailed</code> if the ETH transfer fails.
+Emits a <code>RescueEth</code> event.</em></p>
+<pre><code class="language-solidity">function rescueEth(address _rescueAddress) external onlyRole(MANAGER_ROLE) checkOwner(_rescueAddress);
+</code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_rescueAddress</code></td><td><code>address</code></td><td>The address to send the rescued ETH to.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aavewithdrawwsteth"><a class="header" href="#aavewithdrawwsteth">aaveWithdrawWstETH</a></h3>
 <p>// TODO: Add comment</p>
-<pre><code class="language-solidity">function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE);
+<pre><code class="language-solidity">function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner);
 </code></pre>
-<h3 id="borrowandwithdrawusdc"><a class="header" href="#borrowandwithdrawusdc">borrowAndWithdrawUSDC</a></h3>
+<h3 id="aaveborrowandwithdrawusdc"><a class="header" href="#aaveborrowandwithdrawusdc">aaveBorrowAndWithdrawUSDC</a></h3>
 <p>// TODO: Add comment</p>
-<pre><code class="language-solidity">function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE);
+<pre><code class="language-solidity">function aaveBorrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner);
+</code></pre>
+<h3 id="aavecloseposition"><a class="header" href="#aavecloseposition">aaveClosePosition</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function aaveClosePosition(address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner);
 </code></pre>
 <h3 id="getcreator"><a class="header" href="#getcreator">getCreator</a></h3>
 <p>Getter function to get the i_creator address.</p>

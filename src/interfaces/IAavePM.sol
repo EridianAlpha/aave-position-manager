@@ -100,6 +100,7 @@ interface IAavePM {
     function rescueEth(address rescueAddress) external;
     function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress) external;
     function aaveBorrowAndWithdrawUSDC(uint256 borrowAmount, address ownerAddress) external;
+    function aaveClosePosition(address _owner) external;
 
     // ================================================================
     // │                       FUNCTIONS - GETTERS                    │

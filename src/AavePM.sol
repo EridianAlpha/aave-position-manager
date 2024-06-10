@@ -419,6 +419,26 @@ contract AavePM is
         _checkHealthFactorAboveMinimum();
     }
 
+    /// @notice // TODO: Add comment
+    function aaveClosePosition(address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner) {
+        // Update the Health Factor target to the maximum value.
+        if (!(s_healthFactorTarget == type(uint16).max)) {
+            emit HealthFactorTargetUpdated(s_healthFactorTarget, type(uint16).max);
+            s_healthFactorTarget = type(uint16).max;
+        }
+
+        // Rebalance position to repay all debt.
+        rebalance();
+
+        // Withdraw all wstETH to the owner.
+        aaveWithdrawWstETH(getContractBalance("awstETH"), _owner);
+
+        // Reset state variables.
+        s_withdrawnUSDCTotal = 0;
+        s_reinvestedDebtTotal = 0;
+        s_suppliedCollateralTotal = 0;
+    }
+
     // ================================================================
     // │                       FUNCTIONS - GETTERS                    │
     // ================================================================

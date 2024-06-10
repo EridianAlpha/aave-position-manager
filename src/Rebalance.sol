@@ -72,17 +72,26 @@ contract Rebalance is TokenSwaps, AaveFunctions {
         uint256 currentLiquidationThreshold,
         uint16 healthFactorTarget
     ) private returns (uint256 repaymentAmountUSDC) {
-        // Calculate the maximum amount of USDC that can be borrowed.
-        uint256 maxBorrowUSDC =
-            _calculateMaxBorrowUSDC(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget);
+        // If the health factor target is the maximum value,
+        // then the maximum borrow amount is 0 and the whole position will be repayed + $1 to avoid dust.
+        if (healthFactorTarget == type(uint16).max) {
+            repaymentAmountUSDC = (totalDebtBase + 1e8) / 1e2;
+            IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaymentAmountUSDC, bytes(""), 0);
+            return totalDebtBase;
+        } else {
+            // Calculate the maximum amount of USDC that can be borrowed.
+            uint256 maxBorrowUSDC = _calculateMaxBorrowUSDC(
+                totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget
+            );
 
-        // Calculate the repayment amount required to reach the target health factor.
-        repaymentAmountUSDC = (totalDebtBase - maxBorrowUSDC) / 1e2;
+            // Calculate the repayment amount required to reach the target health factor.
+            repaymentAmountUSDC = (totalDebtBase - maxBorrowUSDC) / 1e2;
 
-        // Take out a flash loan for the USDC amount needed to repay and rebalance the health factor.
-        // flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
-        IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaymentAmountUSDC, bytes(""), 0);
+            // Take out a flash loan for the USDC amount needed to repay and rebalance the health factor.
+            // flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
+            IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaymentAmountUSDC, bytes(""), 0);
 
-        return repaymentAmountUSDC;
+            return repaymentAmountUSDC;
+        }
     }
 }

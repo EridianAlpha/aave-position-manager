@@ -129,6 +129,9 @@ supply-script:
 repay-script:
 	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "aaveRepayAavePM()"
 
+closePosition-script:
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "aaveClosePositionAavePM()"
+
 withdrawWstETH-script:
 	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "withdrawWstETHAavePM(uint256)" ${MAKE_CLI_INPUT_VALUE}
 
@@ -161,6 +164,7 @@ update-hft-anvil: anvil-network update-hft
 update-st-anvil: anvil-network update-st
 rebalance-anvil: anvil-network rebalance-script
 reinvest-anvil: anvil-network reinvest-script
+closePosition-anvil: anvil-network closePosition-script
 supply-anvil: anvil-network supply-script
 repay-anvil: anvil-network repay-script
 withdrawWstETH-anvil: anvil-network withdrawWstETH

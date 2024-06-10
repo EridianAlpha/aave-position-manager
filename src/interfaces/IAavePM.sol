@@ -87,17 +87,17 @@ interface IAavePM {
     function updateSlippageTolerance(uint16 _slippageTolerance) external;
 
     // ================================================================
-    // │                        FUNCTIONS - ETH                       │
-    // ================================================================
-    function rescueEth(address rescueAddress) external;
-
-    // ================================================================
     // │                   FUNCTIONS - CORE FUNCTIONS                 │
     // ================================================================
     function rebalance() external;
     function reinvest() external returns (uint256 reinvestedDebt);
     function aaveSupply() external returns (uint256 suppliedCollateral);
     function aaveRepay() external;
+
+    // ================================================================
+    // │                FUNCTIONS - WITHDRAW FUNCTIONS                │
+    // ================================================================
+    function rescueEth(address rescueAddress) external;
     function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress) external;
     function borrowAndWithdrawUSDC(uint256 borrowAmount, address ownerAddress) external;
 

@@ -87,7 +87,11 @@ contract AavePM is
     // │                           MODIFIERS                          │
     // ================================================================
 
-    // No modifiers are defined in the contract.
+    /// @notice // TODO: Add comment
+    modifier checkOwner(address _owner) {
+        if (!hasRole(OWNER_ROLE, _owner)) revert AavePM__AddressNotAnOwner();
+        _;
+    }
 
     // ================================================================
     // │           FUNCTIONS - CONSTRUCTOR, RECEIVE, FALLBACK         │
@@ -255,31 +259,6 @@ contract AavePM is
     }
 
     // ================================================================
-    // │                        FUNCTIONS - ETH                       │
-    // ================================================================
-
-    /// @notice Rescue all ETH from the contract.
-    /// @dev This function is intended for emergency use.
-    ///      In normal operation, the contract shouldn't hold ETH,
-    ///      as it is used to swap for wstETH.
-    ///      It is called without an argument to rescue the entire balance.
-    ///      Caller must have `MANAGER_ROLE`.
-    ///      The use of nonReentrant isn't required due to the `rescueAddress` check for the `OWNER_ROLE`
-    ///      and it drains 100% of the ETH balance anyway.
-    ///      Throws `AavePM__RescueEthFailed` if the ETH transfer fails.
-    ///      Emits a `RescueEth` event.
-    /// @param rescueAddress The address to send the rescued ETH to.
-    function rescueEth(address rescueAddress) external onlyRole(MANAGER_ROLE) {
-        // Check if the rescueAddress is an owner
-        if (!hasRole(OWNER_ROLE, rescueAddress)) revert AavePM__AddressNotAnOwner();
-
-        // * TRANSFER ETH *
-        emit EthRescued(rescueAddress, getContractBalance("ETH"));
-        (bool callSuccess,) = rescueAddress.call{value: getContractBalance("ETH")}("");
-        if (!callSuccess) revert AavePM__RescueEthFailed();
-    }
-
-    // ================================================================
     // │                   FUNCTIONS - CORE FUNCTIONS                 │
     // ================================================================
 
@@ -342,11 +321,30 @@ contract AavePM is
         }
     }
 
-    /// @notice // TODO: Add comment
-    function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
-        // Confirm withdrawal address is an owner
-        if (!hasRole(OWNER_ROLE, _owner)) revert AavePM__AddressNotAnOwner();
+    // ================================================================
+    // │                FUNCTIONS - WITHDRAW FUNCTIONS                │
+    // ================================================================
 
+    /// @notice Rescue all ETH from the contract.
+    /// @dev This function is intended for emergency use.
+    ///      In normal operation, the contract shouldn't hold ETH,
+    ///      as it is used to swap for wstETH.
+    ///      It is called without an argument to rescue the entire balance.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      The use of nonReentrant isn't required due to the `rescueAddress` check for the `OWNER_ROLE`
+    ///      and it drains 100% of the ETH balance anyway.
+    ///      Throws `AavePM__RescueEthFailed` if the ETH transfer fails.
+    ///      Emits a `RescueEth` event.
+    /// @param _rescueAddress The address to send the rescued ETH to.
+    function rescueEth(address _rescueAddress) external onlyRole(MANAGER_ROLE) checkOwner(_rescueAddress) {
+        // * TRANSFER ETH *
+        emit EthRescued(_rescueAddress, getContractBalance("ETH"));
+        (bool callSuccess,) = _rescueAddress.call{value: getContractBalance("ETH")}("");
+        if (!callSuccess) revert AavePM__RescueEthFailed();
+    }
+
+    /// @notice // TODO: Add comment
+    function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner) {
         // TODO: Improve this function so it doesn't allow withdrawals below the target HF, not just the minimum
         //       Then this will only be used once debt has been repaid
         address aavePoolAddress = getContractAddress("aavePool");
@@ -381,10 +379,7 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) {
-        // Confirm withdrawal address is an owner.
-        if (!hasRole(OWNER_ROLE, _owner)) revert AavePM__AddressNotAnOwner();
-
+    function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner) {
         // Check the requested borrow amount is greater than 0.
         if (_amount == 0) revert AavePM__ZeroBorrowAmount();
 

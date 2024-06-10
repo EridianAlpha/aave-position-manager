@@ -345,7 +345,7 @@ TODO: Add threshold details.</p>
 <li><a href="src/interfaces/IWETH9.sol/interface.IWETH9.html">IWETH9</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/82380edd12311af8638d44e77d07aaf2695907fa/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/de735ed273cbdbe04f62a6907457cb8533fa7523/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -390,7 +390,7 @@ TODO: Add threshold details.</p>
 <pre><code class="language-solidity">function aaveRepayUSDCFromContractBalance() external;
 </code></pre>
 <h3 id="rescueeth"><a class="header" href="#rescueeth">rescueEth</a></h3>
-<pre><code class="language-solidity">function rescueEth(address rescueAddress) external;
+<pre><code class="language-solidity">function rescueEth(address ownerAddress) external;
 </code></pre>
 <h3 id="aavewithdrawwsteth"><a class="header" href="#aavewithdrawwsteth">aaveWithdrawWstETH</a></h3>
 <pre><code class="language-solidity">function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress) external;
@@ -399,7 +399,7 @@ TODO: Add threshold details.</p>
 <pre><code class="language-solidity">function aaveBorrowAndWithdrawUSDC(uint256 borrowAmount, address ownerAddress) external;
 </code></pre>
 <h3 id="aavecloseposition"><a class="header" href="#aavecloseposition">aaveClosePosition</a></h3>
-<pre><code class="language-solidity">function aaveClosePosition(address _owner) external;
+<pre><code class="language-solidity">function aaveClosePosition(address ownerAddress) external;
 </code></pre>
 <h3 id="getcreator"><a class="header" href="#getcreator">getCreator</a></h3>
 <pre><code class="language-solidity">function getCreator() external view returns (address creator);
@@ -582,7 +582,7 @@ TODO: Add threshold details.</p>
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ierc20extended"><a class="header" href="#ierc20extended">IERC20Extended</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/82380edd12311af8638d44e77d07aaf2695907fa/src/interfaces/IERC20Extended.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/de735ed273cbdbe04f62a6907457cb8533fa7523/src/interfaces/IERC20Extended.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 IERC20</p>
 <p>This interface extends the ERC20 interface with the decimals function.</p>
@@ -591,7 +591,7 @@ IERC20</p>
 <pre><code class="language-solidity">function decimals() external view returns (uint8);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iweth9"><a class="header" href="#iweth9">IWETH9</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/82380edd12311af8638d44e77d07aaf2695907fa/src/interfaces/IWETH9.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/de735ed273cbdbe04f62a6907457cb8533fa7523/src/interfaces/IWETH9.sol">Git Source</a></p>
 <p>This interface enables the wrapping and unwrapping of ETH to WETH.</p>
 <h2 id="functions-2"><a class="header" href="#functions-2">Functions</a></h2>
 <h3 id="deposit"><a class="header" href="#deposit">deposit</a></h3>
@@ -601,7 +601,7 @@ IERC20</p>
 <pre><code class="language-solidity">function withdraw(uint256 wad) external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavefunctions"><a class="header" href="#aavefunctions">AaveFunctions</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/82380edd12311af8638d44e77d07aaf2695907fa/src/AaveFunctions.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/de735ed273cbdbe04f62a6907457cb8533fa7523/src/AaveFunctions.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AaveFunctions.sol//src/TokenSwaps.sol/contract.TokenSwaps.html">TokenSwaps</a></p>
 <p>// TODO: Add comment</p>
@@ -715,7 +715,7 @@ The function is called by the Aave pool contract and is not intended to be calle
 ) internal pure returns (uint256 maxBorrowUSDC);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/82380edd12311af8638d44e77d07aaf2695907fa/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/de735ed273cbdbe04f62a6907457cb8533fa7523/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AavePM.sol//src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="src/AavePM.sol//src/Rebalance.sol/contract.Rebalance.html">Rebalance</a>, <a href="src/AavePM.sol//src/Reinvest.sol/contract.Reinvest.html">Reinvest</a>, <a href="src/AavePM.sol//src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html">BorrowAndWithdrawUSDC</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -1217,7 +1217,7 @@ The function is called by the Aave pool contract and is not intended to be calle
 <tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>bool True if the operation was successful.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="borrowandwithdrawusdc"><a class="header" href="#borrowandwithdrawusdc">BorrowAndWithdrawUSDC</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/82380edd12311af8638d44e77d07aaf2695907fa/src/BorrowAndWithdrawUSDC.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/de735ed273cbdbe04f62a6907457cb8533fa7523/src/BorrowAndWithdrawUSDC.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/BorrowAndWithdrawUSDC.sol//src/TokenSwaps.sol/contract.TokenSwaps.html">TokenSwaps</a>, <a href="src/BorrowAndWithdrawUSDC.sol//src/AaveFunctions.sol/contract.AaveFunctions.html">AaveFunctions</a></p>
 <p>// TODO: Add comment</p>
@@ -1238,7 +1238,7 @@ The function is called by the Aave pool contract and is not intended to be calle
 ) private pure returns (uint256 repaidReinvestedDebt);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="rebalance-2"><a class="header" href="#rebalance-2">Rebalance</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/82380edd12311af8638d44e77d07aaf2695907fa/src/Rebalance.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/de735ed273cbdbe04f62a6907457cb8533fa7523/src/Rebalance.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/Rebalance.sol//src/TokenSwaps.sol/contract.TokenSwaps.html">TokenSwaps</a>, <a href="src/Rebalance.sol//src/AaveFunctions.sol/contract.AaveFunctions.html">AaveFunctions</a></p>
 <p>// TODO: Add comment</p>
@@ -1261,7 +1261,7 @@ If the health factor is below the target, it repays debt to increase the health 
 ) private returns (uint256 repaymentAmountUSDC);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="reinvest-2"><a class="header" href="#reinvest-2">Reinvest</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/82380edd12311af8638d44e77d07aaf2695907fa/src/Reinvest.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/de735ed273cbdbe04f62a6907457cb8533fa7523/src/Reinvest.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/Reinvest.sol//src/TokenSwaps.sol/contract.TokenSwaps.html">TokenSwaps</a>, <a href="src/Reinvest.sol//src/AaveFunctions.sol/contract.AaveFunctions.html">AaveFunctions</a></p>
 <p>// TODO: Add comment</p>
@@ -1283,7 +1283,7 @@ If the health factor is below the target, it repays debt to increase the health 
 ) private returns (uint256 borrowAmountUSDC);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="tokenswaps"><a class="header" href="#tokenswaps">TokenSwaps</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/82380edd12311af8638d44e77d07aaf2695907fa/src/TokenSwaps.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/de735ed273cbdbe04f62a6907457cb8533fa7523/src/TokenSwaps.sol">Git Source</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions-8"><a class="header" href="#functions-8">Functions</a></h2>
 <h3 id="_swaptokens"><a class="header" href="#_swaptokens">_swapTokens</a></h3>

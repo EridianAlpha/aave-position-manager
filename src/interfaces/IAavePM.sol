@@ -98,10 +98,10 @@ interface IAavePM {
     // ================================================================
     // │                FUNCTIONS - WITHDRAW FUNCTIONS                │
     // ================================================================
-    function rescueEth(address rescueAddress) external;
+    function rescueEth(address ownerAddress) external;
     function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress) external;
     function aaveBorrowAndWithdrawUSDC(uint256 borrowAmount, address ownerAddress) external;
-    function aaveClosePosition(address _owner) external;
+    function aaveClosePosition(address ownerAddress) external;
 
     // ================================================================
     // │                       FUNCTIONS - GETTERS                    │

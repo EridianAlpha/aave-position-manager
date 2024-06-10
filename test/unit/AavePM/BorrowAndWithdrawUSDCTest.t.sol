@@ -16,11 +16,11 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply the ETH sent to the contract to Aave
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
 
         // Borrow USDC as manager1
         vm.expectRevert(IAavePM.AavePM__AddressNotAnOwner.selector);
-        aavePM.borrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, manager1);
+        aavePM.aaveBorrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, manager1);
         vm.stopPrank();
     }
 
@@ -29,13 +29,13 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply the ETH sent to the contract to Aave
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
         vm.stopPrank();
 
         // An attacker tries to borrow USDC
         vm.startPrank(attacker1);
         vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Manager);
-        aavePM.borrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, attacker1);
+        aavePM.aaveBorrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, attacker1);
         vm.stopPrank();
     }
 
@@ -44,10 +44,10 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply the ETH sent to the contract to Aave
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
 
         // Borrow USDC immediately, without reinvesting
-        aavePM.borrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
+        aavePM.aaveBorrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
 
         // Check the USDC balance of owner1
         assertEq(USDC.balanceOf(owner1), USDC_BORROW_AMOUNT);
@@ -68,7 +68,7 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply the ETH sent to the contract to Aave
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
 
         // Store collateral value before reinvesting
         (uint256 totalCollateralBaseBefore,,,,,) =
@@ -81,7 +81,7 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         uint256 reinvestedDebtTotalBefore = aavePM.getReinvestedDebtTotal();
 
         // Borrow USDC, with reinvested debt
-        aavePM.borrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
+        aavePM.aaveBorrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
 
         // Store reinvested debt total after
         uint256 reinvestedDebtTotalAfter = aavePM.getReinvestedDebtTotal();
@@ -112,7 +112,7 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply the ETH sent to the contract to Aave
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
 
         // Reinvest the ETH supplied to Aave
         aavePM.reinvest();
@@ -121,7 +121,7 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         uint256 maxBorrowAndWithdrawUSDCAmount = aavePM.getMaxBorrowAndWithdrawUSDCAmount();
 
         // Try to borrow more USDC than is available
-        aavePM.borrowAndWithdrawUSDC(maxBorrowAndWithdrawUSDCAmount + USDC_BORROW_AMOUNT, owner1);
+        aavePM.aaveBorrowAndWithdrawUSDC(maxBorrowAndWithdrawUSDCAmount + USDC_BORROW_AMOUNT, owner1);
 
         // Check the USDC balance of owner1
         assertEq(USDC.balanceOf(owner1), maxBorrowAndWithdrawUSDCAmount);
@@ -139,11 +139,11 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply the ETH sent to the contract to Aave
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
 
         // Try to borrow 0 USDC
         vm.expectRevert(IAavePM.AavePM__ZeroBorrowAmount.selector);
-        aavePM.borrowAndWithdrawUSDC(0, owner1);
+        aavePM.aaveBorrowAndWithdrawUSDC(0, owner1);
         vm.stopPrank();
     }
 
@@ -155,7 +155,7 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         vm.stopPrank();
 
         // Supply the ETH sent to the contract to Aave
-        aaveSupply();
+        aaveSupplyFromContractBalance();
 
         // Reinvest the ETH supplied to Aave
         reinvest();

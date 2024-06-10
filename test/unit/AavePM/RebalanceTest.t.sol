@@ -26,7 +26,7 @@ contract RebalanceTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply to start the position
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
 
         uint16 initialHealthFactorTarget = aavePM.getHealthFactorTarget();
 
@@ -82,10 +82,10 @@ contract RebalanceTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply to start the position
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
 
         // Borrow the maximum amount of USDC to get the Health Factor to the target
-        aavePM.borrowAndWithdrawUSDC(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), owner1);
+        aavePM.aaveBorrowAndWithdrawUSDC(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), owner1);
 
         // Increase the health factor target
         aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() + HEALTH_FACTOR_TARGET_CHANGE);

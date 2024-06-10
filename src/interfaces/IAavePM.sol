@@ -91,15 +91,15 @@ interface IAavePM {
     // ================================================================
     function rebalance() external;
     function reinvest() external returns (uint256 reinvestedDebt);
-    function aaveSupply() external returns (uint256 suppliedCollateral);
-    function aaveRepay() external;
+    function aaveSupplyFromContractBalance() external returns (uint256 suppliedCollateral);
+    function aaveRepayUSDCFromContractBalance() external;
 
     // ================================================================
     // │                FUNCTIONS - WITHDRAW FUNCTIONS                │
     // ================================================================
     function rescueEth(address rescueAddress) external;
     function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress) external;
-    function borrowAndWithdrawUSDC(uint256 borrowAmount, address ownerAddress) external;
+    function aaveBorrowAndWithdrawUSDC(uint256 borrowAmount, address ownerAddress) external;
 
     // ================================================================
     // │                       FUNCTIONS - GETTERS                    │

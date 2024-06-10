@@ -90,10 +90,10 @@ contract AavePMGetterTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply ETH to Aave
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
 
         // Withdraw USDC from Aave
-        aavePM.borrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
+        aavePM.aaveBorrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
         vm.stopPrank();
 
         assertEq(aavePM.getWithdrawnUSDCTotal(), USDC_BORROW_AMOUNT);
@@ -105,7 +105,7 @@ contract AavePMGetterTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply ETH to Aave
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
 
         // Reinvest
         (uint256 reinvestedDebt) = aavePM.reinvest();
@@ -128,7 +128,7 @@ contract AavePMGetterTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply ETH to Aave
-        uint256 suppliedCollateral = aavePM.aaveSupply();
+        uint256 suppliedCollateral = aavePM.aaveSupplyFromContractBalance();
 
         assertEq(aavePM.getSuppliedCollateralTotal(), suppliedCollateral);
     }
@@ -146,7 +146,7 @@ contract AavePMGetterTests is AavePMTestSetup {
         sendEth(address(aavePM), SEND_VALUE);
 
         // Supply ETH to Aave
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
 
         uint256 reinvestableAmount = aavePM.getReinvestableAmount();
 

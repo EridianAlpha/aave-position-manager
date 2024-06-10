@@ -6,30 +6,30 @@
 >
 > ---
 
-* [1. Overview](#1-overview)
-  * [1.1. Key Functions](#11-key-functions)
-    * [1.1.1. Owner Functions](#111-owner-functions)
-    * [1.1.2. Manager Functions](#112-manager-functions)
-* [2. WebApp](#2-webapp)
-* [3. Installation](#3-installation)
-  * [3.1. Clone repository](#31-clone-repository)
-  * [3.2. Install Dependencies](#32-install-dependencies)
-  * [3.3. Create the `.env` file](#33-create-the-env-file)
-  * [3.4. Configure Ethernal (optional)](#34-configure-ethernal-optional)
-* [4. Testing](#4-testing)
-  * [4.1. Tests](#41-tests)
-  * [4.2. Coverage](#42-coverage)
-* [5. Deployment](#5-deployment)
-* [6. Upgrades](#6-upgrades)
-* [7. Interactions](#7-interactions)
-  * [7.1. Fund contract with ETH](#71-fund-contract-with-eth)
-  * [7.2. Update Health Factor Target](#72-update-health-factor-target)
-  * [7.3. Update Slippage Tolerance](#73-update-slippage-tolerance)
-  * [7.4. Rebalance](#74-rebalance)
-  * [7.5. Get Contract Balance](#75-get-contract-balance)
-  * [7.6. Get Aave Account Data](#76-get-aave-account-data)
-* [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
-* [9. License](#9-license)
+- [1. Overview](#1-overview)
+  - [1.1. Key Functions](#11-key-functions)
+    - [1.1.1. Owner Functions](#111-owner-functions)
+    - [1.1.2. Manager Functions](#112-manager-functions)
+- [2. WebApp](#2-webapp)
+- [3. Installation](#3-installation)
+  - [3.1. Clone repository](#31-clone-repository)
+  - [3.2. Install Dependencies](#32-install-dependencies)
+  - [3.3. Create the `.env` file](#33-create-the-env-file)
+  - [3.4. Configure Ethernal (optional)](#34-configure-ethernal-optional)
+- [4. Testing](#4-testing)
+  - [4.1. Tests](#41-tests)
+  - [4.2. Coverage](#42-coverage)
+- [5. Deployment](#5-deployment)
+- [6. Upgrades](#6-upgrades)
+- [7. Interactions](#7-interactions)
+  - [7.1. Fund contract with ETH](#71-fund-contract-with-eth)
+  - [7.2. Update Health Factor Target](#72-update-health-factor-target)
+  - [7.3. Update Slippage Tolerance](#73-update-slippage-tolerance)
+  - [7.4. Rebalance](#74-rebalance)
+  - [7.5. Get Contract Balance](#75-get-contract-balance)
+  - [7.6. Get Aave Account Data](#76-get-aave-account-data)
+- [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
+- [9. License](#9-license)
 
 ## 1. Overview
 
@@ -54,15 +54,15 @@ A smart contract manager for Aave positions.
 
 #### 1.1.2. Manager Functions
 
-| Function                 | Restrictions   | Description                                                                 |
-| ------------------------ | -------------- | --------------------------------------------------------------------------- |
-| rebalance                | `MANAGER_ROLE` | Rebalance the Aave position to the desired Health Factor.                   |
-| borrowAndWithdrawUSDC    | `MANAGER_ROLE` | Borrow USDC from Aave and withdraw to the specified owner.                  |
-| withdrawWstETH           | `MANAGER_ROLE` | Withdraw all wstETH from the contract to the specified owner.               |
-| repayUSDC                | `MANAGER_ROLE` | Repay USDC to Aave using all the USDC in the contract.                      |
-| withdrawTokens           | `MANAGER_ROLE` | Withdraw all the specified tokens from the contract to the specified owner. |
-| updateHealthFactorTarget | `MANAGER_ROLE` | Set the desired Health Factor target.                                       |
-| rescueEth                | `MANAGER_ROLE` | Rescue ETH from the contract to the specified owner.                        |
+| Function                  | Restrictions   | Description                                                                 |
+| ------------------------- | -------------- | --------------------------------------------------------------------------- |
+| rebalance                 | `MANAGER_ROLE` | Rebalance the Aave position to the desired Health Factor.                   |
+| aaveBorrowAndWithdrawUSDC | `MANAGER_ROLE` | Borrow USDC from Aave and withdraw to the specified owner.                  |
+| withdrawWstETH            | `MANAGER_ROLE` | Withdraw all wstETH from the contract to the specified owner.               |
+| repayUSDC                 | `MANAGER_ROLE` | Repay USDC to Aave using all the USDC in the contract.                      |
+| withdrawTokens            | `MANAGER_ROLE` | Withdraw all the specified tokens from the contract to the specified owner. |
+| updateHealthFactorTarget  | `MANAGER_ROLE` | Set the desired Health Factor target.                                       |
+| rescueEth                 | `MANAGER_ROLE` | Rescue ETH from the contract to the specified owner.                        |
 
 ## 2. WebApp
 

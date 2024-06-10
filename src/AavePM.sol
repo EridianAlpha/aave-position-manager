@@ -269,7 +269,7 @@ contract AavePM is
     ///      If the health factor is below the target, it repays debt to increase the health factor.
     function rebalance() public onlyRole(MANAGER_ROLE) {
         // Convert any existing tokens to wstETH and supply to Aave.
-        aaveSupply();
+        aaveSupplyFromContractBalance();
 
         // Perform rebalance.
         (uint256 repaymentAmountUSDC) = _rebalance();
@@ -284,7 +284,7 @@ contract AavePM is
     /// @notice // TODO: Add comment
     function reinvest() public onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt) {
         // Convert any existing tokens to wstETH and supply to Aave.
-        aaveSupply();
+        aaveSupplyFromContractBalance();
 
         // Reinvest any excess debt or collateral.
         (reinvestedDebt) = _reinvest();
@@ -294,14 +294,14 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function aaveSupply() public onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral) {
+    function aaveSupplyFromContractBalance() public onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral) {
         suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave();
         if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
         // TODO: Add event to emit the suppliedCollateral
     }
 
     /// @notice // TODO: Add comment
-    function aaveRepay() public onlyRole(MANAGER_ROLE) {
+    function aaveRepayUSDCFromContractBalance() public onlyRole(MANAGER_ROLE) {
         uint256 usdcBalance = getContractBalance("USDC");
         if (usdcBalance == 0) revert AavePM__NoDebtToRepay();
 
@@ -379,7 +379,11 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function borrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner) {
+    function aaveBorrowAndWithdrawUSDC(uint256 _amount, address _owner)
+        public
+        onlyRole(MANAGER_ROLE)
+        checkOwner(_owner)
+    {
         // Check the requested borrow amount is greater than 0.
         if (_amount == 0) revert AavePM__ZeroBorrowAmount();
 

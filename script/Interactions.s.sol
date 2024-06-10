@@ -75,13 +75,13 @@ contract Interactions is Script {
 
     function aaveSupplyAavePM() public {
         vm.startBroadcast();
-        aavePM.aaveSupply();
+        aavePM.aaveSupplyFromContractBalance();
         vm.stopBroadcast();
     }
 
     function aaveRepayAavePM() public {
         vm.startBroadcast();
-        aavePM.aaveRepay();
+        aavePM.aaveRepayUSDCFromContractBalance();
         vm.stopBroadcast();
     }
 
@@ -95,7 +95,7 @@ contract Interactions is Script {
     function borrowAndWithdrawUSDCAavePM(uint256 value) public {
         vm.startBroadcast();
         // TODO: Change this hardcoded Anvil address to an input parameter.
-        aavePM.borrowAndWithdrawUSDC(value, 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+        aavePM.aaveBorrowAndWithdrawUSDC(value, 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
         vm.stopBroadcast();
     }
 

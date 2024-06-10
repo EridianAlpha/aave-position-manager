@@ -129,6 +129,9 @@ supply-script:
 repay-script:
 	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "aaveRepayAavePM()"
 
+deleverage-script:
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "aaveDeleverageAavePM()"
+
 closePosition-script:
 	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "aaveClosePositionAavePM()"
 
@@ -164,6 +167,7 @@ update-hft-anvil: anvil-network update-hft
 update-st-anvil: anvil-network update-st
 rebalance-anvil: anvil-network rebalance-script
 reinvest-anvil: anvil-network reinvest-script
+deleverage-anvil: anvil-network deleverage-script
 closePosition-anvil: anvil-network closePosition-script
 supply-anvil: anvil-network supply-script
 repay-anvil: anvil-network repay-script

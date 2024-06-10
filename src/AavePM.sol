@@ -294,6 +294,23 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
+    function deleverage() public onlyRole(MANAGER_ROLE) {
+        // Update the Health Factor target to the maximum value.
+        uint16 previousHealthFactorTarget = s_healthFactorTarget;
+        if (previousHealthFactorTarget != type(uint16).max) {
+            s_healthFactorTarget = type(uint16).max;
+        }
+
+        // Rebalance position to repay all debt.
+        rebalance();
+
+        // Reset the Health Factor target to the previous value.
+        if (previousHealthFactorTarget != type(uint16).max) {
+            s_healthFactorTarget = previousHealthFactorTarget;
+        }
+    }
+
+    /// @notice // TODO: Add comment
     function aaveSupplyFromContractBalance() public onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral) {
         suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave();
         if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
@@ -421,14 +438,11 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function aaveClosePosition(address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner) {
-        // Update the Health Factor target to the maximum value.
-        if (!(s_healthFactorTarget == type(uint16).max)) {
-            emit HealthFactorTargetUpdated(s_healthFactorTarget, type(uint16).max);
-            s_healthFactorTarget = type(uint16).max;
+        // Check if position needs to be deleveraged before closing.
+        (,,,,, uint256 currentHealthFactor) = IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
+        if (currentHealthFactor != type(uint256).max) {
+            deleverage();
         }
-
-        // Rebalance position to repay all debt.
-        rebalance();
 
         // Withdraw all wstETH to the owner.
         aaveWithdrawWstETH(getContractBalance("awstETH"), _owner);

@@ -85,6 +85,12 @@ contract Interactions is Script {
         vm.stopBroadcast();
     }
 
+    function aaveDeleverageAavePM() public {
+        vm.startBroadcast();
+        aavePM.deleverage();
+        vm.stopBroadcast();
+    }
+
     function aaveClosePositionAavePM() public {
         vm.startBroadcast();
         aavePM.aaveClosePosition(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);

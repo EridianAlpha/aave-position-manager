@@ -30,6 +30,12 @@ interface IAavePM {
     // ================================================================
     // │                           STRUCTS                            │
     // ================================================================
+    struct UpgradeHistory {
+        string version;
+        uint256 upgradeTime;
+        address upgradeInitiator;
+    }
+
     struct ContractAddress {
         string identifier;
         address contractAddress;
@@ -110,6 +116,7 @@ interface IAavePM {
     // │                       FUNCTIONS - GETTERS                    │
     // ================================================================
     function getCreator() external view returns (address creator);
+    function getUpgradeHistory() external view returns (UpgradeHistory[] memory);
     function getVersion() external pure returns (string memory version);
     function getContractAddress(string memory) external view returns (address contractAddress);
     function getTokenAddress(string memory) external view returns (address tokenAddress);

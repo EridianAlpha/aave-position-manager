@@ -57,6 +57,7 @@ contract AavePM is
     uint256 internal s_withdrawnUSDCTotal = 0;
     uint256 internal s_reinvestedDebtTotal = 0;
     uint256 internal s_suppliedCollateralTotal = 0;
+    UpgradeHistory[] internal s_upgradeHistory;
 
     // ================================================================
     // │                           CONSTANTS                          │
@@ -155,6 +156,7 @@ contract AavePM is
         uint16 initialSlippageTolerance
     ) internal {
         s_creator = msg.sender;
+        s_upgradeHistory.push(UpgradeHistory(VERSION, block.timestamp, msg.sender));
 
         _grantRole(OWNER_ROLE, owner);
         _setRoleAdmin(OWNER_ROLE, OWNER_ROLE);
@@ -471,6 +473,13 @@ contract AavePM is
         return s_creator;
     }
 
+    /// @notice Getter function to get the upgrade history.
+    /// @dev Public function to allow anyone to view the upgrade history.
+    /// @return s_upgradeHistory The array of all upgrade history entries.
+    function getUpgradeHistory() public view returns (UpgradeHistory[] memory) {
+        return s_upgradeHistory;
+    }
+
     /// @notice Getter function to get the contract version.
     /// @dev Public function to allow anyone to view the contract version.
     /// @return version The contract version.
@@ -729,6 +738,9 @@ contract AavePM is
         override(IAavePM, UUPSUpgradeable)
     {
         UUPSUpgradeable.upgradeToAndCall(newImplementation, data);
+
+        // Create an UpgradeHistory entry for the new version.
+        s_upgradeHistory.push(UpgradeHistory(IAavePM(newImplementation).getVersion(), block.timestamp, msg.sender));
     }
 
     // ================================================================

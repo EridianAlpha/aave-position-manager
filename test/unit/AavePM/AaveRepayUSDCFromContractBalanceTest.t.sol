@@ -19,7 +19,7 @@ contract AaveRepayUSDCFromContractBalanceTests is AavePMTestSetup {
         aavePM.aaveRepayUSDCFromContractBalance();
     }
 
-    function test_AaveRepaySetup(uint256 testRepayAmount) public {
+    function aaveRepaySetup(uint256 testRepayAmount) public {
         vm.startPrank(manager1);
         sendEth(address(aavePM), SEND_VALUE);
 
@@ -39,7 +39,7 @@ contract AaveRepayUSDCFromContractBalanceTests is AavePMTestSetup {
     }
 
     function test_AaveRepayAll() public {
-        test_AaveRepaySetup(USDC_BORROW_AMOUNT);
+        aaveRepaySetup(USDC_BORROW_AMOUNT);
 
         vm.startPrank(manager1);
         // Confirm that the AavePM contract has some debt that needs repaying
@@ -62,7 +62,7 @@ contract AaveRepayUSDCFromContractBalanceTests is AavePMTestSetup {
     }
 
     function test_AaveRepayHalf() public {
-        test_AaveRepaySetup(USDC_BORROW_AMOUNT / 2);
+        aaveRepaySetup(USDC_BORROW_AMOUNT / 2);
 
         vm.startPrank(manager1);
         // Confirm that the AavePM contract has some debt that needs repaying

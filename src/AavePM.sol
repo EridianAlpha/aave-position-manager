@@ -89,7 +89,7 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     modifier checkOwner(address _owner) {
-        if (!hasRole(OWNER_ROLE, _owner)) revert AavePM__AddressNotAnOwner();
+        _checkOwner(_owner);
         _;
     }
 
@@ -624,6 +624,15 @@ contract AavePM is
         } else {
             return reinvestableAmount = 0;
         }
+    }
+
+    // ================================================================
+    // │                        FUNCTIONS - CHECKS                    │
+    // ================================================================
+
+    /// @notice // TODO: Add comment
+    function _checkOwner(address _owner) internal view {
+        if (!hasRole(OWNER_ROLE, _owner)) revert AavePM__AddressNotAnOwner();
     }
 
     // ================================================================

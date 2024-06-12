@@ -8,7 +8,7 @@ import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 // ================================================================
-// │            AavePMBorrowAndWithdrawUSDCTests TESTS            │
+// │               AavePMBorrowAndWithdrawUSDC TESTS              │
 // ================================================================
 contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
     function test_BorrowAndWithdrawUSDCOnlyOwnerAddressWithdraw() public {

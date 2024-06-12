@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/de735ed273cbdbe04f62a6907457cb8533fa7523/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/372388b81d8106884b4a71c9ba220bcb49c0d6a5/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="/src/Rebalance.sol/contract.Rebalance.html">Rebalance</a>, <a href="/src/Reinvest.sol/contract.Reinvest.html">Reinvest</a>, <a href="/src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html">BorrowAndWithdrawUSDC</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -211,6 +211,9 @@ EridianAlpha</p>
 </code></pre>
 <h3 id="s_suppliedcollateraltotal"><a class="header" href="#s_suppliedcollateraltotal">s_suppliedCollateralTotal</a></h3>
 <pre><code class="language-solidity">uint256 internal s_suppliedCollateralTotal = 0;
+</code></pre>
+<h3 id="s_upgradehistory"><a class="header" href="#s_upgradehistory">s_upgradeHistory</a></h3>
+<pre><code class="language-solidity">UpgradeHistory[] internal s_upgradeHistory;
 </code></pre>
 <h3 id="version"><a class="header" href="#version">VERSION</a></h3>
 <p>The version of the contract.</p>
@@ -350,7 +353,7 @@ Emits a <code>SlippageToleranceUpdated</code> event.</em></p>
 The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
 It then deposits the wstETH into Aave.
 If the health factor is below the target, it repays debt to increase the health factor.</em></p>
-<pre><code class="language-solidity">function rebalance() public onlyRole(MANAGER_ROLE);
+<pre><code class="language-solidity">function rebalance() public onlyRole(MANAGER_ROLE) returns (uint256 repaymentAmountUSDC);
 </code></pre>
 <h3 id="reinvest"><a class="header" href="#reinvest">reinvest</a></h3>
 <p>// TODO: Add comment</p>
@@ -388,7 +391,11 @@ Emits a <code>RescueEth</code> event.</em></p>
 </div>
 <h3 id="aavewithdrawwsteth"><a class="header" href="#aavewithdrawwsteth">aaveWithdrawWstETH</a></h3>
 <p>// TODO: Add comment</p>
-<pre><code class="language-solidity">function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner);
+<pre><code class="language-solidity">function aaveWithdrawWstETH(uint256 _amount, address _owner)
+    public
+    onlyRole(MANAGER_ROLE)
+    checkOwner(_owner)
+    returns (uint256 collateralDeltaBase);
 </code></pre>
 <h3 id="aaveborrowandwithdrawusdc"><a class="header" href="#aaveborrowandwithdrawusdc">aaveBorrowAndWithdrawUSDC</a></h3>
 <p>// TODO: Add comment</p>
@@ -406,6 +413,16 @@ Emits a <code>RescueEth</code> event.</em></p>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>creator</code></td><td><code>address</code></td><td>The address of the creator.</td></tr>
+</tbody></table>
+</div>
+<h3 id="getupgradehistory"><a class="header" href="#getupgradehistory">getUpgradeHistory</a></h3>
+<p>Getter function to get the upgrade history.</p>
+<p><em>Public function to allow anyone to view the upgrade history.</em></p>
+<pre><code class="language-solidity">function getUpgradeHistory() public view returns (UpgradeHistory[] memory);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>UpgradeHistory[]</code></td><td>s_upgradeHistory The array of all upgrade history entries.</td></tr>
 </tbody></table>
 </div>
 <h3 id="getversion"><a class="header" href="#getversion">getVersion</a></h3>
@@ -585,6 +602,10 @@ Emits a <code>RescueEth</code> event.</em></p>
 <h3 id="getreinvestableamount"><a class="header" href="#getreinvestableamount">getReinvestableAmount</a></h3>
 <p>// TODO: Add comment</p>
 <pre><code class="language-solidity">function getReinvestableAmount() public view returns (uint256 reinvestableAmount);
+</code></pre>
+<h3 id="_checkowner"><a class="header" href="#_checkowner">_checkOwner</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function _checkOwner(address _owner) internal view;
 </code></pre>
 <h3 id="getrolemember"><a class="header" href="#getrolemember">getRoleMember</a></h3>
 <p>// TODO: Add comment</p>

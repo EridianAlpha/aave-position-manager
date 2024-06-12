@@ -24,6 +24,26 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         vm.stopPrank();
     }
 
+    function test_BorrowAndWithdrawUSDCMaxBorrowZero() public {
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
+
+        // Supply the ETH sent to the contract to Aave
+        aavePM.aaveSupplyFromContractBalance();
+
+        // Borrow the max amount (called twice as the first time does not quiet reach the max amount)
+        aavePM.aaveBorrowAndWithdrawUSDC(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), owner1);
+        aavePM.aaveBorrowAndWithdrawUSDC(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), owner1);
+
+        assertEq(USDC.balanceOf(owner1), aavePM.getWithdrawnUSDCTotal());
+        assertEq(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), 0);
+
+        // Then try to borrow more
+        vm.expectRevert(IAavePM.AavePM__ZeroBorrowAndWithdrawUSDCAvailable.selector);
+        aavePM.aaveBorrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
+        vm.stopPrank();
+    }
+
     function test_BorrowAndWithdrawUSDCAttacker() public {
         vm.startPrank(manager1);
         sendEth(address(aavePM), SEND_VALUE);

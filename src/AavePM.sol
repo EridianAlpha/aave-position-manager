@@ -267,12 +267,12 @@ contract AavePM is
     ///      The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
     ///      It then deposits the wstETH into Aave.
     ///      If the health factor is below the target, it repays debt to increase the health factor.
-    function rebalance() public onlyRole(MANAGER_ROLE) {
+    function rebalance() public onlyRole(MANAGER_ROLE) returns (uint256 repaymentAmountUSDC) {
         // Convert any existing tokens to wstETH and supply to Aave.
         aaveSupplyFromContractBalance();
 
         // Perform rebalance.
-        (uint256 repaymentAmountUSDC) = _rebalance();
+        (repaymentAmountUSDC) = _rebalance();
 
         if (repaymentAmountUSDC > 0 && s_reinvestedDebtTotal >= repaymentAmountUSDC) {
             s_reinvestedDebtTotal -= repaymentAmountUSDC;

@@ -8,10 +8,11 @@ import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {AavePM} from "src/AavePM.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
+import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 // ================================================================
 // │                         REBALANCE TESTS                      │
 // ================================================================
+
 contract RebalanceTests is AavePMTestSetup {
     function test_RebalanceEmptyContract() public {
         // There's no check for this, as it would only happen if the contract is empty.
@@ -73,6 +74,28 @@ contract RebalanceTests is AavePMTestSetup {
         aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() + HEALTH_FACTOR_TARGET_CHANGE);
         aavePM.rebalance();
         checkEndHealthFactor(address(aavePM));
+        vm.stopPrank();
+    }
+
+    function test_RebalanceHealthFactorMax() public {
+        // Setup contract using the standard rebalance test
+        test_RebalanceSetup();
+
+        (, uint256 totalDebtBaseBefore,,,,) =
+            IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address((aavePM)));
+
+        vm.startPrank(manager1);
+        // Increase the health factor target
+        aavePM.updateHealthFactorTarget(type(uint16).max);
+        uint256 repaymentAmountUSDC = aavePM.rebalance();
+
+        // Check debt after is 0
+        (, uint256 totalDebtBaseAfter,,,,) =
+            IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address((aavePM)));
+        assertEq(totalDebtBaseAfter, 0);
+
+        // Add $1 to avoid dust
+        assertEq((totalDebtBaseBefore + 1e8) / 1e2, repaymentAmountUSDC);
         vm.stopPrank();
     }
 

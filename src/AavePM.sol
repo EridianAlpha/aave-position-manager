@@ -361,13 +361,18 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function aaveWithdrawWstETH(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner) {
-        // TODO: Improve this function so it doesn't allow withdrawals below the target HF, not just the minimum
-        //       Then this will only be used once debt has been repaid
+    function aaveWithdrawWstETH(uint256 _amount, address _owner)
+        public
+        onlyRole(MANAGER_ROLE)
+        checkOwner(_owner)
+        returns (uint256 collateralDeltaBase)
+    {
         address aavePoolAddress = getContractAddress("aavePool");
 
         // Get the collateral base value before withdrawing.
         (uint256 initialCollateralBase,,,,,) = IPool(aavePoolAddress).getUserAccountData(address(this));
+
+        if (initialCollateralBase == 0) revert AavePM__NoCollateralToWithdraw();
 
         address wstETHAddress = getTokenAddress("wstETH");
         _aaveWithdrawCollateral(aavePoolAddress, wstETHAddress, _amount);
@@ -379,7 +384,7 @@ contract AavePM is
         uint256 initialSuppliedCollateral = getSuppliedCollateralTotal();
 
         if (endCollateralBase < initialCollateralBase) {
-            uint256 collateralDeltaBase = initialCollateralBase - endCollateralBase;
+            collateralDeltaBase = initialCollateralBase - endCollateralBase;
             if (initialSuppliedCollateral >= collateralDeltaBase / 1e2) {
                 s_suppliedCollateralTotal -= collateralDeltaBase / 1e2;
             } else if (initialSuppliedCollateral + s_reinvestedDebtTotal >= collateralDeltaBase / 1e2) {
@@ -393,6 +398,8 @@ contract AavePM is
 
         // Check to ensure the health factor is above the minimum target.
         _checkHealthFactorAboveMinimum();
+
+        // TODO: Emit an event
     }
 
     /// @notice // TODO: Add comment

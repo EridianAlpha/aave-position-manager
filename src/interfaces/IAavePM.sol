@@ -16,6 +16,7 @@ interface IAavePM {
     error AavePM__FunctionDoesNotExist();
     error AavePM__NegativeInterestCalc();
     error AavePM__HealthFactorUnchanged();
+    error AavePM__NoCollateralToWithdraw();
     error AavePM__HealthFactorBelowMinimum();
     error AavePM__SlippageToleranceUnchanged();
     error AavePM__SlippageToleranceAboveMaximum();
@@ -99,7 +100,9 @@ interface IAavePM {
     // │                FUNCTIONS - WITHDRAW FUNCTIONS                │
     // ================================================================
     function rescueEth(address ownerAddress) external;
-    function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress) external;
+    function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress)
+        external
+        returns (uint256 collateralDeltaBase);
     function aaveBorrowAndWithdrawUSDC(uint256 borrowAmount, address ownerAddress) external;
     function aaveClosePosition(address ownerAddress) external;
 

@@ -64,8 +64,9 @@ contract AavePMTestSetup is Test, HelperFunctions, AavePM {
 
         // For this test contract, set manager1 as a manager, and address(this) as an owner and manager
         grantRole(keccak256("MANAGER_ROLE"), manager1);
-        grantRole(keccak256("OWNER_ROLE"), address(this));
+        grantRole(keccak256("OWNER_ROLE"), owner1);
         grantRole(keccak256("MANAGER_ROLE"), address(this));
+        grantRole(keccak256("OWNER_ROLE"), address(this));
 
         // Add the owner1 user as the new owner and manager for the AavePM contract
         aavePM.grantRole(keccak256("OWNER_ROLE"), owner1);

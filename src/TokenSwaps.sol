@@ -70,6 +70,7 @@ contract TokenSwaps {
         return (_tokenOutIdentifier, approveAndExecuteSwap(aavePM, params, currentBalance));
     }
 
+    /// @notice // TODO: Add comment
     function approveAndExecuteSwap(
         IAavePM aavePM,
         ISwapRouter.ExactInputSingleParams memory params,

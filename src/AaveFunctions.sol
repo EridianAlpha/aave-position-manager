@@ -229,6 +229,7 @@ contract AaveFunctions is TokenSwaps {
         return true;
     }
 
+    /// @notice // TODO: Add comment
     function _calculateMaxBorrowUSDC(
         uint256 totalCollateralBase,
         uint256 totalDebtBase,

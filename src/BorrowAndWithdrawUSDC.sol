@@ -67,6 +67,7 @@ contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
         return (repaidReinvestedDebt);
     }
 
+    /// @notice // TODO: Add comment
     function _borrowCalculation(
         uint256 totalCollateralBase,
         uint256 totalDebtBase,

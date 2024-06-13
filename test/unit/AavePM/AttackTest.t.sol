@@ -142,6 +142,14 @@ contract AavePMAttackTests is AavePMTestSetup {
         vm.stopPrank();
     }
 
+    function test_AttackWithdrawTokensFromContractBalance() public {
+        test_AttackSetup();
+        vm.startPrank(attacker1);
+        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Manager);
+        aavePM.withdrawTokensFromContractBalance("USDC", attacker1);
+        vm.stopPrank();
+    }
+
     function test_AttackAaveWithdrawWstETH() public {
         test_AttackSetup();
         vm.startPrank(attacker1);

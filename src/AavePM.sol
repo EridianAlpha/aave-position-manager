@@ -363,6 +363,24 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
+    function withdrawTokensFromContractBalance(string memory _identifier, address _owner)
+        public
+        onlyRole(MANAGER_ROLE)
+        checkOwner(_owner)
+    {
+        if (keccak256(abi.encodePacked(_identifier)) == keccak256(abi.encodePacked("awstETH"))) {
+            revert AavePM__InvalidWithdrawalToken();
+        }
+
+        uint256 tokenBalance = getContractBalance(_identifier);
+        if (tokenBalance == 0) revert AavePM__NoTokensToWithdraw();
+
+        IERC20(s_tokenAddresses[_identifier]).transfer(_owner, tokenBalance);
+
+        // TODO: Emit event
+    }
+
+    /// @notice // TODO: Add comment
     function aaveWithdrawWstETH(uint256 _amount, address _owner)
         public
         onlyRole(MANAGER_ROLE)

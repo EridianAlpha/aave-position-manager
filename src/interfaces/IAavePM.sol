@@ -11,12 +11,14 @@ interface IAavePM {
     error AavePM__RescueEthFailed();
     error AavePM__ZeroBorrowAmount();
     error AavePM__AddressNotAnOwner();
+    error AavePM__NoTokensToWithdraw();
     error AavePM__ReinvestNotRequired();
     error AavePM__RebalanceNotRequired();
     error AavePM__FunctionDoesNotExist();
     error AavePM__NegativeInterestCalc();
     error AavePM__HealthFactorUnchanged();
     error AavePM__NoCollateralToWithdraw();
+    error AavePM__InvalidWithdrawalToken();
     error AavePM__HealthFactorBelowMinimum();
     error AavePM__SlippageToleranceUnchanged();
     error AavePM__SlippageToleranceAboveMaximum();
@@ -83,15 +85,12 @@ interface IAavePM {
     // ================================================================
     // │                     FUNCTIONS - UPDATES                      │
     // ================================================================
-    function updateContractAddress(string memory identifier, address _newContractAddress) external;
-    function updateTokenAddress(string memory identifier, address _newTokenAddress) external;
-    function updateUniswapV3Pool(
-        string memory _identifier,
-        address _newUniswapV3PoolAddress,
-        uint24 _newUniswapV3PoolFee
-    ) external;
-    function updateHealthFactorTarget(uint16 _healthFactorTarget) external;
-    function updateSlippageTolerance(uint16 _slippageTolerance) external;
+    function updateContractAddress(string memory identifier, address newContractAddress) external;
+    function updateTokenAddress(string memory identifier, address newTokenAddress) external;
+    function updateUniswapV3Pool(string memory identifier, address newUniswapV3PoolAddress, uint24 newUniswapV3PoolFee)
+        external;
+    function updateHealthFactorTarget(uint16 healthFactorTarget) external;
+    function updateSlippageTolerance(uint16 slippageTolerance) external;
 
     // ================================================================
     // │                   FUNCTIONS - CORE FUNCTIONS                 │
@@ -106,6 +105,7 @@ interface IAavePM {
     // │                FUNCTIONS - WITHDRAW FUNCTIONS                │
     // ================================================================
     function rescueEth(address ownerAddress) external;
+    function withdrawTokensFromContractBalance(string memory identifier, address ownerAddress) external;
     function aaveWithdrawWstETH(uint256 withdrawAmount, address ownerAddress)
         external
         returns (uint256 collateralDeltaBase);
@@ -128,8 +128,8 @@ interface IAavePM {
     function getHealthFactorTargetMinimum() external pure returns (uint16 healthFactorTargetMinimum);
     function getSlippageTolerance() external view returns (uint16 slippageTolerance);
     function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
-    function getContractBalance(string memory _identifier) external view returns (uint256 contractBalance);
-    function getRoleMembers(string memory _roleString) external view returns (address[] memory);
+    function getContractBalance(string memory identifier) external view returns (uint256 contractBalance);
+    function getRoleMembers(string memory roleString) external view returns (address[] memory);
     function getWithdrawnUSDCTotal() external view returns (uint256 withdrawnUSDCTotal);
     function getReinvestedDebtTotal() external view returns (uint256 reinvestedDebtTotal);
     function getTotalCollateralDelta() external view returns (uint256 totalCollateralDelta, bool isPositive);

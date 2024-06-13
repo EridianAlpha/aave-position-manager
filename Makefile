@@ -141,6 +141,12 @@ withdrawWstETH-script:
 borrowUSDC-script:
 	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "borrowAndWithdrawUSDCAavePM(uint256)" ${MAKE_CLI_INPUT_VALUE}
 
+rescueETH-script:
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "rescueETHAavePM()"
+
+withdrawToken-script:
+	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "withdrawTokenAavePM(string)" ${MAKE_CLI_INPUT_VALUE}
+
 getContractBalance-script:
 	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "getContractBalanceAavePM(string)" ${MAKE_CLI_INPUT_VALUE}
 
@@ -152,6 +158,7 @@ getAaveAccountData-script:
 # ================================================================
 send-ETH: ask-for-value convert-value-to-wei store-value send-ETH-script remove-value
 withdrawWstETH: ask-for-value convert-value-to-wei store-value withdrawWstETH-script remove-value
+withdrawToken: ask-for-value store-value withdrawToken-script remove-value
 borrowUSDC: ask-for-value convert-value-to-USDC store-value borrowUSDC-script remove-value
 update-hft: ask-for-value store-value update-hft-script remove-value
 update-st: ask-for-value store-value update-st-script remove-value
@@ -173,5 +180,7 @@ supply-anvil: anvil-network supply-script
 repay-anvil: anvil-network repay-script
 withdrawWstETH-anvil: anvil-network withdrawWstETH
 borrowUSDC-anvil: anvil-network borrowUSDC
+rescueETH-anvil: anvil-network rescueETH-script
+withdrawToken-anvil: anvil-network withdrawToken
 getContractBalance-anvil: anvil-network getContractBalance
 getAaveAccountData-anvil: anvil-network getAaveAccountData-script

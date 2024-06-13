@@ -97,6 +97,18 @@ contract Interactions is Script {
         vm.stopBroadcast();
     }
 
+    function rescueETHAavePM() public {
+        vm.startBroadcast();
+        aavePM.rescueEth(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+        vm.stopBroadcast();
+    }
+
+    function withdrawTokenAavePM(string memory _identifier) public {
+        vm.startBroadcast();
+        aavePM.withdrawTokensFromContractBalance(_identifier, 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+        vm.stopBroadcast();
+    }
+
     function withdrawWstETHAavePM(uint256 value) public {
         vm.startBroadcast();
         // TODO: Change this hardcoded Anvil address to an input parameter.

@@ -31,7 +31,8 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         // Supply the ETH sent to the contract to Aave
         aavePM.aaveSupplyFromContractBalance();
 
-        // Borrow the max amount (called twice as the first time does not quiet reach the max amount)
+        // Borrow the max amount (called multiple times as the first time does not quiet reach the max amount)
+        aavePM.aaveBorrowAndWithdrawUSDC(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), owner1);
         aavePM.aaveBorrowAndWithdrawUSDC(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), owner1);
         aavePM.aaveBorrowAndWithdrawUSDC(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), owner1);
 

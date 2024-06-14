@@ -91,7 +91,7 @@ contract AavePM is
     uint16 internal constant SLIPPAGE_TOLERANCE_MAXIMUM = 100; // 1.00%
 
     // ================================================================
-    // │                           MODIFIERS                          │
+    // │                     MODIFIERS AND CHECKS                     │
     // ================================================================
 
     /// @notice // TODO: Add comment
@@ -101,7 +101,7 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    modifier checkManagerInvocationLimit() {
+    function checkManagerInvocationLimit() internal {
         uint64[] memory managerInvocations = getManagerInvocationTimestamps();
         _checkManagerInvocationLimit(managerInvocations);
 
@@ -110,7 +110,7 @@ contract AavePM is
             // If the array is smaller than the limit, add the current timestamp.
             s_managerInvocationTimestamps.push(uint64(block.timestamp));
         } else {
-            // If the array is at or greater than the limit,
+            // If the array size is at or greater than the limit,
             // replace the oldest timestamp with the current timestamp.
             uint16 oldestIndex = 0;
             for (uint16 i = 1; i < managerInvocations.length; i++) {
@@ -118,7 +118,6 @@ contract AavePM is
             }
             s_managerInvocationTimestamps[oldestIndex] = uint64(block.timestamp);
         }
-        _;
     }
 
     // ================================================================
@@ -261,11 +260,9 @@ contract AavePM is
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      Emits a `HealthFactorTargetUpdated` event.
     /// @param _healthFactorTarget The new Health Factor target.
-    function updateHealthFactorTarget(uint16 _healthFactorTarget)
-        external
-        onlyRole(MANAGER_ROLE)
-        checkManagerInvocationLimit
-    {
+    function updateHealthFactorTarget(uint16 _healthFactorTarget) external onlyRole(MANAGER_ROLE) {
+        checkManagerInvocationLimit();
+
         // Should be different from the current s_healthFactorTarget
         if (s_healthFactorTarget == _healthFactorTarget) revert AavePM__HealthFactorUnchanged();
 
@@ -319,12 +316,9 @@ contract AavePM is
     ///      The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
     ///      It then deposits the wstETH into Aave.
     ///      If the health factor is below the target, it repays debt to increase the health factor.
-    function rebalance()
-        public
-        onlyRole(MANAGER_ROLE)
-        checkManagerInvocationLimit
-        returns (uint256 repaymentAmountUSDC)
-    {
+    function rebalance() public onlyRole(MANAGER_ROLE) returns (uint256 repaymentAmountUSDC) {
+        checkManagerInvocationLimit();
+
         // Convert any existing tokens to wstETH and supply to Aave.
         aaveSupplyFromContractBalance();
 
@@ -339,7 +333,9 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function reinvest() public onlyRole(MANAGER_ROLE) checkManagerInvocationLimit returns (uint256 reinvestedDebt) {
+    function reinvest() public onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt) {
+        checkManagerInvocationLimit();
+
         // Convert any existing tokens to wstETH and supply to Aave.
         aaveSupplyFromContractBalance();
 
@@ -351,7 +347,9 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function deleverage() public onlyRole(MANAGER_ROLE) checkManagerInvocationLimit {
+    function deleverage() public onlyRole(MANAGER_ROLE) {
+        checkManagerInvocationLimit();
+
         // Update the Health Factor target to the maximum value.
         uint16 previousHealthFactorTarget = s_healthFactorTarget;
         if (previousHealthFactorTarget != type(uint16).max) {

@@ -46,7 +46,7 @@ contract HelperConfig is Script {
             wstETHAddress = vm.envAddress("MAINNET_ADDRESS_WSTETH");
             usdcAddress = vm.envAddress("MAINNET_ADDRESS_USDC");
             awstETHAddress = vm.envAddress("MAINNET_ADDRESS_AWSTETH");
-        } else if (chainId == 8453) {
+        } else if (chainId == 8453 || chainId == 31339) {
             // Base
             aavePoolAddress = vm.envAddress("BASE_ADDRESS_AAVE_POOL");
             aaveOracleAddress = vm.envAddress("BASE_ADDRESS_AAVE_ORACLE");

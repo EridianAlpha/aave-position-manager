@@ -59,7 +59,8 @@ contract AavePMTestSetup is Test, HelperFunctions, AavePM {
             config.tokenAddresses,
             config.uniswapV3Pools,
             config.initialHealthFactorTarget,
-            config.initialSlippageTolerance
+            config.initialSlippageTolerance,
+            config.initialManagerDailyInvocationLimit
         );
 
         // For this test contract, set manager1 as a manager, and address(this) as an owner and manager

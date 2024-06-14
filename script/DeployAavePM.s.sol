@@ -18,6 +18,7 @@ contract DeployAavePM is Script {
         IAavePM.UniswapV3Pool[] memory uniswapV3Pools = config.uniswapV3Pools;
         uint16 initialHealthFactorTarget = config.initialHealthFactorTarget;
         uint16 initialSlippageTolerance = config.initialSlippageTolerance;
+        uint16 initialManagerDailyInvocationLimit = config.initialManagerDailyInvocationLimit;
 
         vm.startBroadcast();
         // Deploy the implementation contract
@@ -31,7 +32,8 @@ contract DeployAavePM is Script {
             tokenAddresses,
             uniswapV3Pools,
             initialHealthFactorTarget,
-            initialSlippageTolerance
+            initialSlippageTolerance,
+            initialManagerDailyInvocationLimit
         );
 
         // Deploy the proxy pointing to the implementation

@@ -6,6 +6,7 @@ pragma solidity 0.8.24;
 // ================================================================
 
 // Inherited Contract Imports
+import {FunctionChecks} from "./FunctionChecks.sol";
 import {Rebalance} from "./Rebalance.sol";
 import {Reinvest} from "./Reinvest.sol";
 import {BorrowAndWithdrawUSDC} from "./BorrowAndWithdrawUSDC.sol";
@@ -34,6 +35,7 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 /// @notice A contract to manage positions on Aave.
 contract AavePM is
     IAavePM,
+    FunctionChecks,
     Rebalance,
     Reinvest,
     BorrowAndWithdrawUSDC,
@@ -57,7 +59,11 @@ contract AavePM is
     uint256 internal s_withdrawnUSDCTotal = 0;
     uint256 internal s_reinvestedDebtTotal = 0;
     uint256 internal s_suppliedCollateralTotal = 0;
+
+    // History and invocation tracking
     UpgradeHistory[] internal s_upgradeHistory;
+    uint16 internal s_managerDailyInvocationLimit;
+    uint64[] internal s_managerInvocationTimestamps;
 
     // ================================================================
     // │                           CONSTANTS                          │
@@ -91,6 +97,27 @@ contract AavePM is
     /// @notice // TODO: Add comment
     modifier checkOwner(address _owner) {
         _checkOwner(_owner);
+        _;
+    }
+
+    /// @notice // TODO: Add comment
+    modifier checkManagerInvocationLimit() {
+        uint64[] memory managerInvocations = getManagerInvocationTimestamps();
+        _checkManagerInvocationLimit(managerInvocations);
+
+        // If the check passes, add the current timestamp to the array.
+        if (managerInvocations.length < s_managerDailyInvocationLimit) {
+            // If the array is smaller than the limit, add the current timestamp.
+            s_managerInvocationTimestamps.push(uint64(block.timestamp));
+        } else {
+            // If the array is at or greater than the limit,
+            // replace the oldest timestamp with the current timestamp.
+            uint16 oldestIndex = 0;
+            for (uint16 i = 1; i < managerInvocations.length; i++) {
+                if (managerInvocations[i] < managerInvocations[oldestIndex]) oldestIndex = i;
+            }
+            s_managerInvocationTimestamps[oldestIndex] = uint64(block.timestamp);
+        }
         _;
     }
 
@@ -131,7 +158,8 @@ contract AavePM is
         TokenAddress[] memory tokenAddresses,
         UniswapV3Pool[] memory uniswapV3Pools,
         uint16 initialHealthFactorTarget,
-        uint16 initialSlippageTolerance
+        uint16 initialSlippageTolerance,
+        uint16 initialManagerDailyInvocationLimit
     ) public initializer {
         __AccessControlEnumerable_init();
         __AccessControl_init();
@@ -142,7 +170,8 @@ contract AavePM is
             tokenAddresses,
             uniswapV3Pools,
             initialHealthFactorTarget,
-            initialSlippageTolerance
+            initialSlippageTolerance,
+            initialManagerDailyInvocationLimit
         );
     }
 
@@ -153,7 +182,8 @@ contract AavePM is
         TokenAddress[] memory tokenAddresses,
         UniswapV3Pool[] memory uniswapV3Pools,
         uint16 initialHealthFactorTarget,
-        uint16 initialSlippageTolerance
+        uint16 initialSlippageTolerance,
+        uint16 initialManagerDailyInvocationLimit
     ) internal {
         s_creator = msg.sender;
         s_upgradeHistory.push(UpgradeHistory(VERSION, block.timestamp, msg.sender));
@@ -185,6 +215,7 @@ contract AavePM is
 
         s_healthFactorTarget = initialHealthFactorTarget;
         s_slippageTolerance = initialSlippageTolerance;
+        s_managerDailyInvocationLimit = initialManagerDailyInvocationLimit;
     }
 
     // ================================================================
@@ -230,7 +261,11 @@ contract AavePM is
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      Emits a `HealthFactorTargetUpdated` event.
     /// @param _healthFactorTarget The new Health Factor target.
-    function updateHealthFactorTarget(uint16 _healthFactorTarget) external onlyRole(MANAGER_ROLE) {
+    function updateHealthFactorTarget(uint16 _healthFactorTarget)
+        external
+        onlyRole(MANAGER_ROLE)
+        checkManagerInvocationLimit
+    {
         // Should be different from the current s_healthFactorTarget
         if (s_healthFactorTarget == _healthFactorTarget) revert AavePM__HealthFactorUnchanged();
 
@@ -260,6 +295,21 @@ contract AavePM is
         s_slippageTolerance = _slippageTolerance;
     }
 
+    /// @notice // TODO: Add comment
+    function updateManagerDailyInvocationLimit(uint16 _managerDailyInvocationLimit) external onlyRole(OWNER_ROLE) {
+        s_managerDailyInvocationLimit = _managerDailyInvocationLimit;
+
+        // If the new limit is less than the current length of the managerInvocationTimestamps array,
+        // remove the end of the array to match the new limit.
+        uint256 arrayLength = s_managerInvocationTimestamps.length;
+        if (arrayLength > _managerDailyInvocationLimit) {
+            uint256 excess = arrayLength - _managerDailyInvocationLimit;
+            for (uint256 i = 0; i < excess; i++) {
+                s_managerInvocationTimestamps.pop();
+            }
+        }
+    }
+
     // ================================================================
     // │                   FUNCTIONS - CORE FUNCTIONS                 │
     // ================================================================
@@ -269,7 +319,12 @@ contract AavePM is
     ///      The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
     ///      It then deposits the wstETH into Aave.
     ///      If the health factor is below the target, it repays debt to increase the health factor.
-    function rebalance() public onlyRole(MANAGER_ROLE) returns (uint256 repaymentAmountUSDC) {
+    function rebalance()
+        public
+        onlyRole(MANAGER_ROLE)
+        checkManagerInvocationLimit
+        returns (uint256 repaymentAmountUSDC)
+    {
         // Convert any existing tokens to wstETH and supply to Aave.
         aaveSupplyFromContractBalance();
 
@@ -284,7 +339,7 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function reinvest() public onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt) {
+    function reinvest() public onlyRole(MANAGER_ROLE) checkManagerInvocationLimit returns (uint256 reinvestedDebt) {
         // Convert any existing tokens to wstETH and supply to Aave.
         aaveSupplyFromContractBalance();
 
@@ -296,7 +351,7 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function deleverage() public onlyRole(MANAGER_ROLE) {
+    function deleverage() public onlyRole(MANAGER_ROLE) checkManagerInvocationLimit {
         // Update the Health Factor target to the maximum value.
         uint16 previousHealthFactorTarget = s_healthFactorTarget;
         if (previousHealthFactorTarget != type(uint16).max) {
@@ -562,6 +617,20 @@ contract AavePM is
         return SLIPPAGE_TOLERANCE_MAXIMUM;
     }
 
+    /// @notice Getter function to get the manager role daily invocation limit.
+    /// @dev Public function to allow anyone to view the manager role daily invocation limit.
+    /// @return managerDailyInvocationLimit The manager role daily invocation limit.
+    function getManagerDailyInvocationLimit() public view returns (uint16 managerDailyInvocationLimit) {
+        return s_managerDailyInvocationLimit;
+    }
+
+    /// @notice Getter function to get the manager invocation timestamps.
+    /// @dev Public function to allow anyone to view the manager invocation timestamps.
+    /// @return managerInvocationTimestamps The array of manager invocation timestamps.
+    function getManagerInvocationTimestamps() public view returns (uint64[] memory) {
+        return s_managerInvocationTimestamps;
+    }
+
     /// @notice Getter function to get the balance of the provided identifier.
     /// @dev Public function to allow anyone to view the balance of the provided identifier.
     /// @param _identifier The identifier for the token address.
@@ -651,15 +720,6 @@ contract AavePM is
         } else {
             return reinvestableAmount = 0;
         }
-    }
-
-    // ================================================================
-    // │                        FUNCTIONS - CHECKS                    │
-    // ================================================================
-
-    /// @notice // TODO: Add comment
-    function _checkOwner(address _owner) internal view {
-        if (!hasRole(OWNER_ROLE, _owner)) revert AavePM__AddressNotAnOwner();
     }
 
     // ================================================================

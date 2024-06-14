@@ -23,6 +23,7 @@ interface IAavePM {
     error AavePM__SlippageToleranceUnchanged();
     error AavePM__SlippageToleranceAboveMaximum();
     error AavePM__ZeroBorrowAndWithdrawUSDCAvailable();
+    error AavePM__ManagerDailyInvocationLimitReached();
 
     error AaveFunctions__FlashLoanMsgSenderUnauthorized();
     error AaveFunctions__FlashLoanInitiatorUnauthorized();
@@ -79,7 +80,8 @@ interface IAavePM {
         TokenAddress[] memory tokenAddresses,
         UniswapV3Pool[] memory uniswapV3Pools,
         uint16 initialHealthFactorTarget,
-        uint16 initialSlippageTolerance
+        uint16 initialSlippageTolerance,
+        uint16 initialManagerDailyInvocationLimit
     ) external;
 
     // ================================================================
@@ -91,6 +93,7 @@ interface IAavePM {
         external;
     function updateHealthFactorTarget(uint16 healthFactorTarget) external;
     function updateSlippageTolerance(uint16 slippageTolerance) external;
+    function updateManagerDailyInvocationLimit(uint16 _managerDailyInvocationLimit) external;
 
     // ================================================================
     // │                   FUNCTIONS - CORE FUNCTIONS                 │
@@ -128,6 +131,8 @@ interface IAavePM {
     function getHealthFactorTargetMinimum() external pure returns (uint16 healthFactorTargetMinimum);
     function getSlippageTolerance() external view returns (uint16 slippageTolerance);
     function getSlippageToleranceMaximum() external pure returns (uint16 slippageToleranceMaximum);
+    function getManagerDailyInvocationLimit() external view returns (uint16 managerDailyInvocationLimit);
+    function getManagerInvocationTimestamps() external view returns (uint64[] memory);
     function getContractBalance(string memory identifier) external view returns (uint256 contractBalance);
     function getRoleMembers(string memory roleString) external view returns (address[] memory);
     function getWithdrawnUSDCTotal() external view returns (uint256 withdrawnUSDCTotal);

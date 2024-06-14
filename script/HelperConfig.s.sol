@@ -27,6 +27,7 @@ contract HelperConfig is Script {
         IAavePM.UniswapV3Pool[] uniswapV3Pools;
         uint16 initialHealthFactorTarget;
         uint16 initialSlippageTolerance;
+        uint16 initialManagerDailyInvocationLimit;
     }
 
     function getChainVariables() public {
@@ -92,7 +93,8 @@ contract HelperConfig is Script {
             tokenAddresses: tokenAddresses,
             uniswapV3Pools: uniswapV3Pools,
             initialHealthFactorTarget: uint16(vm.envUint("INITIAL_HEALTH_FACTOR_TARGET")),
-            initialSlippageTolerance: uint16(vm.envUint("INITIAL_SLIPPAGE_TOLERANCE"))
+            initialSlippageTolerance: uint16(vm.envUint("INITIAL_SLIPPAGE_TOLERANCE")),
+            initialManagerDailyInvocationLimit: uint16(vm.envUint("INITIAL_MANAGER_DAILY_INVOCATION_LIMIT"))
         });
 
         return activeNetworkConfig;

@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">README</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/index.html"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.1.</strong> IAavePM</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/IERC20Extended.sol/interface.IERC20Extended.html"><strong aria-hidden="true">1.2.</strong> IERC20Extended</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/IWETH9.sol/interface.IWETH9.html"><strong aria-hidden="true">1.3.</strong> IWETH9</a></li></ol></li><li class="chapter-item expanded "><a href="../../src/AaveFunctions.sol/contract.AaveFunctions.html"><strong aria-hidden="true">2.</strong> AaveFunctions</a></li><li class="chapter-item expanded "><a href="../../src/AavePM.sol/contract.AavePM.html" class="active"><strong aria-hidden="true">3.</strong> AavePM</a></li><li class="chapter-item expanded "><a href="../../src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html"><strong aria-hidden="true">4.</strong> BorrowAndWithdrawUSDC</a></li><li class="chapter-item expanded "><a href="../../src/Rebalance.sol/contract.Rebalance.html"><strong aria-hidden="true">5.</strong> Rebalance</a></li><li class="chapter-item expanded "><a href="../../src/Reinvest.sol/contract.Reinvest.html"><strong aria-hidden="true">6.</strong> Reinvest</a></li><li class="chapter-item expanded "><a href="../../src/TokenSwaps.sol/contract.TokenSwaps.html"><strong aria-hidden="true">7.</strong> TokenSwaps</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">README</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/index.html"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.1.</strong> IAavePM</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/IERC20Extended.sol/interface.IERC20Extended.html"><strong aria-hidden="true">1.2.</strong> IERC20Extended</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/IWETH9.sol/interface.IWETH9.html"><strong aria-hidden="true">1.3.</strong> IWETH9</a></li></ol></li><li class="chapter-item expanded "><a href="../../src/AaveFunctions.sol/contract.AaveFunctions.html"><strong aria-hidden="true">2.</strong> AaveFunctions</a></li><li class="chapter-item expanded "><a href="../../src/AavePM.sol/contract.AavePM.html" class="active"><strong aria-hidden="true">3.</strong> AavePM</a></li><li class="chapter-item expanded "><a href="../../src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html"><strong aria-hidden="true">4.</strong> BorrowAndWithdrawUSDC</a></li><li class="chapter-item expanded "><a href="../../src/FunctionChecks.sol/contract.FunctionChecks.html"><strong aria-hidden="true">5.</strong> FunctionChecks</a></li><li class="chapter-item expanded "><a href="../../src/Rebalance.sol/contract.Rebalance.html"><strong aria-hidden="true">6.</strong> Rebalance</a></li><li class="chapter-item expanded "><a href="../../src/Reinvest.sol/contract.Reinvest.html"><strong aria-hidden="true">7.</strong> Reinvest</a></li><li class="chapter-item expanded "><a href="../../src/TokenSwaps.sol/contract.TokenSwaps.html"><strong aria-hidden="true">8.</strong> TokenSwaps</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -178,9 +178,9 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/372388b81d8106884b4a71c9ba220bcb49c0d6a5/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7dc4c02a35ca1cfd5d9bde07ab1ecbe38b0cece5/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
-<a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="/src/Rebalance.sol/contract.Rebalance.html">Rebalance</a>, <a href="/src/Reinvest.sol/contract.Reinvest.html">Reinvest</a>, <a href="/src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html">BorrowAndWithdrawUSDC</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
+<a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="/src/FunctionChecks.sol/contract.FunctionChecks.html">FunctionChecks</a>, <a href="/src/Rebalance.sol/contract.Rebalance.html">Rebalance</a>, <a href="/src/Reinvest.sol/contract.Reinvest.html">Reinvest</a>, <a href="/src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html">BorrowAndWithdrawUSDC</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>A contract to manage positions on Aave.</p>
@@ -215,6 +215,12 @@ EridianAlpha</p>
 <h3 id="s_upgradehistory"><a class="header" href="#s_upgradehistory">s_upgradeHistory</a></h3>
 <pre><code class="language-solidity">UpgradeHistory[] internal s_upgradeHistory;
 </code></pre>
+<h3 id="s_managerdailyinvocationlimit"><a class="header" href="#s_managerdailyinvocationlimit">s_managerDailyInvocationLimit</a></h3>
+<pre><code class="language-solidity">uint16 internal s_managerDailyInvocationLimit;
+</code></pre>
+<h3 id="s_managerinvocationtimestamps"><a class="header" href="#s_managerinvocationtimestamps">s_managerInvocationTimestamps</a></h3>
+<pre><code class="language-solidity">uint64[] internal s_managerInvocationTimestamps;
+</code></pre>
 <h3 id="version"><a class="header" href="#version">VERSION</a></h3>
 <p>The version of the contract.</p>
 <p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
@@ -247,6 +253,10 @@ A contract upgrade is required to change this value.</em></p>
 <p>// TODO: Add comment</p>
 <pre><code class="language-solidity">modifier checkOwner(address _owner);
 </code></pre>
+<h3 id="checkmanagerinvocationlimit"><a class="header" href="#checkmanagerinvocationlimit">checkManagerInvocationLimit</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function checkManagerInvocationLimit() internal;
+</code></pre>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
 <p>Constructor implemented but unused.</p>
 <p><em>Contract is upgradeable and therefore the constructor is not used.</em></p>
@@ -269,7 +279,8 @@ A contract upgrade is required to change this value.</em></p>
     TokenAddress[] memory tokenAddresses,
     UniswapV3Pool[] memory uniswapV3Pools,
     uint16 initialHealthFactorTarget,
-    uint16 initialSlippageTolerance
+    uint16 initialSlippageTolerance,
+    uint16 initialManagerDailyInvocationLimit
 ) public initializer;
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -280,6 +291,7 @@ A contract upgrade is required to change this value.</em></p>
 <tr><td><code>uniswapV3Pools</code></td><td><code>UniswapV3Pool[]</code></td><td>An array of <code>UniswapV3Pool</code> structures containing the address and fee of the UniswapV3 pools.</td></tr>
 <tr><td><code>initialHealthFactorTarget</code></td><td><code>uint16</code></td><td>The initial target health factor, used to manage risk.</td></tr>
 <tr><td><code>initialSlippageTolerance</code></td><td><code>uint16</code></td><td>The initial slippage tolerance for token swaps.</td></tr>
+<tr><td><code>initialManagerDailyInvocationLimit</code></td><td><code>uint16</code></td><td></td></tr>
 </tbody></table>
 </div>
 <h3 id="_initializestate"><a class="header" href="#_initializestate">_initializeState</a></h3>
@@ -290,7 +302,8 @@ A contract upgrade is required to change this value.</em></p>
     TokenAddress[] memory tokenAddresses,
     UniswapV3Pool[] memory uniswapV3Pools,
     uint16 initialHealthFactorTarget,
-    uint16 initialSlippageTolerance
+    uint16 initialSlippageTolerance,
+    uint16 initialManagerDailyInvocationLimit
 ) internal;
 </code></pre>
 <h3 id="updatecontractaddress"><a class="header" href="#updatecontractaddress">updateContractAddress</a></h3>
@@ -347,6 +360,10 @@ Emits a <code>SlippageToleranceUpdated</code> event.</em></p>
 <tr><td><code>_slippageTolerance</code></td><td><code>uint16</code></td><td>The new Slippage Tolerance.</td></tr>
 </tbody></table>
 </div>
+<h3 id="updatemanagerdailyinvocationlimit"><a class="header" href="#updatemanagerdailyinvocationlimit">updateManagerDailyInvocationLimit</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function updateManagerDailyInvocationLimit(uint16 _managerDailyInvocationLimit) external onlyRole(OWNER_ROLE);
+</code></pre>
 <h3 id="rebalance"><a class="header" href="#rebalance">rebalance</a></h3>
 <p>Rebalance the Aave position.</p>
 <p><em>Caller must have <code>MANAGER_ROLE</code>.
@@ -389,6 +406,13 @@ Emits a <code>RescueEth</code> event.</em></p>
 <tr><td><code>_rescueAddress</code></td><td><code>address</code></td><td>The address to send the rescued ETH to.</td></tr>
 </tbody></table>
 </div>
+<h3 id="withdrawtokensfromcontractbalance"><a class="header" href="#withdrawtokensfromcontractbalance">withdrawTokensFromContractBalance</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function withdrawTokensFromContractBalance(string memory _identifier, address _owner)
+    public
+    onlyRole(MANAGER_ROLE)
+    checkOwner(_owner);
+</code></pre>
 <h3 id="aavewithdrawwsteth"><a class="header" href="#aavewithdrawwsteth">aaveWithdrawWstETH</a></h3>
 <p>// TODO: Add comment</p>
 <pre><code class="language-solidity">function aaveWithdrawWstETH(uint256 _amount, address _owner)
@@ -524,6 +548,26 @@ Emits a <code>RescueEth</code> event.</em></p>
 <tr><td><code>slippageToleranceMaximum</code></td><td><code>uint16</code></td><td>The Slippage Tolerance maximum value.</td></tr>
 </tbody></table>
 </div>
+<h3 id="getmanagerdailyinvocationlimit"><a class="header" href="#getmanagerdailyinvocationlimit">getManagerDailyInvocationLimit</a></h3>
+<p>Getter function to get the manager role daily invocation limit.</p>
+<p><em>Public function to allow anyone to view the manager role daily invocation limit.</em></p>
+<pre><code class="language-solidity">function getManagerDailyInvocationLimit() public view returns (uint16 managerDailyInvocationLimit);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>managerDailyInvocationLimit</code></td><td><code>uint16</code></td><td>The manager role daily invocation limit.</td></tr>
+</tbody></table>
+</div>
+<h3 id="getmanagerinvocationtimestamps"><a class="header" href="#getmanagerinvocationtimestamps">getManagerInvocationTimestamps</a></h3>
+<p>Getter function to get the manager invocation timestamps.</p>
+<p><em>Public function to allow anyone to view the manager invocation timestamps.</em></p>
+<pre><code class="language-solidity">function getManagerInvocationTimestamps() public view returns (uint64[] memory);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint64[]</code></td><td>managerInvocationTimestamps The array of manager invocation timestamps.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getcontractbalance"><a class="header" href="#getcontractbalance">getContractBalance</a></h3>
 <p>Getter function to get the balance of the provided identifier.</p>
 <p><em>Public function to allow anyone to view the balance of the provided identifier.</em></p>
@@ -602,10 +646,6 @@ Emits a <code>RescueEth</code> event.</em></p>
 <h3 id="getreinvestableamount"><a class="header" href="#getreinvestableamount">getReinvestableAmount</a></h3>
 <p>// TODO: Add comment</p>
 <pre><code class="language-solidity">function getReinvestableAmount() public view returns (uint256 reinvestableAmount);
-</code></pre>
-<h3 id="_checkowner"><a class="header" href="#_checkowner">_checkOwner</a></h3>
-<p>// TODO: Add comment</p>
-<pre><code class="language-solidity">function _checkOwner(address _owner) internal view;
 </code></pre>
 <h3 id="getrolemember"><a class="header" href="#getrolemember">getRoleMember</a></h3>
 <p>// TODO: Add comment</p>

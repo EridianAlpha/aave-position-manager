@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html" class="active">README</a></li><li class="chapter-item expanded "><a href="src/interfaces/index.html"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.1.</strong> IAavePM</a></li><li class="chapter-item expanded "><a href="src/interfaces/IERC20Extended.sol/interface.IERC20Extended.html"><strong aria-hidden="true">1.2.</strong> IERC20Extended</a></li><li class="chapter-item expanded "><a href="src/interfaces/IWETH9.sol/interface.IWETH9.html"><strong aria-hidden="true">1.3.</strong> IWETH9</a></li></ol></li><li class="chapter-item expanded "><a href="src/AaveFunctions.sol/contract.AaveFunctions.html"><strong aria-hidden="true">2.</strong> AaveFunctions</a></li><li class="chapter-item expanded "><a href="src/AavePM.sol/contract.AavePM.html"><strong aria-hidden="true">3.</strong> AavePM</a></li><li class="chapter-item expanded "><a href="src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html"><strong aria-hidden="true">4.</strong> BorrowAndWithdrawUSDC</a></li><li class="chapter-item expanded "><a href="src/Rebalance.sol/contract.Rebalance.html"><strong aria-hidden="true">5.</strong> Rebalance</a></li><li class="chapter-item expanded "><a href="src/Reinvest.sol/contract.Reinvest.html"><strong aria-hidden="true">6.</strong> Reinvest</a></li><li class="chapter-item expanded "><a href="src/TokenSwaps.sol/contract.TokenSwaps.html"><strong aria-hidden="true">7.</strong> TokenSwaps</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html" class="active">README</a></li><li class="chapter-item expanded "><a href="src/interfaces/index.html"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.1.</strong> IAavePM</a></li><li class="chapter-item expanded "><a href="src/interfaces/IERC20Extended.sol/interface.IERC20Extended.html"><strong aria-hidden="true">1.2.</strong> IERC20Extended</a></li><li class="chapter-item expanded "><a href="src/interfaces/IWETH9.sol/interface.IWETH9.html"><strong aria-hidden="true">1.3.</strong> IWETH9</a></li></ol></li><li class="chapter-item expanded "><a href="src/AaveFunctions.sol/contract.AaveFunctions.html"><strong aria-hidden="true">2.</strong> AaveFunctions</a></li><li class="chapter-item expanded "><a href="src/AavePM.sol/contract.AavePM.html"><strong aria-hidden="true">3.</strong> AavePM</a></li><li class="chapter-item expanded "><a href="src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html"><strong aria-hidden="true">4.</strong> BorrowAndWithdrawUSDC</a></li><li class="chapter-item expanded "><a href="src/FunctionChecks.sol/contract.FunctionChecks.html"><strong aria-hidden="true">5.</strong> FunctionChecks</a></li><li class="chapter-item expanded "><a href="src/Rebalance.sol/contract.Rebalance.html"><strong aria-hidden="true">6.</strong> Rebalance</a></li><li class="chapter-item expanded "><a href="src/Reinvest.sol/contract.Reinvest.html"><strong aria-hidden="true">7.</strong> Reinvest</a></li><li class="chapter-item expanded "><a href="src/TokenSwaps.sol/contract.TokenSwaps.html"><strong aria-hidden="true">8.</strong> TokenSwaps</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -217,8 +217,14 @@
 <li><a href="#72-update-health-factor-target">7.2. Update Health Factor Target</a></li>
 <li><a href="#73-update-slippage-tolerance">7.3. Update Slippage Tolerance</a></li>
 <li><a href="#74-rebalance">7.4. Rebalance</a></li>
-<li><a href="#75-get-contract-balance">7.5. Get Contract Balance</a></li>
-<li><a href="#76-get-aave-account-data">7.6. Get Aave Account Data</a></li>
+<li><a href="#75-reinvest">7.5. Reinvest</a></li>
+<li><a href="#76-supply">7.6. Supply</a></li>
+<li><a href="#77-repay">7.7. Repay</a></li>
+<li><a href="#78-close-position">7.8. Close Position</a></li>
+<li><a href="#79-withdraw-wsteth">7.9. Withdraw wstETH</a></li>
+<li><a href="#710-borrow-usdc">7.10. Borrow USDC</a></li>
+<li><a href="#711-get-contract-balance">7.11. Get Contract Balance</a></li>
+<li><a href="#712-get-aave-account-data">7.12. Get Aave Account Data</a></li>
 </ul>
 </li>
 <li><a href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></li>
@@ -231,26 +237,31 @@
 <p>A smart contract manager for Aave positions.</p>
 <ol>
 <li>Set a desired Health Factor.</li>
-<li>Deposit assets (ETH or wstETH) into the position.</li>
-<li>Rebalance the position to maintain the desired Health Factor, either manually or with a bot.</li>
+<li>Deposit assets (ETH, WETH, wstETH or USDC) into the position.</li>
+<li>Reinvest and rebalance the position to maintain the desired Health Factor, either manually or with a bot.</li>
 </ol>
 <h3 id="11-key-functions"><a class="header" href="#11-key-functions">1.1. Key Functions</a></h3>
 <h4 id="111-owner-functions"><a class="header" href="#111-owner-functions">1.1.1. Owner Functions</a></h4>
 <div class="table-wrapper"><table><thead><tr><th>Function</th><th>Restrictions</th><th>Description</th></tr></thead><tbody>
-<tr><td>upgradeToAndCall</td><td><code>OWNER_ROLE</code></td><td>Upgrade the contract</td></tr>
-<tr><td>updateContractAddress</td><td><code>OWNER_ROLE</code></td><td>Update the specified contract address</td></tr>
-<tr><td>updateTokenAddress</td><td><code>OWNER_ROLE</code></td><td>Update the specified token address</td></tr>
-<tr><td>updateUniswapV3Pool</td><td><code>OWNER_ROLE</code></td><td>Update the specified Uniswap V3 pool</td></tr>
+<tr><td>upgradeToAndCall</td><td><code>OWNER_ROLE</code></td><td>Upgrade the contract.</td></tr>
+<tr><td>updateContractAddress</td><td><code>OWNER_ROLE</code></td><td>Update the specified contract address.</td></tr>
+<tr><td>updateTokenAddress</td><td><code>OWNER_ROLE</code></td><td>Update the specified token address.</td></tr>
+<tr><td>updateUniswapV3Pool</td><td><code>OWNER_ROLE</code></td><td>Update the specified Uniswap V3 pool.</td></tr>
 </tbody></table>
 </div>
 <h4 id="112-manager-functions"><a class="header" href="#112-manager-functions">1.1.2. Manager Functions</a></h4>
 <div class="table-wrapper"><table><thead><tr><th>Function</th><th>Restrictions</th><th>Description</th></tr></thead><tbody>
 <tr><td>rebalance</td><td><code>MANAGER_ROLE</code></td><td>Rebalance the Aave position to the desired Health Factor.</td></tr>
+<tr><td>reinvest</td><td><code>MANAGER_ROLE</code></td><td>Reinvest the Aave position to the desired Health Factor target.</td></tr>
+<tr><td>deleverage</td><td><code>MANAGER_ROLE</code></td><td>Deleverage the Aave position by paying back all reinvested debt.</td></tr>
+<tr><td>aaveSupplyFromContractBalance</td><td><code>MANAGER_ROLE</code></td><td>Supply all the collateral from the contract balance to Aave.</td></tr>
+<tr><td>aaveRepayUSDCFromContractBalance</td><td><code>MANAGER_ROLE</code></td><td>Repay Aave position debt using all the USDC from the contract balance.</td></tr>
+<tr><td>withdrawTokensFromContractBalance</td><td><code>MANAGER_ROLE</code></td><td>Withdraw all the specified tokens from the contract to the specified owner.</td></tr>
 <tr><td>aaveBorrowAndWithdrawUSDC</td><td><code>MANAGER_ROLE</code></td><td>Borrow USDC from Aave and withdraw to the specified owner.</td></tr>
-<tr><td>withdrawWstETH</td><td><code>MANAGER_ROLE</code></td><td>Withdraw all wstETH from the contract to the specified owner.</td></tr>
-<tr><td>repayUSDC</td><td><code>MANAGER_ROLE</code></td><td>Repay USDC to Aave using all the USDC in the contract.</td></tr>
-<tr><td>withdrawTokens</td><td><code>MANAGER_ROLE</code></td><td>Withdraw all the specified tokens from the contract to the specified owner.</td></tr>
+<tr><td>aaveWithdrawWstETH</td><td><code>MANAGER_ROLE</code></td><td>Withdraw wstETH collateral from the Aave position to the specified owner.</td></tr>
+<tr><td>aaveClosePosition</td><td><code>MANAGER_ROLE</code></td><td>Close the Aave position by repaying all debt and withdrawing all collateral.</td></tr>
 <tr><td>updateHealthFactorTarget</td><td><code>MANAGER_ROLE</code></td><td>Set the desired Health Factor target.</td></tr>
+<tr><td>updateSlippageTolerance</td><td><code>MANAGER_ROLE</code></td><td>Set the slippage tolerance for Uniswap V3 swaps.</td></tr>
 <tr><td>rescueEth</td><td><code>MANAGER_ROLE</code></td><td>Rescue ETH from the contract to the specified owner.</td></tr>
 </tbody></table>
 </div>
@@ -295,7 +306,7 @@ make coverage-report
 </tbody></table>
 </div>
 <h2 id="7-interactions"><a class="header" href="#7-interactions">7. Interactions</a></h2>
-<p>Interactions are defined in <a href="./script/Interactions.s.sol">Interactions.s.sol</a>.</p>
+<p>Interactions are defined in <code>./script/Interactions.s.sol</code></p>
 <h3 id="71-fund-contract-with-eth"><a class="header" href="#71-fund-contract-with-eth">7.1. Fund contract with ETH</a></h3>
 <p>Input value in ETH e.g. <code>0.15</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
@@ -321,13 +332,49 @@ TODO: Add threshold details.</p>
 <tr><td>Anvil</td><td><code>make rebalance-anvil</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="75-get-contract-balance"><a class="header" href="#75-get-contract-balance">7.5. Get Contract Balance</a></h3>
+<h3 id="75-reinvest"><a class="header" href="#75-reinvest">7.5. Reinvest</a></h3>
+<p>Reinvests any collateral above the Health Factor target.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make reinvest-anvil</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="76-supply"><a class="header" href="#76-supply">7.6. Supply</a></h3>
+<p>Supplies any ETH, WETH, wstETH or USDC in the contract to Aave.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make supply-anvil</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="77-repay"><a class="header" href="#77-repay">7.7. Repay</a></h3>
+<p>Repay any USDC debt in the contract to repay Aave position debt.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make repay-anvil</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="78-close-position"><a class="header" href="#78-close-position">7.8. Close Position</a></h3>
+<p>Close the Aave position by repaying all debt and withdrawing all collateral.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make closePosition-anvil</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="79-withdraw-wsteth"><a class="header" href="#79-withdraw-wsteth">7.9. Withdraw wstETH</a></h3>
+<p>Withdraw wstETH collateral from the Aave position to the specified owner.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make withdrawWstETH-anvil</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="710-borrow-usdc"><a class="header" href="#710-borrow-usdc">7.10. Borrow USDC</a></h3>
+<p>Borrow USDC from Aave and withdraw to the specified owner.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make borrowUSDC-anvil</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="711-get-contract-balance"><a class="header" href="#711-get-contract-balance">7.11. Get Contract Balance</a></h3>
 <p>Input value as token identifier e.g. <code>USDC</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make getContractBalance-anvil</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="76-get-aave-account-data"><a class="header" href="#76-get-aave-account-data">7.6. Get Aave Account Data</a></h3>
+<h3 id="712-get-aave-account-data"><a class="header" href="#712-get-aave-account-data">7.12. Get Aave Account Data</a></h3>
 <p>Returns the Aave account data for the contract.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make getAaveAccountData-anvil</code></td></tr>

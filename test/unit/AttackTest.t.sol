@@ -43,7 +43,7 @@ contract AavePMAttackTests is AavePMTestSetup {
 
         vm.startPrank(attacker1);
         vm.expectRevert(InvalidInitialization.selector);
-        aavePM.initialize(attacker1, contractAddresses, tokenAddresses, uniswapV3Pools, 250, 200);
+        aavePM.initialize(attacker1, contractAddresses, tokenAddresses, uniswapV3Pools, 250, 200, 20);
         vm.stopPrank();
     }
 

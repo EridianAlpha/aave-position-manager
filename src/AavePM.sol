@@ -11,6 +11,9 @@ import {Rebalance} from "./Rebalance.sol";
 import {Reinvest} from "./Reinvest.sol";
 import {BorrowAndWithdrawUSDC} from "./BorrowAndWithdrawUSDC.sol";
 
+// Import Modules
+import {TokenSwapsModule} from "./modules/TokenSwapsModule.sol";
+
 // OpenZeppelin Imports
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -163,6 +166,7 @@ contract AavePM is
         __AccessControlEnumerable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
+        _deployAndUpdateModuleContracts();
         _initializeState(
             owner,
             contractAddresses,
@@ -215,6 +219,17 @@ contract AavePM is
         s_healthFactorTarget = initialHealthFactorTarget;
         s_slippageTolerance = initialSlippageTolerance;
         s_managerDailyInvocationLimit = initialManagerDailyInvocationLimit;
+    }
+
+    /// @notice // TODO: Add comment
+    function _deployAndUpdateModuleContracts() internal {
+        // Update the s_contractAddresses mapping with the deployed module contract addresses.
+        s_contractAddresses["tokenSwapsModule"] = address(new TokenSwapsModule());
+    }
+
+    /// @notice // TODO: Add comment
+    function deployAndUpdateModuleContracts() public onlyRole(OWNER_ROLE) {
+        _deployAndUpdateModuleContracts();
     }
 
     // ================================================================

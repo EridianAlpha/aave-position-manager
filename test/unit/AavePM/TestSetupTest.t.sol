@@ -51,8 +51,10 @@ contract AavePMTestSetup is Test, HelperFunctions, AavePM {
         (aavePM, helperConfig) = deployAavePM.run();
         HelperConfig.NetworkConfig memory config = helperConfig.getActiveNetworkConfig();
 
-        // Call the _initialize function to set up this test contract,
+        // Call the _initialize and deployAndUpdateModuleContracts
+        // function to set up this test contract,
         // initialized with the same config as the AavePM contract
+        _deployAndUpdateModuleContracts();
         _initializeState(
             defaultFoundryCaller,
             config.contractAddresses,

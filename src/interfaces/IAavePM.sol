@@ -11,6 +11,7 @@ interface IAavePM {
     error AavePM__RescueEthFailed();
     error AavePM__ZeroBorrowAmount();
     error AavePM__AddressNotAnOwner();
+    error AavePM__DelegateCallFailed();
     error AavePM__NoTokensToWithdraw();
     error AavePM__ReinvestNotRequired();
     error AavePM__RebalanceNotRequired();
@@ -83,6 +84,7 @@ interface IAavePM {
         uint16 initialSlippageTolerance,
         uint16 initialManagerDailyInvocationLimit
     ) external;
+    function deployAndUpdateModuleContracts() external;
 
     // ================================================================
     // │                     FUNCTIONS - UPDATES                      │

@@ -77,7 +77,9 @@ contract ReinvestTests is AavePMTestSetup {
         sendEth(address(this), SEND_VALUE);
         vm.stopPrank();
 
-        _swapTokens("USDC/ETH", "ETH", "USDC");
+        delegateCallHelper(
+            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("USDC/ETH", "ETH", "USDC")
+        );
         reinvest();
         checkEndHealthFactor(address(this));
     }

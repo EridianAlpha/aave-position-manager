@@ -106,6 +106,11 @@ interface IAavePM {
     function aaveSupplyFromContractBalance() external returns (uint256 suppliedCollateral);
     function aaveRepayUSDCFromContractBalance() external;
 
+    /// TODO: Move to different heading
+    function delegateCallHelper(string memory _targetIdentifier, string memory _functionSignature, bytes memory _args)
+        external
+        returns (bytes memory);
+
     // ================================================================
     // │                FUNCTIONS - WITHDRAW FUNCTIONS                │
     // ================================================================

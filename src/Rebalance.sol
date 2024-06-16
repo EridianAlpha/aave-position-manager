@@ -6,7 +6,6 @@ pragma solidity 0.8.24;
 // ================================================================
 
 // Inherited Contract Imports
-import {TokenSwaps} from "./TokenSwaps.sol";
 import {AaveFunctions} from "./AaveFunctions.sol";
 
 // Aave Imports
@@ -20,7 +19,7 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract Rebalance is TokenSwaps, AaveFunctions {
+contract Rebalance is AaveFunctions {
     /// @notice Rebalance the Aave position.
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      The function rebalances the Aave position.

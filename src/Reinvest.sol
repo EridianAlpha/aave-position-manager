@@ -6,7 +6,6 @@ pragma solidity 0.8.24;
 // ================================================================
 
 // Inherited Contract Imports
-import {TokenSwaps} from "./TokenSwaps.sol";
 import {AaveFunctions} from "./AaveFunctions.sol";
 
 // Aave Imports
@@ -20,7 +19,7 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract Reinvest is TokenSwaps, AaveFunctions {
+contract Reinvest is AaveFunctions {
     /// @notice // TODO: Add comment
     function _reinvest() internal returns (uint256 reinvestedDebt) {
         IAavePM aavePM = IAavePM(address(this));
@@ -89,8 +88,13 @@ contract Reinvest is TokenSwaps, AaveFunctions {
         _aaveBorrow(aavePoolAddress, usdcAddress, borrowAmountUSDC);
 
         // Swap borrowed USDC ➜ WETH ➜ wstETH then supply to Aave.
-        _swapTokens("USDC/ETH", "USDC", "ETH");
-        _swapTokens("wstETH/ETH", "ETH", "wstETH");
+        aavePM.delegateCallHelper(
+            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("USDC/ETH", "USDC", "ETH")
+        );
+        aavePM.delegateCallHelper(
+            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("wstETH/ETH", "ETH", "wstETH")
+        );
+
         _aaveSupply(aavePoolAddress, wstETHAddress, aavePM.getContractBalance("wstETH"));
 
         return borrowAmountUSDC;

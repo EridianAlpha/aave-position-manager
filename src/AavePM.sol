@@ -408,6 +408,18 @@ contract AavePM is
         }
     }
 
+    /// @notice // TODO: Add comment and move to different heading. How to protect this function? Does it need protecting?
+    function delegateCallHelper(string memory _targetIdentifier, string memory _functionSignature, bytes memory _args)
+        public
+        returns (bytes memory)
+    {
+        address target = getContractAddress(_targetIdentifier);
+        bytes memory data = abi.encodePacked(abi.encodeWithSignature(_functionSignature), _args);
+        (bool success, bytes memory result) = target.delegatecall(data);
+        if (!success) revert("AavePM__DelegateCallFailed");
+        return result;
+    }
+
     // ================================================================
     // │                FUNCTIONS - WITHDRAW FUNCTIONS                │
     // ================================================================

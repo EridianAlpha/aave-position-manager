@@ -6,7 +6,6 @@ pragma solidity 0.8.24;
 // ================================================================
 
 // Inherited Contract Imports
-import {TokenSwaps} from "./TokenSwaps.sol";
 import {AaveFunctions} from "./AaveFunctions.sol";
 
 // Aave Imports
@@ -21,7 +20,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract BorrowAndWithdrawUSDC is TokenSwaps, AaveFunctions {
+contract BorrowAndWithdrawUSDC is AaveFunctions {
     /// @notice // TODO: Add comment
     function _borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
         internal

@@ -16,15 +16,12 @@ import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/Transfer
 import {IAavePM} from "./interfaces/IAavePM.sol";
 import {IWETH9} from "./interfaces/IWETH9.sol";
 
-// Inherited Contract Imports
-import {TokenSwaps} from "./TokenSwaps.sol";
-
 // ================================================================
 // │                   AAVEFUNCTIONS CONTRACT                     │
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract AaveFunctions is TokenSwaps {
+contract AaveFunctions {
     /// @notice Deposit all wstETH into Aave.
     ///      // TODO: Update comment.
     function _aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) internal {
@@ -156,8 +153,16 @@ contract AaveFunctions is TokenSwaps {
         if (aavePM.getContractBalance("ETH") > 0) {
             IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
         }
-        if (aavePM.getContractBalance("USDC") > 0) _swapTokens("USDC/ETH", "USDC", "ETH");
-        if (aavePM.getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");
+        if (aavePM.getContractBalance("USDC") > 0) {
+            aavePM.delegateCallHelper(
+                "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("USDC/ETH", "USDC", "ETH")
+            );
+        }
+        if (aavePM.getContractBalance("WETH") > 0) {
+            aavePM.delegateCallHelper(
+                "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("wstETH/ETH", "ETH", "wstETH")
+            );
+        }
 
         uint256 wstETHBalance = aavePM.getContractBalance("wstETH");
         if (wstETHBalance > 0) {
@@ -225,8 +230,12 @@ contract AaveFunctions is TokenSwaps {
         _aaveWithdrawCollateral(aavePoolAddress, wstETHAddress, wstETHToWithdrawSlippageAllowance);
 
         // Convert the wstETH to USDC.
-        _swapTokens("wstETH/ETH", "wstETH", "ETH");
-        _swapTokens("USDC/ETH", "ETH", "USDC");
+        aavePM.delegateCallHelper(
+            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("wstETH/ETH", "wstETH", "ETH")
+        );
+        aavePM.delegateCallHelper(
+            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("USDC/ETH", "ETH", "USDC")
+        );
         TransferHelper.safeApprove(asset, aavePoolAddress, repaymentAmountTotalUSDC);
         return true;
     }

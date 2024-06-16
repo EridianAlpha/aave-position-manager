@@ -5,9 +5,6 @@ pragma solidity 0.8.24;
 // │                           IMPORTS                            │
 // ================================================================
 
-// Inherited Contract Imports
-import {AaveFunctions} from "./AaveFunctions.sol";
-
 // Aave Imports
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
@@ -19,7 +16,7 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract Rebalance is AaveFunctions {
+contract Rebalance {
     /// @notice Rebalance the Aave position.
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      The function rebalances the Aave position.
@@ -37,7 +34,10 @@ contract Rebalance is AaveFunctions {
             /* address wstETHAddress */
             ,
             address usdcAddress
-        ) = _getCurrentPositionValues(aavePM);
+        ) = abi.decode(
+            aavePM.delegateCallHelper("aaveFunctionsModule", "getCurrentPositionValues(address)", abi.encode(aavePM)),
+            (uint256, uint256, uint256, uint256, uint16, address, address, address)
+        );
 
         // TODO: Calculate this elsewhere.
         uint16 healthFactorTargetRange = 10;
@@ -57,7 +57,7 @@ contract Rebalance is AaveFunctions {
         }
 
         // Safety check to ensure the health factor is above the minimum target.
-        _checkHealthFactorAboveMinimum();
+        aavePM.delegateCallHelper("aaveFunctionsModule", "checkHealthFactorAboveMinimum()", new bytes(0));
 
         // Return the reinvested debt and reinvested collateral so the state can be updated on the AavePM contract.
         return (repaymentAmountUSDC);
@@ -78,8 +78,13 @@ contract Rebalance is AaveFunctions {
             repaymentAmountUSDC = (totalDebtBase + 1e8) / 1e2;
         } else {
             // Calculate the maximum amount of USDC that can be borrowed.
-            uint256 maxBorrowUSDC = _calculateMaxBorrowUSDC(
-                totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget
+            uint256 maxBorrowUSDC = abi.decode(
+                IAavePM(address(this)).delegateCallHelper(
+                    "aaveFunctionsModule",
+                    "calculateMaxBorrowUSDC(uint256,uint256,uint256,uint16)",
+                    abi.encode(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget)
+                ),
+                (uint256)
             );
 
             // Calculate the repayment amount required to reach the target health factor.

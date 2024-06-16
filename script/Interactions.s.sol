@@ -40,7 +40,7 @@ contract Interactions is Script {
         vm.startBroadcast();
         AavePM newAavePM = new AavePM();
         aavePM.upgradeToAndCall(address(newAavePM), "");
-        aavePM.deployAndUpdateModuleContracts();
+        // TODO: Add module deployments here.
         vm.stopBroadcast();
     }
 

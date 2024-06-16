@@ -10,9 +10,7 @@ import {FunctionChecks} from "./FunctionChecks.sol";
 import {Rebalance} from "./Rebalance.sol";
 import {Reinvest} from "./Reinvest.sol";
 import {BorrowAndWithdrawUSDC} from "./BorrowAndWithdrawUSDC.sol";
-
-// Import Modules
-import {TokenSwapsModule} from "./modules/TokenSwapsModule.sol";
+import {FlashLoan} from "./FlashLoan.sol";
 
 // OpenZeppelin Imports
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -42,6 +40,7 @@ contract AavePM is
     Rebalance,
     Reinvest,
     BorrowAndWithdrawUSDC,
+    FlashLoan,
     Initializable,
     AccessControlEnumerableUpgradeable,
     UUPSUpgradeable
@@ -166,7 +165,6 @@ contract AavePM is
         __AccessControlEnumerable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
-        _deployAndUpdateModuleContracts();
         _initializeState(
             owner,
             contractAddresses,
@@ -219,17 +217,6 @@ contract AavePM is
         s_healthFactorTarget = initialHealthFactorTarget;
         s_slippageTolerance = initialSlippageTolerance;
         s_managerDailyInvocationLimit = initialManagerDailyInvocationLimit;
-    }
-
-    /// @notice // TODO: Add comment
-    function _deployAndUpdateModuleContracts() internal {
-        // Update the s_contractAddresses mapping with the deployed module contract addresses.
-        s_contractAddresses["tokenSwapsModule"] = address(new TokenSwapsModule());
-    }
-
-    /// @notice // TODO: Add comment
-    function deployAndUpdateModuleContracts() public onlyRole(OWNER_ROLE) {
-        _deployAndUpdateModuleContracts();
     }
 
     // ================================================================
@@ -382,7 +369,10 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function aaveSupplyFromContractBalance() public onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral) {
-        suppliedCollateral = _convertExistingBalanceToWstETHAndSupplyToAave();
+        suppliedCollateral = abi.decode(
+            delegateCallHelper("aaveFunctionsModule", "convertExistingBalanceToWstETHAndSupplyToAave()", new bytes(0)),
+            (uint256)
+        );
         if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
         // TODO: Add event to emit the suppliedCollateral
     }
@@ -392,7 +382,11 @@ contract AavePM is
         uint256 usdcBalance = getContractBalance("USDC");
         if (usdcBalance == 0) revert AavePM__NoDebtToRepay();
 
-        _aaveRepayDebt(getContractAddress("aavePool"), getTokenAddress("USDC"), usdcBalance);
+        delegateCallHelper(
+            "aaveFunctionsModule",
+            "aaveRepayDebt(address,address,uint256)",
+            abi.encode(getContractAddress("aavePool"), getTokenAddress("USDC"), usdcBalance)
+        );
 
         // When a debt repayment is made, s_withdrawnUSDCTotal should be updated to reflect the repayment, up to 0.
         // and any excess should be taken off the s_reinvestedDebtTotal.
@@ -475,7 +469,12 @@ contract AavePM is
         if (initialCollateralBase == 0) revert AavePM__NoCollateralToWithdraw();
 
         address wstETHAddress = getTokenAddress("wstETH");
-        _aaveWithdrawCollateral(aavePoolAddress, wstETHAddress, _amount);
+        delegateCallHelper(
+            "aaveFunctionsModule",
+            "aaveWithdrawCollateral(address,address,uint256)",
+            abi.encode(aavePoolAddress, wstETHAddress, _amount)
+        );
+
         IERC20(wstETHAddress).transfer(_owner, _amount);
 
         // Get the collateral base value after withdrawing.
@@ -497,7 +496,7 @@ contract AavePM is
         }
 
         // Check to ensure the health factor is above the minimum target.
-        _checkHealthFactorAboveMinimum();
+        delegateCallHelper("aaveFunctionsModule", "checkHealthFactorAboveMinimum()", new bytes(0));
 
         // TODO: Emit an event
     }
@@ -540,7 +539,7 @@ contract AavePM is
         }
 
         // Check to ensure the health factor is above the minimum target.
-        _checkHealthFactorAboveMinimum();
+        delegateCallHelper("aaveFunctionsModule", "checkHealthFactorAboveMinimum()", new bytes(0));
     }
 
     /// @notice // TODO: Add comment
@@ -700,9 +699,16 @@ contract AavePM is
     /// @dev Public function to allow anyone to view the total collateral delta.
     /// @return totalCollateralDelta The total collateral delta.
     /// @return isPositive A boolean indicating if the total collateral delta is positive.
-    function getTotalCollateralDelta() public view returns (uint256 totalCollateralDelta, bool isPositive) {
+    function getTotalCollateralDelta() public returns (uint256 totalCollateralDelta, bool isPositive) {
         (uint256 totalCollateralBase,,,,,) = IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
-        return _getTotalCollateralDelta(totalCollateralBase, getReinvestedDebtTotal(), getSuppliedCollateralTotal());
+        return abi.decode(
+            delegateCallHelper(
+                "aaveFunctionsModule",
+                "getTotalCollateralDelta(uint256,uint256,uint256)",
+                abi.encode(totalCollateralBase, getReinvestedDebtTotal(), getSuppliedCollateralTotal())
+            ),
+            (uint256, bool)
+        );
     }
 
     /// @notice Getter function to get the total amount of supplied collateral.
@@ -731,12 +737,17 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function getReinvestableAmount() public view returns (uint256 reinvestableAmount) {
+    function getReinvestableAmount() public returns (uint256 reinvestableAmount) {
         (uint256 totalCollateralBase, uint256 totalDebtBase,, uint256 currentLiquidationThreshold,,) =
             IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
 
-        uint256 maxBorrowUSDC = _calculateMaxBorrowUSDC(
-            totalCollateralBase, totalDebtBase, currentLiquidationThreshold, getHealthFactorTarget()
+        uint256 maxBorrowUSDC = abi.decode(
+            delegateCallHelper(
+                "aaveFunctionsModule",
+                "calculateMaxBorrowUSDC(uint256,uint256,uint256,uint16)",
+                abi.encode(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, getHealthFactorTarget())
+            ),
+            (uint256)
         );
 
         // Calculate the additional amount to borrow to reach the target health factor.

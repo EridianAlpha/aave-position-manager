@@ -5,9 +5,6 @@ pragma solidity 0.8.24;
 // │                           IMPORTS                            │
 // ================================================================
 
-// Inherited Contract Imports
-import {AaveFunctions} from "./AaveFunctions.sol";
-
 // Aave Imports
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
@@ -20,7 +17,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract BorrowAndWithdrawUSDC is AaveFunctions {
+contract BorrowAndWithdrawUSDC {
     /// @notice // TODO: Add comment
     function _borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
         internal
@@ -47,7 +44,11 @@ contract BorrowAndWithdrawUSDC is AaveFunctions {
         if (healthFactorAfterBorrowOnlyScaled > healthFactorTarget - 2) {
             // The HF is above target after borrow of USDC only,
             // so the USDC can be borrowed without repaying reinvested debt
-            _aaveBorrow(aavePoolAddress, usdcAddress, borrowAmountUSDC);
+            aavePM.delegateCallHelper(
+                "aaveFunctionsModule",
+                "aaveBorrow(address,address,uint256)",
+                abi.encode(aavePoolAddress, usdcAddress, borrowAmountUSDC)
+            );
         } else if (aavePM.getReinvestedDebtTotal() > 0) {
             // The requested borrow amount would put the HF below the target
             // so repaying some reinvested debt is required
@@ -59,7 +60,11 @@ contract BorrowAndWithdrawUSDC is AaveFunctions {
             IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaidReinvestedDebt, bytes(""), 0);
 
             // Borrow the requested amount of USDC
-            _aaveBorrow(aavePoolAddress, usdcAddress, borrowAmountUSDC);
+            aavePM.delegateCallHelper(
+                "aaveFunctionsModule",
+                "aaveBorrow(address,address,uint256)",
+                abi.encode(aavePoolAddress, usdcAddress, borrowAmountUSDC)
+            );
         }
 
         IERC20(usdcAddress).transfer(_owner, borrowAmountUSDC);

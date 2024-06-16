@@ -48,16 +48,17 @@ contract AavePMTestSetup is Test, HelperFunctions, AavePM {
     function setUp() external {
         DeployAavePM deployAavePM = new DeployAavePM();
 
-        (aavePM, helperConfig) = deployAavePM.run();
+        // Stores the module addresses that are deployed and not contained in config
+        IAavePM.ContractAddress[] memory contractAddresses;
+
+        (aavePM, helperConfig, contractAddresses) = deployAavePM.run();
         HelperConfig.NetworkConfig memory config = helperConfig.getActiveNetworkConfig();
 
-        // Call the _initialize and deployAndUpdateModuleContracts
-        // function to set up this test contract,
+        // Call the _initialize function to set up this test contract,
         // initialized with the same config as the AavePM contract
-        _deployAndUpdateModuleContracts();
         _initializeState(
             defaultFoundryCaller,
-            config.contractAddresses,
+            contractAddresses,
             config.tokenAddresses,
             config.uniswapV3Pools,
             config.initialHealthFactorTarget,

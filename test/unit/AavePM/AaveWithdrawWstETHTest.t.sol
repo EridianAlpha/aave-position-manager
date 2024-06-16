@@ -62,7 +62,11 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
         delegateCallHelper(
             "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("wstETH/ETH", "ETH", "wstETH")
         );
-        _aaveSupply(getContractAddress("aavePool"), getTokenAddress("wstETH"), getContractBalance("wstETH"));
+        delegateCallHelper(
+            "aaveFunctionsModule",
+            "aaveSupply(address,address,uint256)",
+            abi.encode(getContractAddress("aavePool"), getTokenAddress("wstETH"), getContractBalance("wstETH"))
+        );
 
         // Withdraw a collateral amount that is more than the collateral supplied but less than the reinvested debt
         aaveWithdrawWstETH(initialWstETHBalance, owner1);
@@ -93,7 +97,11 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
         delegateCallHelper(
             "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("wstETH/ETH", "ETH", "wstETH")
         );
-        _aaveSupply(getContractAddress("aavePool"), getTokenAddress("wstETH"), getContractBalance("wstETH"));
+        delegateCallHelper(
+            "aaveFunctionsModule",
+            "aaveSupply(address,address,uint256)",
+            abi.encode(getContractAddress("aavePool"), getTokenAddress("wstETH"), getContractBalance("wstETH"))
+        );
 
         // Withdraw a collateral amount that is more than the collateral supplied but less than the reinvested debt
         aaveWithdrawWstETH(initialWstETHBalance * 2, owner1);

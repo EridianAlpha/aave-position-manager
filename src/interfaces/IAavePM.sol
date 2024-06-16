@@ -84,7 +84,6 @@ interface IAavePM {
         uint16 initialSlippageTolerance,
         uint16 initialManagerDailyInvocationLimit
     ) external;
-    function deployAndUpdateModuleContracts() external;
 
     // ================================================================
     // │                     FUNCTIONS - UPDATES                      │
@@ -144,10 +143,10 @@ interface IAavePM {
     function getRoleMembers(string memory roleString) external view returns (address[] memory);
     function getWithdrawnUSDCTotal() external view returns (uint256 withdrawnUSDCTotal);
     function getReinvestedDebtTotal() external view returns (uint256 reinvestedDebtTotal);
-    function getTotalCollateralDelta() external view returns (uint256 totalCollateralDelta, bool isPositive);
+    function getTotalCollateralDelta() external returns (uint256 totalCollateralDelta, bool isPositive);
     function getSuppliedCollateralTotal() external view returns (uint256 depositedCollateralTotal);
     function getMaxBorrowAndWithdrawUSDCAmount() external view returns (uint256 maxBorrowAndWithdrawUSDCAmount);
-    function getReinvestableAmount() external view returns (uint256 reinvestableAmount);
+    function getReinvestableAmount() external returns (uint256 reinvestableAmount);
 
     // ================================================================
     // │             INHERITED FUNCTIONS - ACCESS CONTROLS            │

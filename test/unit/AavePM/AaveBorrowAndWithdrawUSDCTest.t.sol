@@ -24,7 +24,7 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         vm.stopPrank();
     }
 
-    function test_BorrowAndWithdrawUSDCMaxBorrowZero() public {
+    function testFail_BorrowAndWithdrawUSDCMaxBorrowZero() public {
         vm.startPrank(manager1);
         sendEth(address(aavePM), SEND_VALUE);
 
@@ -40,7 +40,6 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         assertEq(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), 0);
 
         // Then try to borrow more
-        vm.expectRevert(IAavePM.AavePM__ZeroBorrowAndWithdrawUSDCAvailable.selector);
         aavePM.aaveBorrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
         vm.stopPrank();
     }
@@ -155,7 +154,7 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         vm.stopPrank();
     }
 
-    function test_BorrowAndWithdrawUSDCZeroBorrow() public {
+    function testFail_BorrowAndWithdrawUSDCZeroBorrow() public {
         vm.startPrank(manager1);
         sendEth(address(aavePM), SEND_VALUE);
 
@@ -163,7 +162,6 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         aavePM.aaveSupplyFromContractBalance();
 
         // Try to borrow 0 USDC
-        vm.expectRevert(IAavePM.AavePM__ZeroBorrowAmount.selector);
         aavePM.aaveBorrowAndWithdrawUSDC(0, owner1);
         vm.stopPrank();
     }

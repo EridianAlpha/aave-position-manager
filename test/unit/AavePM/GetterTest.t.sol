@@ -153,8 +153,15 @@ contract AavePMGetterTests is AavePMTestSetup {
         (uint256 totalCollateralBase, uint256 totalDebtBase,, uint256 currentLiquidationThreshold,,) =
             IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address((aavePM)));
 
-        uint256 reinvestableAmountCalc = _calculateMaxBorrowUSDC(
-            totalCollateralBase, totalDebtBase, currentLiquidationThreshold, aavePM.getHealthFactorTarget()
+        uint256 reinvestableAmountCalc = abi.decode(
+            delegateCallHelper(
+                "aaveFunctionsModule",
+                "calculateMaxBorrowUSDC(uint256,uint256,uint256,uint16)",
+                abi.encode(
+                    totalCollateralBase, totalDebtBase, currentLiquidationThreshold, aavePM.getHealthFactorTarget()
+                )
+            ),
+            (uint256)
         );
 
         assertEq(reinvestableAmount, reinvestableAmountCalc / 1e2);

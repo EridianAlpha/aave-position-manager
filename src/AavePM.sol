@@ -26,6 +26,7 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 // Interface Imports
 import {IAavePM} from "./interfaces/IAavePM.sol";
+import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │                       AAVEPM CONTRACT                        │
@@ -370,7 +371,12 @@ contract AavePM is
     /// @notice // TODO: Add comment
     function aaveSupplyFromContractBalance() public onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral) {
         suppliedCollateral = abi.decode(
-            delegateCallHelper("aaveFunctionsModule", "convertExistingBalanceToWstETHAndSupplyToAave()", new bytes(0)),
+            delegateCallHelper(
+                "aaveFunctionsModule",
+                abi.encodeWithSelector(
+                    IAaveFunctionsModule.convertExistingBalanceToWstETHAndSupplyToAave.selector, new bytes(0)
+                )
+            ),
             (uint256)
         );
         if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
@@ -384,8 +390,12 @@ contract AavePM is
 
         delegateCallHelper(
             "aaveFunctionsModule",
-            "aaveRepayDebt(address,address,uint256)",
-            abi.encode(getContractAddress("aavePool"), getTokenAddress("USDC"), usdcBalance)
+            abi.encodeWithSelector(
+                IAaveFunctionsModule.aaveRepayDebt.selector,
+                getContractAddress("aavePool"),
+                getTokenAddress("USDC"),
+                usdcBalance
+            )
         );
 
         // When a debt repayment is made, s_withdrawnUSDCTotal should be updated to reflect the repayment, up to 0.
@@ -403,13 +413,9 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment and move to different heading. How to protect this function? Does it need protecting?
-    function delegateCallHelper(string memory _targetIdentifier, string memory _functionSignature, bytes memory _args)
-        public
-        returns (bytes memory)
-    {
+    function delegateCallHelper(string memory _targetIdentifier, bytes memory _data) public returns (bytes memory) {
         address target = getContractAddress(_targetIdentifier);
-        bytes memory data = abi.encodePacked(abi.encodeWithSignature(_functionSignature), _args);
-        (bool success, bytes memory result) = target.delegatecall(data);
+        (bool success, bytes memory result) = target.delegatecall(_data);
         if (!success) revert("AavePM__DelegateCallFailed");
         return result;
     }
@@ -471,8 +477,9 @@ contract AavePM is
         address wstETHAddress = getTokenAddress("wstETH");
         delegateCallHelper(
             "aaveFunctionsModule",
-            "aaveWithdrawCollateral(address,address,uint256)",
-            abi.encode(aavePoolAddress, wstETHAddress, _amount)
+            abi.encodeWithSelector(
+                IAaveFunctionsModule.aaveWithdrawCollateral.selector, aavePoolAddress, wstETHAddress, _amount
+            )
         );
 
         IERC20(wstETHAddress).transfer(_owner, _amount);
@@ -496,7 +503,10 @@ contract AavePM is
         }
 
         // Check to ensure the health factor is above the minimum target.
-        delegateCallHelper("aaveFunctionsModule", "checkHealthFactorAboveMinimum()", new bytes(0));
+        delegateCallHelper(
+            "aaveFunctionsModule",
+            abi.encodeWithSelector(IAaveFunctionsModule.checkHealthFactorAboveMinimum.selector, new bytes(0))
+        );
 
         // TODO: Emit an event
     }
@@ -539,7 +549,10 @@ contract AavePM is
         }
 
         // Check to ensure the health factor is above the minimum target.
-        delegateCallHelper("aaveFunctionsModule", "checkHealthFactorAboveMinimum()", new bytes(0));
+        delegateCallHelper(
+            "aaveFunctionsModule",
+            abi.encodeWithSelector(IAaveFunctionsModule.checkHealthFactorAboveMinimum.selector, new bytes(0))
+        );
     }
 
     /// @notice // TODO: Add comment
@@ -704,8 +717,12 @@ contract AavePM is
         return abi.decode(
             delegateCallHelper(
                 "aaveFunctionsModule",
-                "getTotalCollateralDelta(uint256,uint256,uint256)",
-                abi.encode(totalCollateralBase, getReinvestedDebtTotal(), getSuppliedCollateralTotal())
+                abi.encodeWithSelector(
+                    IAaveFunctionsModule.getTotalCollateralDelta.selector,
+                    totalCollateralBase,
+                    getReinvestedDebtTotal(),
+                    getSuppliedCollateralTotal()
+                )
             ),
             (uint256, bool)
         );
@@ -744,8 +761,13 @@ contract AavePM is
         uint256 maxBorrowUSDC = abi.decode(
             delegateCallHelper(
                 "aaveFunctionsModule",
-                "calculateMaxBorrowUSDC(uint256,uint256,uint256,uint16)",
-                abi.encode(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, getHealthFactorTarget())
+                abi.encodeWithSelector(
+                    IAaveFunctionsModule.calculateMaxBorrowUSDC.selector,
+                    totalCollateralBase,
+                    totalDebtBase,
+                    currentLiquidationThreshold,
+                    getHealthFactorTarget()
+                )
             ),
             (uint256)
         );

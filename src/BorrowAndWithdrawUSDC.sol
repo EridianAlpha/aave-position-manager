@@ -11,6 +11,7 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 // Interface Imports
 import {IAavePM} from "./interfaces/IAavePM.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │               BORROW AND WITHDRAW USDC CONTRACT              │
@@ -46,8 +47,9 @@ contract BorrowAndWithdrawUSDC {
             // so the USDC can be borrowed without repaying reinvested debt
             aavePM.delegateCallHelper(
                 "aaveFunctionsModule",
-                "aaveBorrow(address,address,uint256)",
-                abi.encode(aavePoolAddress, usdcAddress, borrowAmountUSDC)
+                abi.encodeWithSelector(
+                    IAaveFunctionsModule.aaveBorrow.selector, aavePoolAddress, usdcAddress, borrowAmountUSDC
+                )
             );
         } else if (aavePM.getReinvestedDebtTotal() > 0) {
             // The requested borrow amount would put the HF below the target
@@ -62,8 +64,9 @@ contract BorrowAndWithdrawUSDC {
             // Borrow the requested amount of USDC
             aavePM.delegateCallHelper(
                 "aaveFunctionsModule",
-                "aaveBorrow(address,address,uint256)",
-                abi.encode(aavePoolAddress, usdcAddress, borrowAmountUSDC)
+                abi.encodeWithSelector(
+                    IAaveFunctionsModule.aaveBorrow.selector, aavePoolAddress, usdcAddress, borrowAmountUSDC
+                )
             );
         }
 

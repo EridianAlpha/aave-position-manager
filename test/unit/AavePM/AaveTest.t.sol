@@ -5,6 +5,7 @@ import {console} from "forge-std/Test.sol";
 
 import {AavePMTestSetup} from "test/unit/AavePM/TestSetupTest.t.sol";
 import {IAavePM} from "src/interfaces/IAavePM.sol";
+import {IAaveFunctionsModule} from "src/interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │                           AAVE TESTS                         │
@@ -47,8 +48,9 @@ contract AavePMAaveTests is AavePMTestSetup {
         (uint256 delta1, bool isPositive1) = abi.decode(
             delegateCallHelper(
                 "aaveFunctionsModule",
-                "getTotalCollateralDelta(uint256,uint256,uint256)",
-                abi.encode(1000 * 1e8, 0 * 1e6, 500 * 1e6)
+                abi.encodeWithSelector(
+                    IAaveFunctionsModule.getTotalCollateralDelta.selector, 1000 * 1e8, 0 * 1e6, 500 * 1e6
+                )
             ),
             (uint256, bool)
         );
@@ -59,8 +61,7 @@ contract AavePMAaveTests is AavePMTestSetup {
         (uint256 delta2, bool isPositive2) = abi.decode(
             delegateCallHelper(
                 "aaveFunctionsModule",
-                "getTotalCollateralDelta(uint256,uint256,uint256)",
-                abi.encode(1000 * 1e8, 0, 1000 * 1e6)
+                abi.encodeWithSelector(IAaveFunctionsModule.getTotalCollateralDelta.selector, 1000 * 1e8, 0, 1000 * 1e6)
             ),
             (uint256, bool)
         );
@@ -71,8 +72,7 @@ contract AavePMAaveTests is AavePMTestSetup {
         (uint256 delta3, bool isPositive3) = abi.decode(
             delegateCallHelper(
                 "aaveFunctionsModule",
-                "getTotalCollateralDelta(uint256,uint256,uint256)",
-                abi.encode(1000 * 1e8, 0, 1500 * 1e6)
+                abi.encodeWithSelector(IAaveFunctionsModule.getTotalCollateralDelta.selector, 1000 * 1e8, 0, 1500 * 1e6)
             ),
             (uint256, bool)
         );
@@ -83,8 +83,9 @@ contract AavePMAaveTests is AavePMTestSetup {
         (uint256 delta4, bool isPositive4) = abi.decode(
             delegateCallHelper(
                 "aaveFunctionsModule",
-                "getTotalCollateralDelta(uint256,uint256,uint256)",
-                abi.encode(1000 * 1e8, 200 * 1e6, 300 * 1e6)
+                abi.encodeWithSelector(
+                    IAaveFunctionsModule.getTotalCollateralDelta.selector, 1000 * 1e8, 200 * 1e6, 300 * 1e6
+                )
             ),
             (uint256, bool)
         );
@@ -95,8 +96,9 @@ contract AavePMAaveTests is AavePMTestSetup {
         (uint256 delta5, bool isPositive5) = abi.decode(
             delegateCallHelper(
                 "aaveFunctionsModule",
-                "getTotalCollateralDelta(uint256,uint256,uint256)",
-                abi.encode(1000 * 1e8, 200 * 1e6, 1000 * 1e6)
+                abi.encodeWithSelector(
+                    IAaveFunctionsModule.getTotalCollateralDelta.selector, 1000 * 1e8, 200 * 1e6, 1000 * 1e6
+                )
             ),
             (uint256, bool)
         );

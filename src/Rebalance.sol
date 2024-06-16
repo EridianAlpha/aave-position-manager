@@ -10,6 +10,7 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 // Interface Imports
 import {IAavePM} from "./interfaces/IAavePM.sol";
+import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │                       REBALANCE CONTRACT                     │
@@ -35,7 +36,10 @@ contract Rebalance {
             ,
             address usdcAddress
         ) = abi.decode(
-            aavePM.delegateCallHelper("aaveFunctionsModule", "getCurrentPositionValues(address)", abi.encode(aavePM)),
+            aavePM.delegateCallHelper(
+                "aaveFunctionsModule",
+                abi.encodeWithSelector(IAaveFunctionsModule.getCurrentPositionValues.selector, aavePM)
+            ),
             (uint256, uint256, uint256, uint256, uint16, address, address, address)
         );
 
@@ -57,7 +61,10 @@ contract Rebalance {
         }
 
         // Safety check to ensure the health factor is above the minimum target.
-        aavePM.delegateCallHelper("aaveFunctionsModule", "checkHealthFactorAboveMinimum()", new bytes(0));
+        aavePM.delegateCallHelper(
+            "aaveFunctionsModule",
+            abi.encodeWithSelector(IAaveFunctionsModule.checkHealthFactorAboveMinimum.selector, new bytes(0))
+        );
 
         // Return the reinvested debt and reinvested collateral so the state can be updated on the AavePM contract.
         return (repaymentAmountUSDC);
@@ -81,8 +88,13 @@ contract Rebalance {
             uint256 maxBorrowUSDC = abi.decode(
                 IAavePM(address(this)).delegateCallHelper(
                     "aaveFunctionsModule",
-                    "calculateMaxBorrowUSDC(uint256,uint256,uint256,uint16)",
-                    abi.encode(totalCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget)
+                    abi.encodeWithSelector(
+                        IAaveFunctionsModule.calculateMaxBorrowUSDC.selector,
+                        totalCollateralBase,
+                        totalDebtBase,
+                        currentLiquidationThreshold,
+                        healthFactorTarget
+                    )
                 ),
                 (uint256)
             );

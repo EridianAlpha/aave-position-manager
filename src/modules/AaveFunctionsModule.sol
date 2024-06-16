@@ -15,6 +15,7 @@ import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/Transfer
 // Interface Imports
 import {IAavePM} from "../interfaces/IAavePM.sol";
 import {IWETH9} from "../interfaces/IWETH9.sol";
+import {ITokenSwapsModule} from "src/interfaces/ITokenSwapsModule.sol";
 
 // ================================================================
 // │                   AAVEFUNCTIONS CONTRACT                     │
@@ -155,12 +156,14 @@ contract AaveFunctionsModule {
         }
         if (aavePM.getContractBalance("USDC") > 0) {
             aavePM.delegateCallHelper(
-                "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("USDC/ETH", "USDC", "ETH")
+                "tokenSwapsModule",
+                abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "USDC/ETH", "USDC", "ETH")
             );
         }
         if (aavePM.getContractBalance("WETH") > 0) {
             aavePM.delegateCallHelper(
-                "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("wstETH/ETH", "ETH", "wstETH")
+                "tokenSwapsModule",
+                abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "wstETH/ETH", "ETH", "wstETH")
             );
         }
 

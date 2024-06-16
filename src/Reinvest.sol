@@ -10,6 +10,8 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 // Interface Imports
 import {IAavePM} from "./interfaces/IAavePM.sol";
+import {ITokenSwapsModule} from "./interfaces/ITokenSwapsModule.sol";
+import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │                        REINVEST CONTRACT                     │
@@ -34,7 +36,10 @@ contract Reinvest {
             address wstETHAddress,
             address usdcAddress
         ) = abi.decode(
-            aavePM.delegateCallHelper("aaveFunctionsModule", "getCurrentPositionValues(address)", abi.encode(aavePM)),
+            aavePM.delegateCallHelper(
+                "aaveFunctionsModule",
+                abi.encodeWithSelector(IAaveFunctionsModule.getCurrentPositionValues.selector, aavePM)
+            ),
             (uint256, uint256, uint256, uint256, uint16, address, address, address)
         );
 
@@ -58,7 +63,10 @@ contract Reinvest {
         }
 
         // Safety check to ensure the health factor is above the minimum target.
-        aavePM.delegateCallHelper("aaveFunctionsModule", "checkHealthFactorAboveMinimum()", new bytes(0));
+        aavePM.delegateCallHelper(
+            "aaveFunctionsModule",
+            abi.encodeWithSelector(IAaveFunctionsModule.checkHealthFactorAboveMinimum.selector, new bytes(0))
+        );
 
         // Return the reinvested debt and reinvested collateral so the state can be updated on the AavePM contract.
         return (reinvestedDebt);
@@ -79,8 +87,13 @@ contract Reinvest {
         uint256 maxBorrowUSDC = abi.decode(
             IAavePM(address(this)).delegateCallHelper(
                 "aaveFunctionsModule",
-                "calculateMaxBorrowUSDC(uint256,uint256,uint256,uint16)",
-                abi.encode(initialCollateralBase, totalDebtBase, currentLiquidationThreshold, healthFactorTarget)
+                abi.encodeWithSelector(
+                    IAaveFunctionsModule.calculateMaxBorrowUSDC.selector,
+                    initialCollateralBase,
+                    totalDebtBase,
+                    currentLiquidationThreshold,
+                    healthFactorTarget
+                )
             ),
             (uint256)
         );
@@ -92,22 +105,28 @@ contract Reinvest {
         borrowAmountUSDC = additionalBorrowUSDC / 1e2;
         aavePM.delegateCallHelper(
             "aaveFunctionsModule",
-            "aaveBorrow(address,address,uint256)",
-            abi.encode(aavePoolAddress, usdcAddress, borrowAmountUSDC)
+            abi.encodeWithSelector(
+                IAaveFunctionsModule.aaveBorrow.selector, aavePoolAddress, usdcAddress, borrowAmountUSDC
+            )
         );
 
         // Swap borrowed USDC ➜ WETH ➜ wstETH then supply to Aave.
         aavePM.delegateCallHelper(
-            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("USDC/ETH", "USDC", "ETH")
+            "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "USDC/ETH", "USDC", "ETH")
         );
         aavePM.delegateCallHelper(
-            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("wstETH/ETH", "ETH", "wstETH")
+            "tokenSwapsModule",
+            abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "wstETH/ETH", "ETH", "wstETH")
         );
 
         aavePM.delegateCallHelper(
             "aaveFunctionsModule",
-            "aaveSupply(address,address,uint256)",
-            abi.encode(aavePoolAddress, wstETHAddress, aavePM.getContractBalance("wstETH"))
+            abi.encodeWithSelector(
+                IAaveFunctionsModule.aaveSupply.selector,
+                aavePoolAddress,
+                wstETHAddress,
+                aavePM.getContractBalance("wstETH")
+            )
         );
 
         return borrowAmountUSDC;

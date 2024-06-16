@@ -106,9 +106,7 @@ interface IAavePM {
     function aaveRepayUSDCFromContractBalance() external;
 
     /// TODO: Move to different heading
-    function delegateCallHelper(string memory _targetIdentifier, string memory _functionSignature, bytes memory _args)
-        external
-        returns (bytes memory);
+    function delegateCallHelper(string memory _targetIdentifier, bytes memory _data) external returns (bytes memory);
 
     // ================================================================
     // │                FUNCTIONS - WITHDRAW FUNCTIONS                │

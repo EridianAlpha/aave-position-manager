@@ -15,6 +15,8 @@ import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/Transfer
 // Interface Imports
 import {IAavePM} from "./interfaces/IAavePM.sol";
 import {IWETH9} from "./interfaces/IWETH9.sol";
+import {ITokenSwapsModule} from "./interfaces/ITokenSwapsModule.sol";
+import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │                   AAVEFUNCTIONS CONTRACT                     │
@@ -53,8 +55,9 @@ contract FlashLoan {
         // Use the flash loan USDC to repay the debt.
         aavePM.delegateCallHelper(
             "aaveFunctionsModule",
-            "aaveRepayDebt(address,address,uint256)",
-            abi.encode(aavePoolAddress, aavePM.getTokenAddress("USDC"), amount)
+            abi.encodeWithSelector(
+                IAaveFunctionsModule.aaveRepayDebt.selector, aavePoolAddress, aavePM.getTokenAddress("USDC"), amount
+            )
         );
 
         // Now the HF is higher, withdraw the corresponding amount of wstETH from collateral.
@@ -72,16 +75,21 @@ contract FlashLoan {
         // Withdraw the wstETH from Aave.
         aavePM.delegateCallHelper(
             "aaveFunctionsModule",
-            "aaveWithdrawCollateral(address,address,uint256)",
-            abi.encode(aavePoolAddress, wstETHAddress, wstETHToWithdrawSlippageAllowance)
+            abi.encodeWithSelector(
+                IAaveFunctionsModule.aaveWithdrawCollateral.selector,
+                aavePoolAddress,
+                wstETHAddress,
+                wstETHToWithdrawSlippageAllowance
+            )
         );
 
         // Convert the wstETH to USDC.
         aavePM.delegateCallHelper(
-            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("wstETH/ETH", "wstETH", "ETH")
+            "tokenSwapsModule",
+            abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "wstETH/ETH", "wstETH", "ETH")
         );
         aavePM.delegateCallHelper(
-            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("USDC/ETH", "ETH", "USDC")
+            "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "USDC/ETH", "ETH", "USDC")
         );
         TransferHelper.safeApprove(asset, aavePoolAddress, repaymentAmountTotalUSDC);
         return true;

@@ -7,6 +7,8 @@ import {AavePMTestSetup} from "test/unit/AavePM/TestSetupTest.t.sol";
 import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 import {IWETH9} from "src/interfaces/IWETH9.sol";
+import {ITokenSwapsModule} from "src/interfaces/ITokenSwapsModule.sol";
+import {IAaveFunctionsModule} from "src/interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │            aaveWithdrawWstETH TESTS            │
@@ -60,12 +62,17 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
         IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
 
         delegateCallHelper(
-            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("wstETH/ETH", "ETH", "wstETH")
+            "tokenSwapsModule",
+            abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "wstETH/ETH", "ETH", "wstETH")
         );
         delegateCallHelper(
             "aaveFunctionsModule",
-            "aaveSupply(address,address,uint256)",
-            abi.encode(getContractAddress("aavePool"), getTokenAddress("wstETH"), getContractBalance("wstETH"))
+            abi.encodeWithSelector(
+                IAaveFunctionsModule.aaveSupply.selector,
+                getContractAddress("aavePool"),
+                getTokenAddress("wstETH"),
+                getContractBalance("wstETH")
+            )
         );
 
         // Withdraw a collateral amount that is more than the collateral supplied but less than the reinvested debt
@@ -95,12 +102,17 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
         IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
 
         delegateCallHelper(
-            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("wstETH/ETH", "ETH", "wstETH")
+            "tokenSwapsModule",
+            abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "wstETH/ETH", "ETH", "wstETH")
         );
         delegateCallHelper(
             "aaveFunctionsModule",
-            "aaveSupply(address,address,uint256)",
-            abi.encode(getContractAddress("aavePool"), getTokenAddress("wstETH"), getContractBalance("wstETH"))
+            abi.encodeWithSelector(
+                IAaveFunctionsModule.aaveSupply.selector,
+                getContractAddress("aavePool"),
+                getTokenAddress("wstETH"),
+                getContractBalance("wstETH")
+            )
         );
 
         // Withdraw a collateral amount that is more than the collateral supplied but less than the reinvested debt

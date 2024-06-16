@@ -6,6 +6,7 @@ import {console} from "forge-std/Test.sol";
 import {AavePMTestSetup} from "test/unit/AavePM/TestSetupTest.t.sol";
 
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
+import {IAaveFunctionsModule} from "src/interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │                         GETTER TESTS                         │
@@ -156,9 +157,12 @@ contract AavePMGetterTests is AavePMTestSetup {
         uint256 reinvestableAmountCalc = abi.decode(
             delegateCallHelper(
                 "aaveFunctionsModule",
-                "calculateMaxBorrowUSDC(uint256,uint256,uint256,uint16)",
-                abi.encode(
-                    totalCollateralBase, totalDebtBase, currentLiquidationThreshold, aavePM.getHealthFactorTarget()
+                abi.encodeWithSelector(
+                    IAaveFunctionsModule.calculateMaxBorrowUSDC.selector,
+                    totalCollateralBase,
+                    totalDebtBase,
+                    currentLiquidationThreshold,
+                    aavePM.getHealthFactorTarget()
                 )
             ),
             (uint256)

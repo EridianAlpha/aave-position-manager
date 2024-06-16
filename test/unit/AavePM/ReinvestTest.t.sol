@@ -8,6 +8,7 @@ import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {AavePM} from "src/AavePM.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ITokenSwapsModule} from "src/interfaces/ITokenSwapsModule.sol";
 
 // ================================================================
 // │                         REINVEST TESTS                      │
@@ -78,7 +79,7 @@ contract ReinvestTests is AavePMTestSetup {
         vm.stopPrank();
 
         delegateCallHelper(
-            "tokenSwapsModule", "swapTokens(string,string,string)", abi.encode("USDC/ETH", "ETH", "USDC")
+            "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "USDC/ETH", "ETH", "USDC")
         );
         reinvest();
         checkEndHealthFactor(address(this));

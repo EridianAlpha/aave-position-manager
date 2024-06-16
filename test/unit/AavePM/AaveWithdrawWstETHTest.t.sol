@@ -6,6 +6,7 @@ import {AavePMTestSetup} from "test/unit/AavePM/TestSetupTest.t.sol";
 
 import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
+import {IWETH9} from "src/interfaces/IWETH9.sol";
 
 // ================================================================
 // │            aaveWithdrawWstETH TESTS            │
@@ -56,7 +57,7 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
         sendEth(address(this), SEND_VALUE * 5);
         vm.stopPrank();
 
-        _wrapETHToWETH();
+        IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
         _swapTokens("wstETH/ETH", "ETH", "wstETH");
         _aaveSupply(getContractAddress("aavePool"), getTokenAddress("wstETH"), getContractBalance("wstETH"));
 
@@ -84,7 +85,7 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
         sendEth(address(this), SEND_VALUE * 5);
         vm.stopPrank();
 
-        _wrapETHToWETH();
+        IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
         _swapTokens("wstETH/ETH", "ETH", "wstETH");
         _aaveSupply(getContractAddress("aavePool"), getTokenAddress("wstETH"), getContractBalance("wstETH"));
 

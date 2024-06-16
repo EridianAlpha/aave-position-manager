@@ -14,6 +14,7 @@ import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/Transfer
 
 // Interface Imports
 import {IAavePM} from "./interfaces/IAavePM.sol";
+import {IWETH9} from "./interfaces/IWETH9.sol";
 
 // Inherited Contract Imports
 // TokenSwaps imported here so that the _swapTokens function can be used here and in the AavePM contract.
@@ -153,7 +154,9 @@ contract AaveFunctions is TokenSwaps {
         address aavePoolAddress = aavePM.getContractAddress("aavePool");
         address wstETHAddress = aavePM.getTokenAddress("wstETH");
 
-        if (aavePM.getContractBalance("ETH") > 0) _wrapETHToWETH();
+        if (aavePM.getContractBalance("ETH") > 0) {
+            IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
+        }
         if (aavePM.getContractBalance("USDC") > 0) _swapTokens("USDC/ETH", "USDC", "ETH");
         if (aavePM.getContractBalance("WETH") > 0) _swapTokens("wstETH/ETH", "ETH", "wstETH");
 

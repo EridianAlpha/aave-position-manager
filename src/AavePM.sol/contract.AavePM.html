@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">README</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/index.html"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.1.</strong> IAavePM</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/IERC20Extended.sol/interface.IERC20Extended.html"><strong aria-hidden="true">1.2.</strong> IERC20Extended</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/IWETH9.sol/interface.IWETH9.html"><strong aria-hidden="true">1.3.</strong> IWETH9</a></li></ol></li><li class="chapter-item expanded "><a href="../../src/AaveFunctions.sol/contract.AaveFunctions.html"><strong aria-hidden="true">2.</strong> AaveFunctions</a></li><li class="chapter-item expanded "><a href="../../src/AavePM.sol/contract.AavePM.html" class="active"><strong aria-hidden="true">3.</strong> AavePM</a></li><li class="chapter-item expanded "><a href="../../src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html"><strong aria-hidden="true">4.</strong> BorrowAndWithdrawUSDC</a></li><li class="chapter-item expanded "><a href="../../src/FunctionChecks.sol/contract.FunctionChecks.html"><strong aria-hidden="true">5.</strong> FunctionChecks</a></li><li class="chapter-item expanded "><a href="../../src/Rebalance.sol/contract.Rebalance.html"><strong aria-hidden="true">6.</strong> Rebalance</a></li><li class="chapter-item expanded "><a href="../../src/Reinvest.sol/contract.Reinvest.html"><strong aria-hidden="true">7.</strong> Reinvest</a></li><li class="chapter-item expanded "><a href="../../src/TokenSwaps.sol/contract.TokenSwaps.html"><strong aria-hidden="true">8.</strong> TokenSwaps</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">README</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/index.html"><strong aria-hidden="true">1.</strong> interfaces</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../src/interfaces/IAaveFunctionsModule.sol/interface.IAaveFunctionsModule.html"><strong aria-hidden="true">1.1.</strong> IAaveFunctionsModule</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/IAavePM.sol/interface.IAavePM.html"><strong aria-hidden="true">1.2.</strong> IAavePM</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/IERC20Extended.sol/interface.IERC20Extended.html"><strong aria-hidden="true">1.3.</strong> IERC20Extended</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/ITokenSwapsModule.sol/interface.ITokenSwapsModule.html"><strong aria-hidden="true">1.4.</strong> ITokenSwapsModule</a></li><li class="chapter-item expanded "><a href="../../src/interfaces/IWETH9.sol/interface.IWETH9.html"><strong aria-hidden="true">1.5.</strong> IWETH9</a></li></ol></li><li class="chapter-item expanded "><a href="../../src/modules/index.html"><strong aria-hidden="true">2.</strong> modules</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../src/modules/AaveFunctionsModule.sol/contract.AaveFunctionsModule.html"><strong aria-hidden="true">2.1.</strong> AaveFunctionsModule</a></li><li class="chapter-item expanded "><a href="../../src/modules/TokenSwapsModule.sol/contract.TokenSwapsModule.html"><strong aria-hidden="true">2.2.</strong> TokenSwapsModule</a></li></ol></li><li class="chapter-item expanded "><a href="../../src/AavePM.sol/contract.AavePM.html" class="active"><strong aria-hidden="true">3.</strong> AavePM</a></li><li class="chapter-item expanded "><a href="../../src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html"><strong aria-hidden="true">4.</strong> BorrowAndWithdrawUSDC</a></li><li class="chapter-item expanded "><a href="../../src/FlashLoan.sol/contract.FlashLoan.html"><strong aria-hidden="true">5.</strong> FlashLoan</a></li><li class="chapter-item expanded "><a href="../../src/FunctionChecks.sol/contract.FunctionChecks.html"><strong aria-hidden="true">6.</strong> FunctionChecks</a></li><li class="chapter-item expanded "><a href="../../src/Rebalance.sol/contract.Rebalance.html"><strong aria-hidden="true">7.</strong> Rebalance</a></li><li class="chapter-item expanded "><a href="../../src/Reinvest.sol/contract.Reinvest.html"><strong aria-hidden="true">8.</strong> Reinvest</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -178,9 +178,9 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7dc4c02a35ca1cfd5d9bde07ab1ecbe38b0cece5/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/d8d33d5bfa4f33746dba1b4a5dcf7bf49b3fec7e/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
-<a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="/src/FunctionChecks.sol/contract.FunctionChecks.html">FunctionChecks</a>, <a href="/src/Rebalance.sol/contract.Rebalance.html">Rebalance</a>, <a href="/src/Reinvest.sol/contract.Reinvest.html">Reinvest</a>, <a href="/src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html">BorrowAndWithdrawUSDC</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
+<a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="/src/FunctionChecks.sol/contract.FunctionChecks.html">FunctionChecks</a>, <a href="/src/Rebalance.sol/contract.Rebalance.html">Rebalance</a>, <a href="/src/Reinvest.sol/contract.Reinvest.html">Reinvest</a>, <a href="/src/BorrowAndWithdrawUSDC.sol/contract.BorrowAndWithdrawUSDC.html">BorrowAndWithdrawUSDC</a>, <a href="/src/FlashLoan.sol/contract.FlashLoan.html">FlashLoan</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>A contract to manage positions on Aave.</p>
@@ -387,6 +387,10 @@ If the health factor is below the target, it repays debt to increase the health 
 <h3 id="aaverepayusdcfromcontractbalance"><a class="header" href="#aaverepayusdcfromcontractbalance">aaveRepayUSDCFromContractBalance</a></h3>
 <p>// TODO: Add comment</p>
 <pre><code class="language-solidity">function aaveRepayUSDCFromContractBalance() public onlyRole(MANAGER_ROLE);
+</code></pre>
+<h3 id="delegatecallhelper"><a class="header" href="#delegatecallhelper">delegateCallHelper</a></h3>
+<p>// TODO: Add comment and move to different heading. How to protect this function? Does it need protecting?</p>
+<pre><code class="language-solidity">function delegateCallHelper(string memory _targetIdentifier, bytes memory _data) public returns (bytes memory);
 </code></pre>
 <h3 id="rescueeth"><a class="header" href="#rescueeth">rescueEth</a></h3>
 <p>Rescue all ETH from the contract.</p>
@@ -621,7 +625,7 @@ Emits a <code>RescueEth</code> event.</em></p>
 <h3 id="gettotalcollateraldelta"><a class="header" href="#gettotalcollateraldelta">getTotalCollateralDelta</a></h3>
 <p>Getter function to get the total collateral delta.</p>
 <p><em>Public function to allow anyone to view the total collateral delta.</em></p>
-<pre><code class="language-solidity">function getTotalCollateralDelta() public view returns (uint256 totalCollateralDelta, bool isPositive);
+<pre><code class="language-solidity">function getTotalCollateralDelta() public returns (uint256 totalCollateralDelta, bool isPositive);
 </code></pre>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -645,7 +649,7 @@ Emits a <code>RescueEth</code> event.</em></p>
 </code></pre>
 <h3 id="getreinvestableamount"><a class="header" href="#getreinvestableamount">getReinvestableAmount</a></h3>
 <p>// TODO: Add comment</p>
-<pre><code class="language-solidity">function getReinvestableAmount() public view returns (uint256 reinvestableAmount);
+<pre><code class="language-solidity">function getReinvestableAmount() public returns (uint256 reinvestableAmount);
 </code></pre>
 <h3 id="getrolemember"><a class="header" href="#getrolemember">getRoleMember</a></h3>
 <p>// TODO: Add comment</p>
@@ -745,7 +749,7 @@ The function is called by the Aave pool contract and is not intended to be calle
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../src/AaveFunctions.sol/contract.AaveFunctions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../src/modules/TokenSwapsModule.sol/contract.TokenSwapsModule.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -759,7 +763,7 @@ The function is called by the Aave pool contract and is not intended to be calle
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../src/AaveFunctions.sol/contract.AaveFunctions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../src/modules/TokenSwapsModule.sol/contract.TokenSwapsModule.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

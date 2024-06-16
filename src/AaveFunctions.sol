@@ -17,7 +17,6 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 import {IWETH9} from "./interfaces/IWETH9.sol";
 
 // Inherited Contract Imports
-// TokenSwaps imported here so that the _swapTokens function can be used here and in the AavePM contract.
 import {TokenSwaps} from "./TokenSwaps.sol";
 
 // ================================================================

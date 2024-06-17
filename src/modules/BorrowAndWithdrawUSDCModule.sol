@@ -9,19 +9,19 @@ pragma solidity 0.8.24;
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 // Interface Imports
-import {IAavePM} from "./interfaces/IAavePM.sol";
+import {IAavePM} from "../interfaces/IAavePM.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
+import {IAaveFunctionsModule} from "../interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │               BORROW AND WITHDRAW USDC CONTRACT              │
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract BorrowAndWithdrawUSDC {
+contract BorrowAndWithdrawUSDCModule {
     /// @notice // TODO: Add comment
-    function _borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
-        internal
+    function borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
+        public
         returns (uint256 repaidReinvestedDebt)
     {
         IAavePM aavePM = IAavePM(address(this));

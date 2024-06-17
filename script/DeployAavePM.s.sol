@@ -11,6 +11,7 @@ import {HelperConfig} from "./HelperConfig.s.sol";
 // Import Modules
 import {TokenSwapsModule} from "src/modules/TokenSwapsModule.sol";
 import {AaveFunctionsModule} from "src/modules/AaveFunctionsModule.sol";
+import {BorrowAndWithdrawUSDCModule} from "src/modules/BorrowAndWithdrawUSDCModule.sol";
 
 contract DeployAavePM is Script {
     function run() public returns (AavePM, HelperConfig, IAavePM.ContractAddress[] memory) {
@@ -28,15 +29,15 @@ contract DeployAavePM is Script {
         // Deploy the implementation contract
         AavePM aavePMImplementation = new AavePM();
 
-        // Deploy the module contracts and add them to the contractAddresses array
-        TokenSwapsModule tokenSwapsModule = new TokenSwapsModule();
-        contractAddresses = addContractAddress(
-            contractAddresses, IAavePM.ContractAddress("tokenSwapsModule", address(tokenSwapsModule))
-        );
-        AaveFunctionsModule aaveFunctionsModule = new AaveFunctionsModule();
-        contractAddresses = addContractAddress(
-            contractAddresses, IAavePM.ContractAddress("aaveFunctionsModule", address(aaveFunctionsModule))
-        );
+        // Deploy the module contracts
+        IAavePM.ContractAddress[] memory newAddresses = new IAavePM.ContractAddress[](3);
+        newAddresses[0] = IAavePM.ContractAddress("tokenSwapsModule", address(new TokenSwapsModule()));
+        newAddresses[1] = IAavePM.ContractAddress("aaveFunctionsModule", address(new AaveFunctionsModule()));
+        newAddresses[2] =
+            IAavePM.ContractAddress("borrowAndWithdrawUSDCModule", address(new BorrowAndWithdrawUSDCModule()));
+
+        // Add the new module contract addresses to the contractAddresses array
+        contractAddresses = addContractAddresses(contractAddresses, newAddresses);
 
         // Encode the initializer function
         bytes memory initData = abi.encodeWithSelector(
@@ -56,12 +57,13 @@ contract DeployAavePM is Script {
         return (AavePM(payable(address(proxy))), helperConfig, contractAddresses);
     }
 
-    function addContractAddress(
+    function addContractAddresses(
         IAavePM.ContractAddress[] memory originalArray,
-        IAavePM.ContractAddress memory newElement
+        IAavePM.ContractAddress[] memory newElements
     ) internal pure returns (IAavePM.ContractAddress[] memory) {
         uint256 originalLength = originalArray.length;
-        uint256 newLength = originalLength + 1;
+        uint256 newElementsLength = newElements.length;
+        uint256 newLength = originalLength + newElementsLength;
 
         // Create a new memory array with the new length
         IAavePM.ContractAddress[] memory newArray = new IAavePM.ContractAddress[](newLength);
@@ -71,8 +73,10 @@ contract DeployAavePM is Script {
             newArray[i] = originalArray[i];
         }
 
-        // Add the new element to the new array
-        newArray[originalLength] = newElement;
+        // Add the new elements to the new array
+        for (uint256 j = 0; j < newElementsLength; j++) {
+            newArray[originalLength + j] = newElements[j];
+        }
 
         return newArray;
     }

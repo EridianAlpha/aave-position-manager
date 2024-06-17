@@ -9,7 +9,6 @@ pragma solidity 0.8.24;
 import {FunctionChecks} from "./FunctionChecks.sol";
 import {Rebalance} from "./Rebalance.sol";
 import {Reinvest} from "./Reinvest.sol";
-import {BorrowAndWithdrawUSDC} from "./BorrowAndWithdrawUSDC.sol";
 import {FlashLoan} from "./FlashLoan.sol";
 
 // OpenZeppelin Imports
@@ -27,6 +26,7 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 // Interface Imports
 import {IAavePM} from "./interfaces/IAavePM.sol";
 import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
+import {IBorrowAndWithdrawUSDCModule} from "./interfaces/IBorrowAndWithdrawUSDCModule.sol";
 
 // ================================================================
 // │                       AAVEPM CONTRACT                        │
@@ -40,7 +40,6 @@ contract AavePM is
     FunctionChecks,
     Rebalance,
     Reinvest,
-    BorrowAndWithdrawUSDC,
     FlashLoan,
     Initializable,
     AccessControlEnumerableUpgradeable,
@@ -535,7 +534,13 @@ contract AavePM is
         }
 
         // Borrow the requested amount of USDC and withdraw it to the owner.
-        (uint256 repaidReinvestedDebt) = _borrowAndWithdrawUSDC(_amount, _owner);
+        (uint256 repaidReinvestedDebt) = abi.decode(
+            delegateCallHelper(
+                "borrowAndWithdrawUSDCModule",
+                abi.encodeWithSelector(IBorrowAndWithdrawUSDCModule.borrowAndWithdrawUSDC.selector, _amount, _owner)
+            ),
+            (uint256)
+        );
 
         // Update the total withdrawn USDC amount.
         s_withdrawnUSDCTotal += _amount;

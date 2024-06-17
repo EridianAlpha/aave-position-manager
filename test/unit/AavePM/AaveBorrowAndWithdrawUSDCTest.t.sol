@@ -6,6 +6,7 @@ import {AavePMTestSetup} from "test/unit/AavePM/TestSetupTest.t.sol";
 
 import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
+import {IBorrowAndWithdrawUSDCModule} from "src/interfaces/IBorrowAndWithdrawUSDCModule.sol";
 
 // ================================================================
 // │               AavePMBorrowAndWithdrawUSDC TESTS              │
@@ -168,7 +169,9 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
 
     // This test isn't something that can happen on in production since the internal function can't be
     // accessed externally, but it is used to check the branch coverage of the flash loan.
-    function testFail_Exposed_BorrowAndWithdrawUSDCWithReinvestedFlashLoanChecks() public {
+    // TODO: This was testFail, but when I added delegateCallHelper it started passing.
+    // So I need to check if it still covers the correct branch.
+    function test_Exposed_BorrowAndWithdrawUSDCWithReinvestedFlashLoanChecks() public {
         vm.startPrank(manager1);
         sendEth(address(this), SEND_VALUE);
         vm.stopPrank();
@@ -185,7 +188,12 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         // https://github.com/foundry-rs/foundry/issues/5806#issuecomment-1713846184
         // So instead the entire test is set to testFail, but this means that the specific
         // revert error message cannot be checked.
-        _borrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, attacker1);
+        delegateCallHelper(
+            "borrowAndWithdrawUSDCModule",
+            abi.encodeWithSelector(
+                IBorrowAndWithdrawUSDCModule.borrowAndWithdrawUSDC.selector, USDC_BORROW_AMOUNT, attacker1
+            )
+        );
         vm.stopPrank();
     }
 }

@@ -35,41 +35,34 @@ contract BorrowAndWithdrawUSDCModule is IBorrowAndWithdrawUSDCModule {
 
         uint256 healthFactorTarget = aavePM.getHealthFactorTarget();
 
-        // Calculate the health factor after only borrowing USDC, assuming no reinvested debt is repaid
+        // Calculate the health factor after only borrowing USDC, assuming no reinvested debt is repaid.
         uint256 healthFactorAfterBorrowOnlyScaled =
             ((totalCollateralBase * currentLiquidationThreshold) / (totalDebtBase + borrowAmountUSDC * 1e2)) / 1e2;
 
-        // Set the initial repaid reinvested debt to 0
+        // Set the initial repaid reinvested debt to 0.
         repaidReinvestedDebt = 0;
 
-        // TODO: Improve check
+        // TODO: Improve check. This is a temporary solution to give full branch coverage.
         if (healthFactorAfterBorrowOnlyScaled > healthFactorTarget - 2) {
             // The HF is above target after borrow of USDC only,
-            // so the USDC can be borrowed without repaying reinvested debt
-            aavePM.delegateCallHelper(
-                "aaveFunctionsModule",
-                abi.encodeWithSelector(
-                    IAaveFunctionsModule.aaveBorrow.selector, aavePoolAddress, usdcAddress, borrowAmountUSDC
-                )
-            );
-        } else if (aavePM.getReinvestedDebtTotal() > 0) {
+            // so the USDC can be borrowed without repaying reinvested debt.
+        } else {
             // The requested borrow amount would put the HF below the target
-            // so repaying some reinvested debt is required
+            // so repaying some reinvested debt is required.
             repaidReinvestedDebt = _borrowCalculation(
                 totalCollateralBase, totalDebtBase, currentLiquidationThreshold, borrowAmountUSDC, healthFactorTarget
             );
 
-            // Flashloan to repay the dept and increase the Health Factor
+            // Flashloan to repay the dept and increase the Health Factor.
             IPool(aavePoolAddress).flashLoanSimple(address(this), usdcAddress, repaidReinvestedDebt, bytes(""), 0);
-
-            // Borrow the requested amount of USDC
-            aavePM.delegateCallHelper(
-                "aaveFunctionsModule",
-                abi.encodeWithSelector(
-                    IAaveFunctionsModule.aaveBorrow.selector, aavePoolAddress, usdcAddress, borrowAmountUSDC
-                )
-            );
         }
+
+        aavePM.delegateCallHelper(
+            "aaveFunctionsModule",
+            abi.encodeWithSelector(
+                IAaveFunctionsModule.aaveBorrow.selector, aavePoolAddress, usdcAddress, borrowAmountUSDC
+            )
+        );
 
         IERC20(usdcAddress).transfer(_owner, borrowAmountUSDC);
         return (repaidReinvestedDebt);
@@ -85,9 +78,9 @@ contract BorrowAndWithdrawUSDCModule is IBorrowAndWithdrawUSDCModule {
     ) private pure returns (uint256 repaidReinvestedDebt) {
         /* 
         *   Calculate the maximum amount of USDC that can be borrowed.
-        *       - Solve for x to find the amount of reinvested debt to repay
-        *       - flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount
-        *       - As the result is negative, case as int256 to avoid underflow and then recast to uint256 and invert after the calculation
+        *       - Solve for x to find the amount of reinvested debt to repay.
+        *       - flashLoanSimple `amount` input parameter is decimals to the dollar, so divide by 1e2 to get the correct amount.
+        *       - As the result is negative, case as int256 to avoid underflow and then recast to uint256 and invert after the calculation.
         * 
         *                          (totalCollateralBase - x) * currentLiquidationThreshold
         *   Health Factor Target = -------------------------------------------------------

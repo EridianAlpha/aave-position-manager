@@ -152,18 +152,26 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
         address aavePoolAddress = aavePM.getContractAddress("aavePool");
         address wstETHAddress = aavePM.getTokenAddress("wstETH");
 
-        if (aavePM.getContractBalance("ETH") > 0) {
+        // TODO: Work out why the code branch coverage says a branch is missing when the delegateCallHelper function
+        //       is called in the first if statement, but is fine when called in the else statement.
+        if (aavePM.getContractBalance("ETH") == 0) {
+            // No-op: intentionally left blank to ensure code branch coverage.
+        } else {
             aavePM.delegateCallHelper(
                 "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.wrapETHToWETH.selector, new bytes(0))
             );
         }
-        if (aavePM.getContractBalance("USDC") > 0) {
+        if (aavePM.getContractBalance("USDC") == 0) {
+            // No-op: intentionally left blank to ensure code branch coverage.
+        } else {
             aavePM.delegateCallHelper(
                 "tokenSwapsModule",
                 abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "USDC/ETH", "USDC", "ETH")
             );
         }
-        if (aavePM.getContractBalance("WETH") > 0) {
+        if (aavePM.getContractBalance("WETH") == 0) {
+            // No-op: intentionally left blank to ensure code branch coverage.
+        } else {
             aavePM.delegateCallHelper(
                 "tokenSwapsModule",
                 abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "wstETH/ETH", "ETH", "wstETH")

@@ -12,19 +12,5 @@ interface ITokenSwapsModule {
         string memory _tokenOutIdentifier
     ) external returns (string memory tokenOutIdentifier, uint256 amountOut);
 
-    function approveAndExecuteSwap(
-        IAavePM aavePM,
-        ISwapRouter.ExactInputSingleParams memory params,
-        uint256 currentBalance
-    ) external returns (uint256 amountOut);
-
-    function uniswapV3CalculateMinOut(
-        IAavePM aavePM,
-        uint256 _currentBalance,
-        address _uniswapV3PoolAddress,
-        address tokenInAddress,
-        address tokenOutAddress
-    ) external view returns (uint256 minOut);
-
-    function _isIdentifierETH(string memory identifier) external pure returns (bool);
+    function wrapETHToWETH() external payable;
 }

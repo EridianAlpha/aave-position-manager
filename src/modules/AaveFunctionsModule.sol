@@ -152,7 +152,9 @@ contract AaveFunctionsModule {
         address wstETHAddress = aavePM.getTokenAddress("wstETH");
 
         if (aavePM.getContractBalance("ETH") > 0) {
-            IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
+            aavePM.delegateCallHelper(
+                "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.wrapETHToWETH.selector, new bytes(0))
+            );
         }
         if (aavePM.getContractBalance("USDC") > 0) {
             aavePM.delegateCallHelper(

@@ -17,13 +17,14 @@ import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/Transfer
 import {IWETH9} from "../interfaces/IWETH9.sol";
 import {IAavePM} from "../interfaces/IAavePM.sol";
 import {IERC20Extended} from "../interfaces/IERC20Extended.sol";
+import {ITokenSwapsModule} from "../interfaces/ITokenSwapsModule.sol";
 
 // ================================================================
 // │                  TokenSwapsModule CONTRACT                   │
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract TokenSwapsModule {
+contract TokenSwapsModule is ITokenSwapsModule {
     /// @notice Swaps the contract's entire specified token balance using a UniswapV3 pool.
     /// @dev Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
     ///      Reverts if there are no tokens in the contract or if the transaction doesn't meet the `amountOutMinimum` criteria due to price movements.
@@ -42,7 +43,7 @@ contract TokenSwapsModule {
 
         // If the input is ETH, wrap any ETH to WETH.
         if (_isIdentifierETH(_tokenInIdentifier) && aavePM.getContractBalance("ETH") > 0) {
-            IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
+            wrapETHToWETH();
         }
 
         // If ETH is input or output, convert the identifier to WETH.
@@ -83,6 +84,11 @@ contract TokenSwapsModule {
         TransferHelper.safeApprove(params.tokenIn, address(swapRouter), currentBalance);
         amountOut = swapRouter.exactInputSingle(params);
         return amountOut;
+    }
+
+    /// @notice // TODO: Add comment
+    function wrapETHToWETH() public payable {
+        IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
     }
 
     // ================================================================

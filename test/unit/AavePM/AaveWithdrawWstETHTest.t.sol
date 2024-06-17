@@ -59,7 +59,9 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
         sendEth(address(this), SEND_VALUE * 5);
         vm.stopPrank();
 
-        IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
+        aavePM.delegateCallHelper(
+            "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.wrapETHToWETH.selector, new bytes(0))
+        );
 
         delegateCallHelper(
             "tokenSwapsModule",
@@ -99,7 +101,9 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
         sendEth(address(this), SEND_VALUE * 5);
         vm.stopPrank();
 
-        IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
+        aavePM.delegateCallHelper(
+            "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.wrapETHToWETH.selector, new bytes(0))
+        );
 
         delegateCallHelper(
             "tokenSwapsModule",

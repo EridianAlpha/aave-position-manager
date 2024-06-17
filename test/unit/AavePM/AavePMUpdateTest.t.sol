@@ -118,4 +118,35 @@ contract AavePMUpdateTests is AavePMTestSetup {
         vm.prank(manager1);
         aavePM.updateSlippageTolerance(newSlippageTolerance);
     }
+
+    function test_UpdateManagerDailyInvocationLimit() public {
+        uint16 previousManagerDailyInvocationLimit = aavePM.getManagerDailyInvocationLimit();
+        uint16 newManagerDailyInvocationLimit =
+            previousManagerDailyInvocationLimit + MANAGER_DAILY_INVOCATION_LIMIT_CHANGE;
+
+        vm.startPrank(owner1);
+        aavePM.updateManagerDailyInvocationLimit(newManagerDailyInvocationLimit);
+        assertEq(aavePM.getManagerDailyInvocationLimit(), newManagerDailyInvocationLimit);
+        vm.stopPrank();
+    }
+
+    function test_UpdateManagerDailyInvocationLimitAboveNewLimit() public {
+        // Loop through to hit the daily invocation limit
+        vm.startPrank(manager1);
+        for (uint256 i = 1; i <= aavePM.getManagerDailyInvocationLimit(); i++) {
+            aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() + uint16(i));
+        }
+        vm.stopPrank();
+
+        uint16 previousManagerDailyInvocationLimit = aavePM.getManagerDailyInvocationLimit();
+        uint16 newManagerDailyInvocationLimit =
+            previousManagerDailyInvocationLimit - MANAGER_DAILY_INVOCATION_LIMIT_CHANGE;
+
+        vm.startPrank(owner1);
+        assertEq(aavePM.getManagerInvocationTimestamps().length, previousManagerDailyInvocationLimit);
+        aavePM.updateManagerDailyInvocationLimit(newManagerDailyInvocationLimit);
+        assertEq(aavePM.getManagerDailyInvocationLimit(), newManagerDailyInvocationLimit);
+        assertEq(aavePM.getManagerInvocationTimestamps().length, newManagerDailyInvocationLimit);
+        vm.stopPrank();
+    }
 }

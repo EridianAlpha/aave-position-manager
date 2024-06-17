@@ -29,6 +29,7 @@ contract AavePMTestSetup is Test, HelperFunctions, AavePM {
     uint16 internal constant SLIPPAGE_TOLERANCE_CHANGE = 100;
     uint16 internal constant HEALTH_FACTOR_TOLERANCE = 2;
     string internal constant UPGRADE_EXAMPLE_VERSION = "9.9.9";
+    uint16 internal constant MANAGER_DAILY_INVOCATION_LIMIT_CHANGE = 5;
 
     // Create users
     address defaultFoundryCaller = address(uint160(uint256(keccak256("foundry default caller"))));

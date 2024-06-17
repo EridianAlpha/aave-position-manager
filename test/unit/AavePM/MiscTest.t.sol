@@ -21,4 +21,13 @@ contract AavePMMiscTests is AavePMTestSetup {
         vm.expectRevert(IAavePM.AavePM__FunctionDoesNotExist.selector);
         sendEth(address(aavePM), SEND_VALUE, "123");
     }
+
+    function test_DelegateCallHelperRevert() public {
+        vm.startPrank(manager1);
+        vm.expectRevert(IAavePM.AavePM__DelegateCallFailed.selector);
+        aavePM.delegateCallHelper(
+            "aaveFunctionsModule", abi.encodeWithSelector(IAavePM.AavePM__FunctionDoesNotExist.selector, new bytes(0))
+        );
+        vm.stopPrank();
+    }
 }

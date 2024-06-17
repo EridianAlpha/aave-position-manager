@@ -369,7 +369,12 @@ contract AavePM is
     }
 
     /// @notice // TODO: Add comment
-    function aaveSupplyFromContractBalance() public onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral) {
+    function aaveSupplyFromContractBalance()
+        public
+        payable
+        onlyRole(MANAGER_ROLE)
+        returns (uint256 suppliedCollateral)
+    {
         suppliedCollateral = abi.decode(
             delegateCallHelper(
                 "aaveFunctionsModule",

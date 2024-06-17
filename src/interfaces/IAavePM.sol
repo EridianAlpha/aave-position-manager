@@ -102,7 +102,7 @@ interface IAavePM {
     function rebalance() external returns (uint256 repaymentAmountUSDC);
     function reinvest() external returns (uint256 reinvestedDebt);
     function deleverage() external;
-    function aaveSupplyFromContractBalance() external returns (uint256 suppliedCollateral);
+    function aaveSupplyFromContractBalance() external payable returns (uint256 suppliedCollateral);
     function aaveRepayUSDCFromContractBalance() external;
 
     /// TODO: Move to different heading

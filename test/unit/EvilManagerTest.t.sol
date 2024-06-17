@@ -31,4 +31,22 @@ contract AavePMEvilManagerTests is AavePMTestSetup {
         }
         vm.stopPrank();
     }
+
+    function test_EvilManagerLoopDrainThenAllowNextDay() public {
+        evilManagerSetup();
+        vm.startPrank(manager1);
+        for (uint256 i = 1; i < aavePM.getManagerDailyInvocationLimit(); i++) {
+            aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() + uint16(i));
+        }
+        vm.stopPrank();
+
+        console.log("Next step");
+        console.log("aavePM.getManagerInvocationTimestamps.length", aavePM.getManagerInvocationTimestamps().length);
+
+        vm.warp(block.timestamp + 1 days + 1 hours);
+        vm.startPrank(manager1);
+        aavePM.deleverage();
+        aavePM.reinvest();
+        vm.stopPrank();
+    }
 }

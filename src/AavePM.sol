@@ -7,7 +7,6 @@ pragma solidity 0.8.24;
 
 // Inherited Contract Imports
 import {FunctionChecks} from "./FunctionChecks.sol";
-import {Reinvest} from "./Reinvest.sol";
 import {FlashLoan} from "./FlashLoan.sol";
 
 // OpenZeppelin Imports
@@ -24,6 +23,7 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 // Interface Imports
 import {IAavePM} from "./interfaces/IAavePM.sol";
+import {IReinvestModule} from "./interfaces/IReinvestModule.sol";
 import {IRebalanceModule} from "./interfaces/IRebalanceModule.sol";
 import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
 import {IBorrowAndWithdrawUSDCModule} from "./interfaces/IBorrowAndWithdrawUSDCModule.sol";
@@ -38,7 +38,6 @@ import {IBorrowAndWithdrawUSDCModule} from "./interfaces/IBorrowAndWithdrawUSDCM
 contract AavePM is
     IAavePM,
     FunctionChecks,
-    Reinvest,
     FlashLoan,
     Initializable,
     AccessControlEnumerableUpgradeable,
@@ -346,7 +345,12 @@ contract AavePM is
         aaveSupplyFromContractBalance();
 
         // Reinvest any excess debt or collateral.
-        (reinvestedDebt) = _reinvest();
+        reinvestedDebt = abi.decode(
+            delegateCallHelper(
+                "reinvestModule", abi.encodeWithSelector(IReinvestModule.reinvest.selector, new bytes(0))
+            ),
+            (uint256)
+        );
         if (reinvestedDebt > 0) s_reinvestedDebtTotal += reinvestedDebt;
 
         // TODO: Emit an event with suppliedCollateral, reinvestedDebt, reinvestedCollateral

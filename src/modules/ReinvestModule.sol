@@ -9,18 +9,18 @@ pragma solidity 0.8.24;
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 // Interface Imports
-import {IAavePM} from "./interfaces/IAavePM.sol";
-import {ITokenSwapsModule} from "./interfaces/ITokenSwapsModule.sol";
-import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
+import {IAavePM} from "../interfaces/IAavePM.sol";
+import {ITokenSwapsModule} from "../interfaces/ITokenSwapsModule.sol";
+import {IAaveFunctionsModule} from "../interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │                        REINVEST CONTRACT                     │
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract Reinvest {
+contract ReinvestModule {
     /// @notice // TODO: Add comment
-    function _reinvest() internal returns (uint256 reinvestedDebt) {
+    function reinvest() public returns (uint256 reinvestedDebt) {
         IAavePM aavePM = IAavePM(address(this));
 
         // Set the initial reinvested debt to 0.

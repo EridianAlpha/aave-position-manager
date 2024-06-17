@@ -296,15 +296,8 @@ contract AavePM is
     function updateManagerDailyInvocationLimit(uint16 _managerDailyInvocationLimit) external onlyRole(OWNER_ROLE) {
         s_managerDailyInvocationLimit = _managerDailyInvocationLimit;
 
-        // If the new limit is less than the current length of the managerInvocationTimestamps array,
-        // remove the end of the array to match the new limit.
-        uint256 arrayLength = s_managerInvocationTimestamps.length;
-        if (arrayLength > _managerDailyInvocationLimit) {
-            uint256 excess = arrayLength - _managerDailyInvocationLimit;
-            for (uint256 i = 0; i < excess; i++) {
-                s_managerInvocationTimestamps.pop();
-            }
-        }
+        // Reset the s_managerInvocationTimestamps array
+        delete s_managerInvocationTimestamps;
     }
 
     // ================================================================

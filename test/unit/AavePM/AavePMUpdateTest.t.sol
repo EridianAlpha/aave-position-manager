@@ -146,7 +146,10 @@ contract AavePMUpdateTests is AavePMTestSetup {
         assertEq(aavePM.getManagerInvocationTimestamps().length, previousManagerDailyInvocationLimit);
         aavePM.updateManagerDailyInvocationLimit(newManagerDailyInvocationLimit);
         assertEq(aavePM.getManagerDailyInvocationLimit(), newManagerDailyInvocationLimit);
-        assertEq(aavePM.getManagerInvocationTimestamps().length, newManagerDailyInvocationLimit);
+
+        for (uint256 i = 1; i <= aavePM.getManagerDailyInvocationLimit() / 2; i++) {
+            aavePM.updateHealthFactorTarget(aavePM.getHealthFactorTarget() + uint16(i));
+        }
         vm.stopPrank();
     }
 }

@@ -88,6 +88,15 @@ contract AavePMAttackTests is AavePMTestSetup {
         vm.stopPrank();
     }
 
+    function testFail_AttackUpdateManagerDailyInvocationLimit() public {
+        test_AttackSetup();
+        vm.startPrank(attacker1);
+        aavePM.updateManagerDailyInvocationLimit(
+            aavePM.getManagerDailyInvocationLimit() + MANAGER_DAILY_INVOCATION_LIMIT_CHANGE
+        );
+        vm.stopPrank();
+    }
+
     // ================================================================
     // │                   FUNCTIONS - CORE FUNCTIONS                 │
     // ================================================================

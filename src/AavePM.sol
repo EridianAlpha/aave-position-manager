@@ -7,7 +7,6 @@ pragma solidity 0.8.24;
 
 // Inherited Contract Imports
 import {FunctionChecks} from "./FunctionChecks.sol";
-import {Rebalance} from "./Rebalance.sol";
 import {Reinvest} from "./Reinvest.sol";
 import {FlashLoan} from "./FlashLoan.sol";
 
@@ -25,6 +24,7 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 // Interface Imports
 import {IAavePM} from "./interfaces/IAavePM.sol";
+import {IRebalanceModule} from "./interfaces/IRebalanceModule.sol";
 import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
 import {IBorrowAndWithdrawUSDCModule} from "./interfaces/IBorrowAndWithdrawUSDCModule.sol";
 
@@ -38,7 +38,6 @@ import {IBorrowAndWithdrawUSDCModule} from "./interfaces/IBorrowAndWithdrawUSDCM
 contract AavePM is
     IAavePM,
     FunctionChecks,
-    Rebalance,
     Reinvest,
     FlashLoan,
     Initializable,
@@ -325,7 +324,12 @@ contract AavePM is
         aaveSupplyFromContractBalance();
 
         // Perform rebalance.
-        (repaymentAmountUSDC) = _rebalance();
+        repaymentAmountUSDC = abi.decode(
+            delegateCallHelper(
+                "rebalanceModule", abi.encodeWithSelector(IRebalanceModule.rebalance.selector, new bytes(0))
+            ),
+            (uint256)
+        );
 
         if (repaymentAmountUSDC > 0 && s_reinvestedDebtTotal >= repaymentAmountUSDC) {
             s_reinvestedDebtTotal -= repaymentAmountUSDC;
@@ -415,7 +419,18 @@ contract AavePM is
     function delegateCallHelper(string memory _targetIdentifier, bytes memory _data) public returns (bytes memory) {
         address target = getContractAddress(_targetIdentifier);
         (bool success, bytes memory result) = target.delegatecall(_data);
-        if (!success) revert("AavePM__DelegateCallFailed");
+        if (!success) {
+            if (result.length > 0) {
+                // The call reverted with a reason or a custom error, decode and bubble it up
+                assembly {
+                    let returnData_size := mload(result)
+                    revert(add(32, result), returnData_size)
+                }
+            } else {
+                // The call reverted without a reason
+                revert AavePM__DelegateCallFailed();
+            }
+        }
         return result;
     }
 

@@ -9,20 +9,20 @@ pragma solidity 0.8.24;
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 // Interface Imports
-import {IAavePM} from "./interfaces/IAavePM.sol";
-import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
+import {IAavePM} from "src/interfaces/IAavePM.sol";
+import {IAaveFunctionsModule} from "src/interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │                       REBALANCE CONTRACT                     │
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract Rebalance {
+contract RebalanceModule {
     /// @notice Rebalance the Aave position.
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      The function rebalances the Aave position.
     ///      If the health factor is below the target, it repays debt to increase the health factor.
-    function _rebalance() internal returns (uint256 repaymentAmountUSDC) {
+    function rebalance() public returns (uint256 repaymentAmountUSDC) {
         IAavePM aavePM = IAavePM(address(this));
 
         (

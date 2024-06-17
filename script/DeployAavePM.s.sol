@@ -9,6 +9,7 @@ import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.s
 import {HelperConfig} from "./HelperConfig.s.sol";
 
 // Import Modules
+import {RebalanceModule} from "src/modules/RebalanceModule.sol";
 import {TokenSwapsModule} from "src/modules/TokenSwapsModule.sol";
 import {AaveFunctionsModule} from "src/modules/AaveFunctionsModule.sol";
 import {BorrowAndWithdrawUSDCModule} from "src/modules/BorrowAndWithdrawUSDCModule.sol";
@@ -30,11 +31,12 @@ contract DeployAavePM is Script {
         AavePM aavePMImplementation = new AavePM();
 
         // Deploy the module contracts
-        IAavePM.ContractAddress[] memory newAddresses = new IAavePM.ContractAddress[](3);
+        IAavePM.ContractAddress[] memory newAddresses = new IAavePM.ContractAddress[](4);
         newAddresses[0] = IAavePM.ContractAddress("tokenSwapsModule", address(new TokenSwapsModule()));
         newAddresses[1] = IAavePM.ContractAddress("aaveFunctionsModule", address(new AaveFunctionsModule()));
         newAddresses[2] =
             IAavePM.ContractAddress("borrowAndWithdrawUSDCModule", address(new BorrowAndWithdrawUSDCModule()));
+        newAddresses[3] = IAavePM.ContractAddress("rebalanceModule", address(new RebalanceModule()));
 
         // Add the new module contract addresses to the contractAddresses array
         contractAddresses = addContractAddresses(contractAddresses, newAddresses);

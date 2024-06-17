@@ -9,6 +9,7 @@ import {AavePM} from "src/AavePM.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
+import {IRebalanceModule} from "src/interfaces/IRebalanceModule.sol";
 
 // ================================================================
 // │                         REBALANCE TESTS                      │
@@ -129,13 +130,13 @@ contract RebalanceTests is AavePMTestSetup {
         vm.stopPrank();
 
         // As HEALTH_FACTOR_TARGET_MINIMUM is a constant, the best way to test this is to decrease the health factor target
-        // directly to below the minimum value and confirm that the check at the end of the _rebalance() function fails.
+        // directly to below the minimum value and confirm that the check at the end of the rebalance() function fails.
         s_healthFactorTarget = HEALTH_FACTOR_TARGET_MINIMUM - 10;
 
         // As this is an internal call reverting, vm.expectRevert() does not work:
         // https://github.com/foundry-rs/foundry/issues/5806#issuecomment-1713846184
         // So instead the entire test is set to testFail, but this means that the specific
         // revert error message cannot be checked.
-        _rebalance();
+        delegateCallHelper("rebalanceModule", abi.encodeWithSelector(IRebalanceModule.rebalance.selector, new bytes(0)));
     }
 }

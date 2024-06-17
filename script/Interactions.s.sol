@@ -8,6 +8,13 @@ import {AavePM} from "src/AavePM.sol";
 
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
+// Import Modules
+import {RebalanceModule} from "src/modules/RebalanceModule.sol";
+import {ReinvestModule} from "src/modules/ReinvestModule.sol";
+import {TokenSwapsModule} from "src/modules/TokenSwapsModule.sol";
+import {AaveFunctionsModule} from "src/modules/AaveFunctionsModule.sol";
+import {BorrowAndWithdrawUSDCModule} from "src/modules/BorrowAndWithdrawUSDCModule.sol";
+
 // ================================================================
 // │                             SETUP                            │
 // ================================================================
@@ -42,7 +49,13 @@ contract Interactions is Script {
         vm.startBroadcast();
         AavePM newAavePM = new AavePM();
         aavePM.upgradeToAndCall(address(newAavePM), "");
-        // TODO: Add module deployments here.
+
+        // Deploy updated modules
+        aavePM.updateContractAddress("tokenSwapsModule", address(new TokenSwapsModule()));
+        aavePM.updateContractAddress("aaveFunctionsModule", address(new AaveFunctionsModule()));
+        aavePM.updateContractAddress("borrowAndWithdrawUSDCModule", address(new BorrowAndWithdrawUSDCModule()));
+        aavePM.updateContractAddress("rebalanceModule", address(new RebalanceModule()));
+        aavePM.updateContractAddress("reinvestModule", address(new ReinvestModule()));
         vm.stopBroadcast();
     }
 

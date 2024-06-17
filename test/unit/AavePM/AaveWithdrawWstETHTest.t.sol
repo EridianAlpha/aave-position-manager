@@ -50,18 +50,11 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
 
         reinvest();
 
-        // Get the initial wstETH balance
-        uint256 initialWstETHBalance = getContractBalance("awstETH");
-
         // "Increase" the collateral value by calling the internal function _aaveSupply to increase
         // the collateral value without incrementing the collateral counter
         vm.startPrank(manager1);
         sendEth(address(this), SEND_VALUE * 5);
         vm.stopPrank();
-
-        aavePM.delegateCallHelper(
-            "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.wrapETHToWETH.selector, new bytes(0))
-        );
 
         delegateCallHelper(
             "tokenSwapsModule",
@@ -78,7 +71,7 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
         );
 
         // Withdraw a collateral amount that is more than the collateral supplied but less than the reinvested debt
-        aaveWithdrawWstETH(initialWstETHBalance, owner1);
+        aaveWithdrawWstETH(SEND_VALUE, owner1);
 
         assertEq(getSuppliedCollateralTotal(), 0);
         assert(getReinvestedDebtTotal() > 0);

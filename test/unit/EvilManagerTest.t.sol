@@ -40,9 +40,6 @@ contract AavePMEvilManagerTests is AavePMTestSetup {
         }
         vm.stopPrank();
 
-        console.log("Next step");
-        console.log("aavePM.getManagerInvocationTimestamps.length", aavePM.getManagerInvocationTimestamps().length);
-
         vm.warp(block.timestamp + 1 days + 1 hours);
         vm.startPrank(manager1);
         aavePM.deleverage();

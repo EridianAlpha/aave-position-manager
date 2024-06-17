@@ -3,6 +3,7 @@ pragma solidity 0.8.24;
 
 import {IAavePM} from "./IAavePM.sol";
 
+/// @notice // TODO: Add comment
 interface IAaveFunctionsModule {
     function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) external;
     function aaveWithdrawCollateral(address aavePoolAddress, address tokenAddress, uint256 withdrawAmount) external;

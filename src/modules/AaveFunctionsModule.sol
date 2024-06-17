@@ -16,13 +16,14 @@ import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/Transfer
 import {IAavePM} from "../interfaces/IAavePM.sol";
 import {IWETH9} from "../interfaces/IWETH9.sol";
 import {ITokenSwapsModule} from "src/interfaces/ITokenSwapsModule.sol";
+import {IAaveFunctionsModule} from "src/interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
 // │                   AAVEFUNCTIONS CONTRACT                     │
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract AaveFunctionsModule {
+contract AaveFunctionsModule is IAaveFunctionsModule {
     /// @notice Deposit all wstETH into Aave.
     ///      // TODO: Update comment.
     function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) public {

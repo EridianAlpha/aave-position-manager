@@ -11,13 +11,14 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 // Interface Imports
 import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {IAaveFunctionsModule} from "src/interfaces/IAaveFunctionsModule.sol";
+import {IRebalanceModule} from "src/interfaces/IRebalanceModule.sol";
 
 // ================================================================
 // │                       REBALANCE CONTRACT                     │
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract RebalanceModule {
+contract RebalanceModule is IRebalanceModule {
     /// @notice Rebalance the Aave position.
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      The function rebalances the Aave position.

@@ -12,13 +12,14 @@ import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 import {IAavePM} from "../interfaces/IAavePM.sol";
 import {ITokenSwapsModule} from "../interfaces/ITokenSwapsModule.sol";
 import {IAaveFunctionsModule} from "../interfaces/IAaveFunctionsModule.sol";
+import {IReinvestModule} from "../interfaces/IReinvestModule.sol";
 
 // ================================================================
 // │                        REINVEST CONTRACT                     │
 // ================================================================
 
 /// @notice // TODO: Add comment
-contract ReinvestModule {
+contract ReinvestModule is IReinvestModule {
     /// @notice // TODO: Add comment
     function reinvest() public returns (uint256 reinvestedDebt) {
         IAavePM aavePM = IAavePM(address(this));

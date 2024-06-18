@@ -6,6 +6,7 @@ import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRoute
 
 /// @notice // TODO: Add comment
 interface ITokenSwapsModule {
+    function getVersion() external pure returns (string memory version);
     function swapTokens(
         string memory _uniswapV3PoolIdentifier,
         string memory _tokenInIdentifier,

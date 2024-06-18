@@ -5,6 +5,7 @@ import {IAavePM} from "./IAavePM.sol";
 
 /// @notice // TODO: Add comment
 interface IAaveFunctionsModule {
+    function getVersion() external pure returns (string memory version);
     function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) external;
     function aaveWithdrawCollateral(address aavePoolAddress, address tokenAddress, uint256 withdrawAmount) external;
     function aaveBorrow(address aavePoolAddress, address tokenAddress, uint256 borrowAmount) external;

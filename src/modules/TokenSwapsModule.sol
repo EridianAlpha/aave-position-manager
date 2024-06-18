@@ -25,6 +25,17 @@ import {ITokenSwapsModule} from "../interfaces/ITokenSwapsModule.sol";
 
 /// @notice // TODO: Add comment
 contract TokenSwapsModule is ITokenSwapsModule {
+    /// @notice The version of the contract.
+    /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
+    string internal constant VERSION = "0.0.1";
+
+    /// @notice Getter function to get the contract version.
+    /// @dev Public function to allow anyone to view the contract version.
+    /// @return version The contract version.
+    function getVersion() public pure returns (string memory version) {
+        return VERSION;
+    }
+
     /// @notice Swaps the contract's entire specified token balance using a UniswapV3 pool.
     /// @dev Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
     ///      Reverts if there are no tokens in the contract or if the transaction doesn't meet the `amountOutMinimum` criteria due to price movements.

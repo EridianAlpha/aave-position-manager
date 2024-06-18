@@ -216,7 +216,7 @@ contract AavePM is
         s_managerDailyInvocationLimit = initialManagerDailyInvocationLimit;
 
         // TODO: Emit an event
-        s_eventBlockNumbers.push(uint64(block.number));
+        _storeEventBlockNumber();
     }
 
     // ================================================================
@@ -233,6 +233,7 @@ contract AavePM is
         onlyRole(OWNER_ROLE)
     {
         emit ContractAddressUpdated(_identifier, s_contractAddresses[_identifier], _newContractAddress);
+        _storeEventBlockNumber();
         s_contractAddresses[_identifier] = _newContractAddress;
     }
 
@@ -243,6 +244,7 @@ contract AavePM is
     /// @param _newTokenAddress The new token address.
     function updateTokenAddress(string memory _identifier, address _newTokenAddress) external onlyRole(OWNER_ROLE) {
         emit TokenAddressUpdated(_identifier, s_tokenAddresses[_identifier], _newTokenAddress);
+        _storeEventBlockNumber();
         s_tokenAddresses[_identifier] = _newTokenAddress;
     }
 
@@ -255,6 +257,7 @@ contract AavePM is
         uint24 _newUniswapV3PoolFee
     ) external onlyRole(OWNER_ROLE) {
         emit UniswapV3PoolUpdated(_identifier, _newUniswapV3PoolAddress, _newUniswapV3PoolFee);
+        _storeEventBlockNumber();
         s_uniswapV3Pools[_identifier] = UniswapV3Pool(_identifier, _newUniswapV3PoolAddress, _newUniswapV3PoolFee);
     }
 
@@ -273,6 +276,7 @@ contract AavePM is
         if (_healthFactorTarget < HEALTH_FACTOR_TARGET_MINIMUM) revert AavePM__HealthFactorBelowMinimum();
 
         emit HealthFactorTargetUpdated(s_healthFactorTarget, _healthFactorTarget);
+        _storeEventBlockNumber();
         s_healthFactorTarget = _healthFactorTarget;
     }
 
@@ -291,6 +295,7 @@ contract AavePM is
         if (_slippageTolerance < SLIPPAGE_TOLERANCE_MAXIMUM) revert AavePM__SlippageToleranceAboveMaximum();
 
         emit SlippageToleranceUpdated(s_slippageTolerance, _slippageTolerance);
+        _storeEventBlockNumber();
         s_slippageTolerance = _slippageTolerance;
     }
 
@@ -300,6 +305,11 @@ contract AavePM is
 
         // Reset the s_managerInvocationTimestamps array
         delete s_managerInvocationTimestamps;
+    }
+
+    /// @notice // TODO: Add comment
+    function _storeEventBlockNumber() private {
+        s_eventBlockNumbers.push(uint64(block.number));
     }
 
     // ================================================================
@@ -456,6 +466,7 @@ contract AavePM is
     function rescueEth(address _rescueAddress) external onlyRole(MANAGER_ROLE) checkOwner(_rescueAddress) {
         // * TRANSFER ETH *
         emit EthRescued(_rescueAddress, getContractBalance("ETH"));
+        _storeEventBlockNumber();
         (bool callSuccess,) = _rescueAddress.call{value: getContractBalance("ETH")}("");
         if (!callSuccess) revert AavePM__RescueEthFailed();
     }
@@ -899,8 +910,8 @@ contract AavePM is
     {
         UUPSUpgradeable.upgradeToAndCall(newImplementation, data);
 
-        // TODO: Emit an event
-        s_eventBlockNumbers.push(uint64(block.number));
+        // TODO: Emit an event (or does this function already emit an event?)
+        _storeEventBlockNumber();
     }
 
     // ================================================================

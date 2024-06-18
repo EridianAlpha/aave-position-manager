@@ -397,9 +397,12 @@ TODO: Add threshold details.</p>
 <li><a href="src/interfaces/IWETH9.sol/interface.IWETH9.html">IWETH9</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavefunctionsmodule"><a class="header" href="#iaavefunctionsmodule">IAaveFunctionsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/interfaces/IAaveFunctionsModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/interfaces/IAaveFunctionsModule.sol">Git Source</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
+<h3 id="getversion"><a class="header" href="#getversion">getVersion</a></h3>
+<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
+</code></pre>
 <h3 id="aavesupply"><a class="header" href="#aavesupply">aaveSupply</a></h3>
 <pre><code class="language-solidity">function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) external;
 </code></pre>
@@ -459,7 +462,7 @@ TODO: Add threshold details.</p>
 ) external pure returns (uint256 maxBorrowUSDC);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -531,10 +534,10 @@ TODO: Add threshold details.</p>
 <h3 id="getcreator"><a class="header" href="#getcreator">getCreator</a></h3>
 <pre><code class="language-solidity">function getCreator() external view returns (address creator);
 </code></pre>
-<h3 id="getupgradehistory"><a class="header" href="#getupgradehistory">getUpgradeHistory</a></h3>
-<pre><code class="language-solidity">function getUpgradeHistory() external view returns (UpgradeHistory[] memory);
+<h3 id="geteventblocknumbers"><a class="header" href="#geteventblocknumbers">getEventBlockNumbers</a></h3>
+<pre><code class="language-solidity">function getEventBlockNumbers() external view returns (uint64[] memory);
 </code></pre>
-<h3 id="getversion"><a class="header" href="#getversion">getVersion</a></h3>
+<h3 id="getversion-1"><a class="header" href="#getversion-1">getVersion</a></h3>
 <pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
 </code></pre>
 <h3 id="getcontractaddress"><a class="header" href="#getcontractaddress">getContractAddress</a></h3>
@@ -713,13 +716,6 @@ TODO: Add threshold details.</p>
 <pre><code class="language-solidity">error TokenSwaps__NotEnoughTokensForSwap(string tokenInIdentifier);
 </code></pre>
 <h2 id="structs"><a class="header" href="#structs">Structs</a></h2>
-<h3 id="upgradehistory"><a class="header" href="#upgradehistory">UpgradeHistory</a></h3>
-<pre><code class="language-solidity">struct UpgradeHistory {
-    string version;
-    uint256 upgradeTime;
-    address upgradeInitiator;
-}
-</code></pre>
 <h3 id="contractaddress"><a class="header" href="#contractaddress">ContractAddress</a></h3>
 <pre><code class="language-solidity">struct ContractAddress {
     string identifier;
@@ -740,16 +736,19 @@ TODO: Add threshold details.</p>
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iborrowandwithdrawusdcmodule"><a class="header" href="#iborrowandwithdrawusdcmodule">IBorrowAndWithdrawUSDCModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/interfaces/IBorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/interfaces/IBorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions-2"><a class="header" href="#functions-2">Functions</a></h2>
+<h3 id="getversion-2"><a class="header" href="#getversion-2">getVersion</a></h3>
+<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
+</code></pre>
 <h3 id="borrowandwithdrawusdc"><a class="header" href="#borrowandwithdrawusdc">borrowAndWithdrawUSDC</a></h3>
 <pre><code class="language-solidity">function borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
     external
     returns (uint256 repaidReinvestedDebt);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ierc20extended"><a class="header" href="#ierc20extended">IERC20Extended</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/interfaces/IERC20Extended.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/interfaces/IERC20Extended.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 IERC20</p>
 <p>This interface extends the ERC20 interface with the decimals function.</p>
@@ -758,23 +757,32 @@ IERC20</p>
 <pre><code class="language-solidity">function decimals() external view returns (uint8);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="irebalancemodule"><a class="header" href="#irebalancemodule">IRebalanceModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/interfaces/IRebalanceModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/interfaces/IRebalanceModule.sol">Git Source</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions-4"><a class="header" href="#functions-4">Functions</a></h2>
+<h3 id="getversion-3"><a class="header" href="#getversion-3">getVersion</a></h3>
+<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
+</code></pre>
 <h3 id="rebalance-1"><a class="header" href="#rebalance-1">rebalance</a></h3>
 <pre><code class="language-solidity">function rebalance() external returns (uint256 repaymentAmountUSDC);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ireinvestmodule"><a class="header" href="#ireinvestmodule">IReinvestModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/interfaces/IReinvestModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/interfaces/IReinvestModule.sol">Git Source</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions-5"><a class="header" href="#functions-5">Functions</a></h2>
+<h3 id="getversion-4"><a class="header" href="#getversion-4">getVersion</a></h3>
+<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
+</code></pre>
 <h3 id="reinvest-1"><a class="header" href="#reinvest-1">reinvest</a></h3>
 <pre><code class="language-solidity">function reinvest() external returns (uint256 reinvestedDebt);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="itokenswapsmodule"><a class="header" href="#itokenswapsmodule">ITokenSwapsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/interfaces/ITokenSwapsModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/interfaces/ITokenSwapsModule.sol">Git Source</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions-6"><a class="header" href="#functions-6">Functions</a></h2>
+<h3 id="getversion-5"><a class="header" href="#getversion-5">getVersion</a></h3>
+<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
+</code></pre>
 <h3 id="swaptokens"><a class="header" href="#swaptokens">swapTokens</a></h3>
 <pre><code class="language-solidity">function swapTokens(
     string memory _uniswapV3PoolIdentifier,
@@ -786,7 +794,7 @@ IERC20</p>
 <pre><code class="language-solidity">function wrapETHToWETH() external payable;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iweth9"><a class="header" href="#iweth9">IWETH9</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/interfaces/IWETH9.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/interfaces/IWETH9.sol">Git Source</a></p>
 <p>This interface enables the wrapping and unwrapping of ETH to WETH.</p>
 <h2 id="functions-7"><a class="header" href="#functions-7">Functions</a></h2>
 <h3 id="deposit"><a class="header" href="#deposit">deposit</a></h3>
@@ -804,11 +812,27 @@ IERC20</p>
 <li><a href="src/modules/TokenSwapsModule.sol/contract.TokenSwapsModule.html">TokenSwapsModule</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavefunctionsmodule"><a class="header" href="#aavefunctionsmodule">AaveFunctionsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/modules/AaveFunctionsModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/modules/AaveFunctionsModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/AaveFunctionsModule.sol//src/interfaces/IAaveFunctionsModule.sol/interface.IAaveFunctionsModule.html">IAaveFunctionsModule</a></p>
 <p>// TODO: Add comment</p>
+<h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
+<h3 id="version"><a class="header" href="#version">VERSION</a></h3>
+<p>The version of the contract.</p>
+<p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
+<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
+</code></pre>
 <h2 id="functions-8"><a class="header" href="#functions-8">Functions</a></h2>
+<h3 id="getversion-6"><a class="header" href="#getversion-6">getVersion</a></h3>
+<p>Getter function to get the contract version.</p>
+<p><em>Public function to allow anyone to view the contract version.</em></p>
+<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aavesupply-1"><a class="header" href="#aavesupply-1">aaveSupply</a></h3>
 <p>Deposit all wstETH into Aave.
 TODO: Update comment.</p>
@@ -896,11 +920,27 @@ TODO: Update comment.</p>
 ) public pure returns (uint256 maxBorrowUSDC);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="borrowandwithdrawusdcmodule"><a class="header" href="#borrowandwithdrawusdcmodule">BorrowAndWithdrawUSDCModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/modules/BorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/modules/BorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/BorrowAndWithdrawUSDCModule.sol//src/interfaces/IBorrowAndWithdrawUSDCModule.sol/interface.IBorrowAndWithdrawUSDCModule.html">IBorrowAndWithdrawUSDCModule</a></p>
 <p>// TODO: Add comment</p>
+<h2 id="state-variables-1"><a class="header" href="#state-variables-1">State Variables</a></h2>
+<h3 id="version-1"><a class="header" href="#version-1">VERSION</a></h3>
+<p>The version of the contract.</p>
+<p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
+<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
+</code></pre>
 <h2 id="functions-9"><a class="header" href="#functions-9">Functions</a></h2>
+<h3 id="getversion-7"><a class="header" href="#getversion-7">getVersion</a></h3>
+<p>Getter function to get the contract version.</p>
+<p><em>Public function to allow anyone to view the contract version.</em></p>
+<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
+</tbody></table>
+</div>
 <h3 id="borrowandwithdrawusdc-1"><a class="header" href="#borrowandwithdrawusdc-1">borrowAndWithdrawUSDC</a></h3>
 <p>// TODO: Add comment</p>
 <pre><code class="language-solidity">function borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
@@ -918,11 +958,27 @@ TODO: Update comment.</p>
 ) private pure returns (uint256 repaidReinvestedDebt);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="rebalancemodule"><a class="header" href="#rebalancemodule">RebalanceModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/modules/RebalanceModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/modules/RebalanceModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/RebalanceModule.sol//src/interfaces/IRebalanceModule.sol/interface.IRebalanceModule.html">IRebalanceModule</a></p>
 <p>// TODO: Add comment</p>
+<h2 id="state-variables-2"><a class="header" href="#state-variables-2">State Variables</a></h2>
+<h3 id="version-2"><a class="header" href="#version-2">VERSION</a></h3>
+<p>The version of the contract.</p>
+<p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
+<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
+</code></pre>
 <h2 id="functions-10"><a class="header" href="#functions-10">Functions</a></h2>
+<h3 id="getversion-8"><a class="header" href="#getversion-8">getVersion</a></h3>
+<p>Getter function to get the contract version.</p>
+<p><em>Public function to allow anyone to view the contract version.</em></p>
+<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
+</tbody></table>
+</div>
 <h3 id="rebalance-2"><a class="header" href="#rebalance-2">rebalance</a></h3>
 <p>Rebalance the Aave position.</p>
 <p><em>Caller must have <code>MANAGER_ROLE</code>.
@@ -942,11 +998,27 @@ If the health factor is below the target, it repays debt to increase the health 
 ) private returns (uint256 repaymentAmountUSDC);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="reinvestmodule"><a class="header" href="#reinvestmodule">ReinvestModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/modules/ReinvestModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/modules/ReinvestModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/ReinvestModule.sol//src/interfaces/IReinvestModule.sol/interface.IReinvestModule.html">IReinvestModule</a></p>
 <p>// TODO: Add comment</p>
+<h2 id="state-variables-3"><a class="header" href="#state-variables-3">State Variables</a></h2>
+<h3 id="version-3"><a class="header" href="#version-3">VERSION</a></h3>
+<p>The version of the contract.</p>
+<p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
+<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
+</code></pre>
 <h2 id="functions-11"><a class="header" href="#functions-11">Functions</a></h2>
+<h3 id="getversion-9"><a class="header" href="#getversion-9">getVersion</a></h3>
+<p>Getter function to get the contract version.</p>
+<p><em>Public function to allow anyone to view the contract version.</em></p>
+<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
+</tbody></table>
+</div>
 <h3 id="reinvest-2"><a class="header" href="#reinvest-2">reinvest</a></h3>
 <p>// TODO: Add comment</p>
 <pre><code class="language-solidity">function reinvest() public returns (uint256 reinvestedDebt);
@@ -965,11 +1037,27 @@ If the health factor is below the target, it repays debt to increase the health 
 ) private returns (uint256 borrowAmountUSDC);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="tokenswapsmodule"><a class="header" href="#tokenswapsmodule">TokenSwapsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/modules/TokenSwapsModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/modules/TokenSwapsModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/TokenSwapsModule.sol//src/interfaces/ITokenSwapsModule.sol/interface.ITokenSwapsModule.html">ITokenSwapsModule</a></p>
 <p>// TODO: Add comment</p>
+<h2 id="state-variables-4"><a class="header" href="#state-variables-4">State Variables</a></h2>
+<h3 id="version-4"><a class="header" href="#version-4">VERSION</a></h3>
+<p>The version of the contract.</p>
+<p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
+<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
+</code></pre>
 <h2 id="functions-12"><a class="header" href="#functions-12">Functions</a></h2>
+<h3 id="getversion-10"><a class="header" href="#getversion-10">getVersion</a></h3>
+<p>Getter function to get the contract version.</p>
+<p><em>Public function to allow anyone to view the contract version.</em></p>
+<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
+</code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
+</tbody></table>
+</div>
 <h3 id="swaptokens-1"><a class="header" href="#swaptokens-1">swapTokens</a></h3>
 <p>Swaps the contract's entire specified token balance using a UniswapV3 pool.</p>
 <p><em>Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
@@ -1018,13 +1106,13 @@ Reverts if there are no tokens in the contract or if the transaction doesn't mee
 <pre><code class="language-solidity">function _isIdentifierETH(string memory identifier) private pure returns (bool);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AavePM.sol//src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="src/AavePM.sol//src/FunctionChecks.sol/contract.FunctionChecks.html">FunctionChecks</a>, <a href="src/AavePM.sol//src/FlashLoan.sol/contract.FlashLoan.html">FlashLoan</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>A contract to manage positions on Aave.</p>
-<h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
+<h2 id="state-variables-5"><a class="header" href="#state-variables-5">State Variables</a></h2>
 <h3 id="s_creator"><a class="header" href="#s_creator">s_creator</a></h3>
 <pre><code class="language-solidity">address internal s_creator;
 </code></pre>
@@ -1052,8 +1140,8 @@ EridianAlpha</p>
 <h3 id="s_suppliedcollateraltotal"><a class="header" href="#s_suppliedcollateraltotal">s_suppliedCollateralTotal</a></h3>
 <pre><code class="language-solidity">uint256 internal s_suppliedCollateralTotal = 0;
 </code></pre>
-<h3 id="s_upgradehistory"><a class="header" href="#s_upgradehistory">s_upgradeHistory</a></h3>
-<pre><code class="language-solidity">UpgradeHistory[] internal s_upgradeHistory;
+<h3 id="s_eventblocknumbers"><a class="header" href="#s_eventblocknumbers">s_eventBlockNumbers</a></h3>
+<pre><code class="language-solidity">uint64[] internal s_eventBlockNumbers;
 </code></pre>
 <h3 id="s_managerdailyinvocationlimit"><a class="header" href="#s_managerdailyinvocationlimit">s_managerDailyInvocationLimit</a></h3>
 <pre><code class="language-solidity">uint16 internal s_managerDailyInvocationLimit;
@@ -1061,7 +1149,7 @@ EridianAlpha</p>
 <h3 id="s_managerinvocationtimestamps"><a class="header" href="#s_managerinvocationtimestamps">s_managerInvocationTimestamps</a></h3>
 <pre><code class="language-solidity">uint64[] internal s_managerInvocationTimestamps;
 </code></pre>
-<h3 id="version"><a class="header" href="#version">VERSION</a></h3>
+<h3 id="version-5"><a class="header" href="#version-5">VERSION</a></h3>
 <p>The version of the contract.</p>
 <p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
 <pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
@@ -1204,6 +1292,10 @@ Emits a <code>SlippageToleranceUpdated</code> event.</em></p>
 <p>// TODO: Add comment</p>
 <pre><code class="language-solidity">function updateManagerDailyInvocationLimit(uint16 _managerDailyInvocationLimit) external onlyRole(OWNER_ROLE);
 </code></pre>
+<h3 id="_storeeventblocknumber"><a class="header" href="#_storeeventblocknumber">_storeEventBlockNumber</a></h3>
+<p>// TODO: Add comment</p>
+<pre><code class="language-solidity">function _storeEventBlockNumber() private;
+</code></pre>
 <h3 id="rebalance-3"><a class="header" href="#rebalance-3">rebalance</a></h3>
 <p>Rebalance the Aave position.</p>
 <p><em>Caller must have <code>MANAGER_ROLE</code>.
@@ -1283,17 +1375,17 @@ Emits a <code>RescueEth</code> event.</em></p>
 <tr><td><code>creator</code></td><td><code>address</code></td><td>The address of the creator.</td></tr>
 </tbody></table>
 </div>
-<h3 id="getupgradehistory-1"><a class="header" href="#getupgradehistory-1">getUpgradeHistory</a></h3>
-<p>Getter function to get the upgrade history.</p>
-<p><em>Public function to allow anyone to view the upgrade history.</em></p>
-<pre><code class="language-solidity">function getUpgradeHistory() public view returns (UpgradeHistory[] memory);
+<h3 id="geteventblocknumbers-1"><a class="header" href="#geteventblocknumbers-1">getEventBlockNumbers</a></h3>
+<p>Getter function to get the block numbers of all the contract events.</p>
+<p><em>Public function to allow anyone to view the block numbers of  all the contract events.</em></p>
+<pre><code class="language-solidity">function getEventBlockNumbers() public view returns (uint64[] memory);
 </code></pre>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>&lt;none&gt;</code></td><td><code>UpgradeHistory[]</code></td><td>s_upgradeHistory The array of all upgrade history entries.</td></tr>
+<tr><td><code>&lt;none&gt;</code></td><td><code>uint64[]</code></td><td>eventBlockNumbers The array of event block numbers.</td></tr>
 </tbody></table>
 </div>
-<h3 id="getversion-1"><a class="header" href="#getversion-1">getVersion</a></h3>
+<h3 id="getversion-11"><a class="header" href="#getversion-11">getVersion</a></h3>
 <p>Getter function to get the contract version.</p>
 <p><em>Public function to allow anyone to view the contract version.</em></p>
 <pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
@@ -1585,7 +1677,7 @@ The function is called by the Aave pool contract and is not intended to be calle
 <tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>bool True if the operation was successful.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="flashloan"><a class="header" href="#flashloan">FlashLoan</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/FlashLoan.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/FlashLoan.sol">Git Source</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions-14"><a class="header" href="#functions-14">Functions</a></h2>
 <h3 id="_executeoperation"><a class="header" href="#_executeoperation">_executeOperation</a></h3>
@@ -1611,7 +1703,7 @@ The function is called by the Aave pool contract and is not intended to be calle
 <tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>bool True if the operation was successful.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="functionchecks"><a class="header" href="#functionchecks">FunctionChecks</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/FunctionChecks.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/FunctionChecks.sol">Git Source</a></p>
 <p>// TODO: Add comment</p>
 <h2 id="functions-15"><a class="header" href="#functions-15">Functions</a></h2>
 <h3 id="_checkowner"><a class="header" href="#_checkowner">_checkOwner</a></h3>

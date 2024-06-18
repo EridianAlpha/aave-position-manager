@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/119dc7dd2d312c1bf38e9e2eb3ce9dd353b04dd2/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b4cb110d1b0b38009db6df8e1fdc118967f33917/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -250,8 +250,8 @@
 <h3 id="getcreator"><a class="header" href="#getcreator">getCreator</a></h3>
 <pre><code class="language-solidity">function getCreator() external view returns (address creator);
 </code></pre>
-<h3 id="getupgradehistory"><a class="header" href="#getupgradehistory">getUpgradeHistory</a></h3>
-<pre><code class="language-solidity">function getUpgradeHistory() external view returns (UpgradeHistory[] memory);
+<h3 id="geteventblocknumbers"><a class="header" href="#geteventblocknumbers">getEventBlockNumbers</a></h3>
+<pre><code class="language-solidity">function getEventBlockNumbers() external view returns (uint64[] memory);
 </code></pre>
 <h3 id="getversion"><a class="header" href="#getversion">getVersion</a></h3>
 <pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
@@ -432,13 +432,6 @@
 <pre><code class="language-solidity">error TokenSwaps__NotEnoughTokensForSwap(string tokenInIdentifier);
 </code></pre>
 <h2 id="structs"><a class="header" href="#structs">Structs</a></h2>
-<h3 id="upgradehistory"><a class="header" href="#upgradehistory">UpgradeHistory</a></h3>
-<pre><code class="language-solidity">struct UpgradeHistory {
-    string version;
-    uint256 upgradeTime;
-    address upgradeInitiator;
-}
-</code></pre>
 <h3 id="contractaddress"><a class="header" href="#contractaddress">ContractAddress</a></h3>
 <pre><code class="language-solidity">struct ContractAddress {
     string identifier;

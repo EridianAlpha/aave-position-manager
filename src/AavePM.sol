@@ -61,7 +61,7 @@ contract AavePM is
     uint256 internal s_suppliedCollateralTotal = 0;
 
     // History and invocation tracking
-    UpgradeHistory[] internal s_upgradeHistory;
+    uint64[] internal s_eventBlockNumbers;
     uint16 internal s_managerDailyInvocationLimit;
     uint64[] internal s_managerInvocationTimestamps;
 
@@ -185,7 +185,6 @@ contract AavePM is
         uint16 initialManagerDailyInvocationLimit
     ) internal {
         s_creator = msg.sender;
-        s_upgradeHistory.push(UpgradeHistory(VERSION, block.timestamp, msg.sender));
 
         _grantRole(OWNER_ROLE, owner);
         _setRoleAdmin(OWNER_ROLE, OWNER_ROLE);
@@ -215,6 +214,9 @@ contract AavePM is
         s_healthFactorTarget = initialHealthFactorTarget;
         s_slippageTolerance = initialSlippageTolerance;
         s_managerDailyInvocationLimit = initialManagerDailyInvocationLimit;
+
+        // TODO: Emit an event
+        s_eventBlockNumbers.push(uint64(block.number));
     }
 
     // ================================================================
@@ -605,11 +607,11 @@ contract AavePM is
         return s_creator;
     }
 
-    /// @notice Getter function to get the upgrade history.
-    /// @dev Public function to allow anyone to view the upgrade history.
-    /// @return s_upgradeHistory The array of all upgrade history entries.
-    function getUpgradeHistory() public view returns (UpgradeHistory[] memory) {
-        return s_upgradeHistory;
+    /// @notice Getter function to get the block numbers of all the contract events.
+    /// @dev Public function to allow anyone to view the block numbers of  all the contract events.
+    /// @return eventBlockNumbers The array of event block numbers.
+    function getEventBlockNumbers() public view returns (uint64[] memory) {
+        return s_eventBlockNumbers;
     }
 
     /// @notice Getter function to get the contract version.
@@ -897,8 +899,8 @@ contract AavePM is
     {
         UUPSUpgradeable.upgradeToAndCall(newImplementation, data);
 
-        // Create an UpgradeHistory entry for the new version.
-        s_upgradeHistory.push(UpgradeHistory(IAavePM(newImplementation).getVersion(), block.timestamp, msg.sender));
+        // TODO: Emit an event
+        s_eventBlockNumbers.push(uint64(block.number));
     }
 
     // ================================================================

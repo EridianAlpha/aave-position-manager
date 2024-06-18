@@ -309,6 +309,10 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function _storeEventBlockNumber() private {
+        // This can result in duplicate block numbers being stored,
+        // but this will be rare and doesn't add a huge gas cost.
+        // The alternative is to check if the block number is already stored,
+        // but this would add an increasing gas cost for each check as the array grows.
         s_eventBlockNumbers.push(uint64(block.number));
     }
 

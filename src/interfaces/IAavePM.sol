@@ -53,15 +53,15 @@ interface IAavePM {
     // ================================================================
     // │                            EVENTS                            │
     // ================================================================
+
+    // Unindexed string are directly readable from the logs, indexed strings are hashed and not readable
     event EthRescued(address indexed to, uint256 amount);
     event ContractAddressUpdated(
-        string indexed identifier, address indexed previousContractAddress, address indexed newContractAddress
+        string identifier, address indexed previousContractAddress, address indexed newContractAddress
     );
-    event TokenAddressUpdated(
-        string indexed identifier, address indexed previousTokenAddress, address indexed newTokenAddress
-    );
+    event TokenAddressUpdated(string identifier, address indexed previousTokenAddress, address indexed newTokenAddress);
     event UniswapV3PoolUpdated(
-        string indexed identifier, address indexed newUniswapV3PoolAddress, uint24 indexed newUniswapV3PoolFee
+        string identifier, address indexed newUniswapV3PoolAddress, uint24 indexed newUniswapV3PoolFee
     );
     event HealthFactorTargetUpdated(uint16 previousHealthFactorTarget, uint16 newHealthFactorTarget);
     event SlippageToleranceUpdated(uint16 previousSlippageTolerance, uint16 newSlippageTolerance);

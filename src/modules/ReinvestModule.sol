@@ -35,7 +35,7 @@ contract ReinvestModule is IReinvestModule {
         return VERSION;
     }
 
-    address immutable aavePMProxyAddress;
+    address immutable public aavePMProxyAddress;
 
     constructor(address _aavePMProxyAddress) {
         aavePMProxyAddress = _aavePMProxyAddress;

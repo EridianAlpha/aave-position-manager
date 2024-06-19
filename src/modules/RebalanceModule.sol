@@ -34,7 +34,7 @@ contract RebalanceModule is IRebalanceModule {
         return VERSION;
     }
 
-    address immutable aavePMProxyAddress;
+    address public immutable aavePMProxyAddress;
 
     constructor(address _aavePMProxyAddress) {
         aavePMProxyAddress = _aavePMProxyAddress;

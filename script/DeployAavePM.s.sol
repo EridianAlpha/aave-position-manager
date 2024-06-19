@@ -16,7 +16,7 @@ import {AaveFunctionsModule} from "src/modules/AaveFunctionsModule.sol";
 import {BorrowAndWithdrawUSDCModule} from "src/modules/BorrowAndWithdrawUSDCModule.sol";
 
 contract DeployAavePM is Script {
-    function run() public returns (AavePM, HelperConfig, IAavePM.ContractAddress[] memory) {
+    function run() public returns (AavePM, HelperConfig, address) {
         HelperConfig helperConfig = new HelperConfig();
         HelperConfig.NetworkConfig memory config = helperConfig.getActiveNetworkConfig();
 
@@ -27,21 +27,12 @@ contract DeployAavePM is Script {
         uint16 initialSlippageTolerance = config.initialSlippageTolerance;
         uint16 initialManagerDailyInvocationLimit = config.initialManagerDailyInvocationLimit;
 
-        vm.startBroadcast();
+        // Specify the sender as msg.sender is needed for the test setup to work
+        // but that does not change anything for real deployments
+        vm.startBroadcast(msg.sender);
+
         // Deploy the implementation contract
         AavePM aavePMImplementation = new AavePM();
-
-        // Deploy the module contracts
-        IAavePM.ContractAddress[] memory newAddresses = new IAavePM.ContractAddress[](5);
-        newAddresses[0] = IAavePM.ContractAddress("tokenSwapsModule", address(new TokenSwapsModule()));
-        newAddresses[1] = IAavePM.ContractAddress("aaveFunctionsModule", address(new AaveFunctionsModule()));
-        newAddresses[2] =
-            IAavePM.ContractAddress("borrowAndWithdrawUSDCModule", address(new BorrowAndWithdrawUSDCModule()));
-        newAddresses[3] = IAavePM.ContractAddress("rebalanceModule", address(new RebalanceModule()));
-        newAddresses[4] = IAavePM.ContractAddress("reinvestModule", address(new ReinvestModule()));
-
-        // Add the new module contract addresses to the contractAddresses array
-        contractAddresses = addContractAddresses(contractAddresses, newAddresses);
 
         // Encode the initializer function
         bytes memory initData = abi.encodeWithSelector(
@@ -57,31 +48,19 @@ contract DeployAavePM is Script {
 
         // Deploy the proxy pointing to the implementation
         ERC1967Proxy proxy = new ERC1967Proxy(address(aavePMImplementation), initData);
+        AavePM aavePM = AavePM(payable(address(proxy)));
+
+        // Deploy the module contracts and pass in the proxy address now it is deployed
+        // so that only the proxy address can use the modules
+        aavePM.updateContractAddress("tokenSwapsModule", address(new TokenSwapsModule(address(aavePM))));
+        aavePM.updateContractAddress("aaveFunctionsModule", address(new AaveFunctionsModule(address(aavePM))));
+        aavePM.updateContractAddress(
+            "borrowAndWithdrawUSDCModule", address(new BorrowAndWithdrawUSDCModule(address(aavePM)))
+        );
+        aavePM.updateContractAddress("rebalanceModule", address(new RebalanceModule(address(aavePM))));
+        aavePM.updateContractAddress("reinvestModule", address(new ReinvestModule(address(aavePM))));
+
         vm.stopBroadcast();
-        return (AavePM(payable(address(proxy))), helperConfig, contractAddresses);
-    }
-
-    function addContractAddresses(
-        IAavePM.ContractAddress[] memory originalArray,
-        IAavePM.ContractAddress[] memory newElements
-    ) internal pure returns (IAavePM.ContractAddress[] memory) {
-        uint256 originalLength = originalArray.length;
-        uint256 newElementsLength = newElements.length;
-        uint256 newLength = originalLength + newElementsLength;
-
-        // Create a new memory array with the new length
-        IAavePM.ContractAddress[] memory newArray = new IAavePM.ContractAddress[](newLength);
-
-        // Copy all elements from the original array to the new array
-        for (uint256 i = 0; i < originalLength; i++) {
-            newArray[i] = originalArray[i];
-        }
-
-        // Add the new elements to the new array
-        for (uint256 j = 0; j < newElementsLength; j++) {
-            newArray[originalLength + j] = newElements[j];
-        }
-
-        return newArray;
+        return (aavePM, helperConfig, msg.sender);
     }
 }

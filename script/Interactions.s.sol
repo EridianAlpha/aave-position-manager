@@ -51,11 +51,13 @@ contract Interactions is Script {
         aavePM.upgradeToAndCall(address(newAavePM), "");
 
         // Deploy updated modules
-        aavePM.updateContractAddress("tokenSwapsModule", address(new TokenSwapsModule()));
-        aavePM.updateContractAddress("aaveFunctionsModule", address(new AaveFunctionsModule()));
-        aavePM.updateContractAddress("borrowAndWithdrawUSDCModule", address(new BorrowAndWithdrawUSDCModule()));
-        aavePM.updateContractAddress("rebalanceModule", address(new RebalanceModule()));
-        aavePM.updateContractAddress("reinvestModule", address(new ReinvestModule()));
+        aavePM.updateContractAddress("tokenSwapsModule", address(new TokenSwapsModule(address(aavePM))));
+        aavePM.updateContractAddress("aaveFunctionsModule", address(new AaveFunctionsModule(address(aavePM))));
+        aavePM.updateContractAddress(
+            "borrowAndWithdrawUSDCModule", address(new BorrowAndWithdrawUSDCModule(address(aavePM)))
+        );
+        aavePM.updateContractAddress("rebalanceModule", address(new RebalanceModule(address(aavePM))));
+        aavePM.updateContractAddress("reinvestModule", address(new ReinvestModule(address(aavePM))));
         vm.stopBroadcast();
     }
 

@@ -13,7 +13,9 @@ import {TokenSwapsModule} from "src/modules/TokenSwapsModule.sol";
 // │                        MODULE TESTS                          │
 // ================================================================
 contract AaveFunctionsModuleTests is Test, AaveFunctionsModule {
-    AaveFunctionsModule aaveFunctionsModule = new AaveFunctionsModule();
+    constructor() AaveFunctionsModule(address(this)) {}
+
+    AaveFunctionsModule aaveFunctionsModule = new AaveFunctionsModule(address(this));
 
     function test_GetVersion() public {
         assertEq(keccak256(abi.encodePacked(aaveFunctionsModule.getVersion())), keccak256(abi.encodePacked(VERSION)));
@@ -21,7 +23,9 @@ contract AaveFunctionsModuleTests is Test, AaveFunctionsModule {
 }
 
 contract BorrowAndWithdrawUSDCModuleTests is Test, BorrowAndWithdrawUSDCModule {
-    BorrowAndWithdrawUSDCModule borrowAndWithdrawUSDCModule = new BorrowAndWithdrawUSDCModule();
+    constructor() BorrowAndWithdrawUSDCModule(address(this)) {}
+
+    BorrowAndWithdrawUSDCModule borrowAndWithdrawUSDCModule = new BorrowAndWithdrawUSDCModule(address(this));
 
     function test_GetVersion() public {
         assertEq(
@@ -31,7 +35,9 @@ contract BorrowAndWithdrawUSDCModuleTests is Test, BorrowAndWithdrawUSDCModule {
 }
 
 contract RebalanceModuleTests is Test, RebalanceModule {
-    RebalanceModule rebalanceModule = new RebalanceModule();
+    constructor() RebalanceModule(address(this)) {}
+
+    RebalanceModule rebalanceModule = new RebalanceModule(address(this));
 
     function test_GetVersion() public {
         assertEq(keccak256(abi.encodePacked(rebalanceModule.getVersion())), keccak256(abi.encodePacked(VERSION)));
@@ -39,7 +45,9 @@ contract RebalanceModuleTests is Test, RebalanceModule {
 }
 
 contract ReinvestModuleTests is Test, ReinvestModule {
-    ReinvestModule reinvestModule = new ReinvestModule();
+    constructor() ReinvestModule(address(this)) {}
+
+    ReinvestModule reinvestModule = new ReinvestModule(address(this));
 
     function test_GetVersion() public {
         assertEq(keccak256(abi.encodePacked(reinvestModule.getVersion())), keccak256(abi.encodePacked(VERSION)));
@@ -47,7 +55,9 @@ contract ReinvestModuleTests is Test, ReinvestModule {
 }
 
 contract TokenSwapsModuleTests is Test, TokenSwapsModule {
-    TokenSwapsModule tokenSwapsModule = new TokenSwapsModule();
+    constructor() TokenSwapsModule(address(this)) {}
+
+    TokenSwapsModule tokenSwapsModule = new TokenSwapsModule(address(this));
 
     function test_GetVersion() public {
         assertEq(keccak256(abi.encodePacked(tokenSwapsModule.getVersion())), keccak256(abi.encodePacked(VERSION)));

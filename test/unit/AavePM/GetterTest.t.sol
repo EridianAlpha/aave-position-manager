@@ -13,20 +13,22 @@ import {IAaveFunctionsModule} from "src/interfaces/IAaveFunctionsModule.sol";
 // ================================================================
 contract AavePMGetterTests is AavePMTestSetup {
     function test_GetCreator() public {
-        assertEq(aavePM.getCreator(), msg.sender);
+        assertEq(aavePM.getCreator(), contractCreator);
     }
 
     function test_GetEventBlockNumbers() public {
-        // Check initial eventBlockNumbers length is 1 (from the initialization of the contract)
-        assertEq(aavePM.getEventBlockNumbers().length, 1);
+        // Check initial eventBlockNumbers length from the initialization of the contract and modules.
+        uint256 initialEventBlockNumbersLength = 6;
+
+        assertEq(aavePM.getEventBlockNumbers().length, initialEventBlockNumbersLength);
 
         // Trigger an event by updating the Health Factor Target
         vm.startPrank(manager1);
         aavePM.updateHealthFactorTarget(HEALTH_FACTOR_TARGET_MINIMUM);
         vm.stopPrank();
 
-        // Check the event block numbers are now 2.
-        assertEq(aavePM.getEventBlockNumbers().length, 2);
+        // Check the event block numbers are now one greater than the initial length.
+        assertEq(aavePM.getEventBlockNumbers().length, initialEventBlockNumbersLength + 1);
     }
 
     function test_GetVersion() public {

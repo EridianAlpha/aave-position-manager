@@ -10,7 +10,7 @@ import {console} from "forge-std/Test.sol";
 // ================================================================
 contract AavePMInitializeTests is AavePMTestSetup {
     function test_Initialize() public {
-        assertEq(aavePM.getCreator(), msg.sender);
+        assertEq(aavePM.getCreator(), contractCreator);
 
         assert(aavePM.hasRole(keccak256("OWNER_ROLE"), owner1));
         assert(aavePM.getRoleAdmin(keccak256("OWNER_ROLE")) == keccak256("OWNER_ROLE"));

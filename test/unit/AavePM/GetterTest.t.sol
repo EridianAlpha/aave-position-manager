@@ -16,6 +16,19 @@ contract AavePMGetterTests is AavePMTestSetup {
         assertEq(aavePM.getCreator(), msg.sender);
     }
 
+    function test_GetEventBlockNumbers() public {
+        // Check initial eventBlockNumbers length is 1 (from the initialization of the contract)
+        assertEq(aavePM.getEventBlockNumbers().length, 1);
+
+        // Trigger an event by updating the Health Factor Target
+        vm.startPrank(manager1);
+        aavePM.updateHealthFactorTarget(HEALTH_FACTOR_TARGET_MINIMUM);
+        vm.stopPrank();
+
+        // Check the event block numbers are now 2.
+        assertEq(aavePM.getEventBlockNumbers().length, 2);
+    }
+
     function test_GetVersion() public {
         assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(VERSION)));
     }

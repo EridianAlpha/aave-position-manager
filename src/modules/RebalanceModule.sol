@@ -19,6 +19,10 @@ import {IRebalanceModule} from "src/interfaces/IRebalanceModule.sol";
 
 /// @notice // TODO: Add comment
 contract RebalanceModule is IRebalanceModule {
+    // ================================================================
+    // │                         MODULE SETUP                         │
+    // ================================================================
+
     /// @notice The version of the contract.
     /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
     string internal constant VERSION = "0.0.1";
@@ -30,11 +34,26 @@ contract RebalanceModule is IRebalanceModule {
         return VERSION;
     }
 
+    address immutable aavePMProxyAddress;
+
+    constructor(address _aavePMProxyAddress) {
+        aavePMProxyAddress = _aavePMProxyAddress;
+    }
+
+    modifier onlyAavePM() {
+        if (address(this) != aavePMProxyAddress) revert RebalanceModule__InvalidAavePMProxyAddress();
+        _;
+    }
+
+    // ================================================================
+    // │                       MODULE FUNCTIONS                       │
+    // ================================================================
+
     /// @notice Rebalance the Aave position.
     /// @dev Caller must have `MANAGER_ROLE`.
     ///      The function rebalances the Aave position.
     ///      If the health factor is below the target, it repays debt to increase the health factor.
-    function rebalance() public returns (uint256 repaymentAmountUSDC) {
+    function rebalance() public onlyAavePM returns (uint256 repaymentAmountUSDC) {
         IAavePM aavePM = IAavePM(address(this));
 
         (

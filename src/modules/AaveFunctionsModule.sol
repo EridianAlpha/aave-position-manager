@@ -24,6 +24,10 @@ import {IAaveFunctionsModule} from "src/interfaces/IAaveFunctionsModule.sol";
 
 /// @notice // TODO: Add comment
 contract AaveFunctionsModule is IAaveFunctionsModule {
+    // ================================================================
+    // │                         MODULE SETUP                         │
+    // ================================================================
+
     /// @notice The version of the contract.
     /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
     string internal constant VERSION = "0.0.1";
@@ -35,9 +39,24 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
         return VERSION;
     }
 
+    address immutable aavePMProxyAddress;
+
+    constructor(address _aavePMProxyAddress) {
+        aavePMProxyAddress = _aavePMProxyAddress;
+    }
+
+    modifier onlyAavePM() {
+        if (address(this) != aavePMProxyAddress) revert AaveFunctionsModule__InvalidAavePMProxyAddress();
+        _;
+    }
+
+    // ================================================================
+    // │                       MODULE FUNCTIONS                       │
+    // ================================================================
+
     /// @notice Deposit all wstETH into Aave.
     ///      // TODO: Update comment.
-    function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) public {
+    function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) public onlyAavePM {
         // Takes all tokens in the contract and deposits it into Aave
         TransferHelper.safeApprove(tokenAddress, aavePoolAddress, tokenBalance);
         IPool(aavePoolAddress).deposit(tokenAddress, tokenBalance, address(this), 0);
@@ -45,21 +64,24 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
 
     /// @notice Withdraw wstETH from Aave.
     ///      // TODO: Update comment.
-    function aaveWithdrawCollateral(address aavePoolAddress, address tokenAddress, uint256 withdrawAmount) public {
+    function aaveWithdrawCollateral(address aavePoolAddress, address tokenAddress, uint256 withdrawAmount)
+        public
+        onlyAavePM
+    {
         IPool(aavePoolAddress).withdraw(tokenAddress, withdrawAmount, address(this));
     }
 
     /// @notice Borrow USDC from Aave.
     ///      // TODO: Update comment.
     /// @param borrowAmount The amount of USDC to borrow. 8 decimal places to the dollar. e.g. 100000000 = $1.00.
-    function aaveBorrow(address aavePoolAddress, address tokenAddress, uint256 borrowAmount) public {
+    function aaveBorrow(address aavePoolAddress, address tokenAddress, uint256 borrowAmount) public onlyAavePM {
         IPool(aavePoolAddress).borrow(tokenAddress, borrowAmount, 2, 0, address(this));
     }
 
     /// @notice Repay USDC debt to Aave.
     ///      // TODO: Update comment.
     /// @param repayAmount The amount of USDC to repay. 8 decimal places to the dollar. e.g. 100000000 = $1.00.
-    function aaveRepayDebt(address aavePoolAddress, address tokenAddress, uint256 repayAmount) public {
+    function aaveRepayDebt(address aavePoolAddress, address tokenAddress, uint256 repayAmount) public onlyAavePM {
         TransferHelper.safeApprove(tokenAddress, aavePoolAddress, repayAmount);
         IPool(aavePoolAddress).repay(tokenAddress, repayAmount, 2, address(this));
     }
@@ -158,7 +180,7 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
     }
 
     /// @notice // TODO: Add comment
-    function convertExistingBalanceToWstETHAndSupplyToAave() public returns (uint256 suppliedCollateral) {
+    function convertExistingBalanceToWstETHAndSupplyToAave() public onlyAavePM returns (uint256 suppliedCollateral) {
         IAavePM aavePM = IAavePM(address(this));
         address aavePoolAddress = aavePM.getContractAddress("aavePool");
         address wstETHAddress = aavePM.getTokenAddress("wstETH");

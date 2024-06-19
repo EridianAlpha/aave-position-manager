@@ -20,6 +20,10 @@ import {IBorrowAndWithdrawUSDCModule} from "../interfaces/IBorrowAndWithdrawUSDC
 
 /// @notice // TODO: Add comment
 contract BorrowAndWithdrawUSDCModule is IBorrowAndWithdrawUSDCModule {
+    // ================================================================
+    // │                         MODULE SETUP                         │
+    // ================================================================
+
     /// @notice The version of the contract.
     /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
     string internal constant VERSION = "0.0.1";
@@ -31,9 +35,25 @@ contract BorrowAndWithdrawUSDCModule is IBorrowAndWithdrawUSDCModule {
         return VERSION;
     }
 
+    address immutable aavePMProxyAddress;
+
+    constructor(address _aavePMProxyAddress) {
+        aavePMProxyAddress = _aavePMProxyAddress;
+    }
+
+    modifier onlyAavePM() {
+        if (address(this) != aavePMProxyAddress) revert BorrowAndWithdrawUSDCModule__InvalidAavePMProxyAddress();
+        _;
+    }
+
+    // ================================================================
+    // │                       MODULE FUNCTIONS                       │
+    // ================================================================
+
     /// @notice // TODO: Add comment
     function borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
         public
+        onlyAavePM
         returns (uint256 repaidReinvestedDebt)
     {
         IAavePM aavePM = IAavePM(address(this));

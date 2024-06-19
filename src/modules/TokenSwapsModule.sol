@@ -25,6 +25,10 @@ import {ITokenSwapsModule} from "../interfaces/ITokenSwapsModule.sol";
 
 /// @notice // TODO: Add comment
 contract TokenSwapsModule is ITokenSwapsModule {
+    // ================================================================
+    // │                         MODULE SETUP                         │
+    // ================================================================
+
     /// @notice The version of the contract.
     /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
     string internal constant VERSION = "0.0.1";
@@ -35,6 +39,21 @@ contract TokenSwapsModule is ITokenSwapsModule {
     function getVersion() public pure returns (string memory version) {
         return VERSION;
     }
+
+    address immutable aavePMProxyAddress;
+
+    constructor(address _aavePMProxyAddress) {
+        aavePMProxyAddress = _aavePMProxyAddress;
+    }
+
+    modifier onlyAavePM() {
+        if (address(this) != aavePMProxyAddress) revert TokenSwapsModule__InvalidAavePMProxyAddress();
+        _;
+    }
+
+    // ================================================================
+    // │                       MODULE FUNCTIONS                       │
+    // ================================================================
 
     /// @notice Swaps the contract's entire specified token balance using a UniswapV3 pool.
     /// @dev Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
@@ -48,7 +67,7 @@ contract TokenSwapsModule is ITokenSwapsModule {
         string memory _uniswapV3PoolIdentifier,
         string memory _tokenInIdentifier,
         string memory _tokenOutIdentifier
-    ) public returns (string memory tokenOutIdentifier, uint256 amountOut) {
+    ) public onlyAavePM returns (string memory tokenOutIdentifier, uint256 amountOut) {
         IAavePM aavePM = IAavePM(address(this));
         (address uniswapV3PoolAddress, uint24 uniswapV3PoolFee) = aavePM.getUniswapV3Pool(_uniswapV3PoolIdentifier);
 
@@ -98,7 +117,7 @@ contract TokenSwapsModule is ITokenSwapsModule {
     }
 
     /// @notice // TODO: Add comment
-    function wrapETHToWETH() public payable {
+    function wrapETHToWETH() public payable onlyAavePM {
         IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
     }
 

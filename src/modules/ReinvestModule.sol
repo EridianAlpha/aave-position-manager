@@ -20,6 +20,10 @@ import {IReinvestModule} from "../interfaces/IReinvestModule.sol";
 
 /// @notice // TODO: Add comment
 contract ReinvestModule is IReinvestModule {
+    // ================================================================
+    // │                         MODULE SETUP                         │
+    // ================================================================
+
     /// @notice The version of the contract.
     /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
     string internal constant VERSION = "0.0.1";
@@ -31,8 +35,23 @@ contract ReinvestModule is IReinvestModule {
         return VERSION;
     }
 
+    address immutable aavePMProxyAddress;
+
+    constructor(address _aavePMProxyAddress) {
+        aavePMProxyAddress = _aavePMProxyAddress;
+    }
+
+    modifier onlyAavePM() {
+        if (address(this) != aavePMProxyAddress) revert ReinvestModule__InvalidAavePMProxyAddress();
+        _;
+    }
+
+    // ================================================================
+    // │                       MODULE FUNCTIONS                       │
+    // ================================================================
+
     /// @notice // TODO: Add comment
-    function reinvest() public returns (uint256 reinvestedDebt) {
+    function reinvest() public onlyAavePM returns (uint256 reinvestedDebt) {
         IAavePM aavePM = IAavePM(address(this));
 
         // Set the initial reinvested debt to 0.

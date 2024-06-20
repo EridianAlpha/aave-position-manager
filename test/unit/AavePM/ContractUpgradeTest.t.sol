@@ -3,6 +3,7 @@ pragma solidity 0.8.24;
 
 import {AavePMTestSetup} from "test/unit/AavePM/TestSetupTest.t.sol";
 
+import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {AavePM} from "src/AavePM.sol";
 import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 import {InvalidUpgrade} from "test/testHelperContracts/InvalidUpgrade.sol";
@@ -19,8 +20,14 @@ contract AavePMContractUpgradeTests is AavePMTestSetup {
         // Check version before upgrade
         assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(VERSION)));
 
+        // This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1
+        bytes32 slot = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+        address previousImplementation = address(uint160(uint256(vm.load(address(aavePM), slot))));
+
         // Upgrade
         vm.prank(owner1);
+        vm.expectEmit();
+        emit IAavePM.AavePMUpgraded(previousImplementation, address(aavePMUpgradeExample));
         aavePM.upgradeToAndCall(address(aavePMUpgradeExample), "");
         assertEq(keccak256(abi.encodePacked(aavePM.getVersion())), keccak256(abi.encodePacked(UPGRADE_EXAMPLE_VERSION)));
     }

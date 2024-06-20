@@ -25,6 +25,13 @@ contract ReinvestTests is AavePMTestSetup {
         // Used as the setup for other reinvest tests.
         vm.startPrank(manager1);
         sendEth(address(aavePM), SEND_VALUE);
+
+        // The first parameter: Whether to check the event signature.
+        // The second parameter: Whether to check the indexed parameters (topics) of the event.
+        // The third parameter: Whether to check the unindexed parameters (data) of the event.
+        // The fourth parameter: Whether to check the event data's values.
+        vm.expectEmit(true, true, true, false);
+        emit IAavePM.Reinvested(0); // The data is a placeholder and not checked
         aavePM.reinvest();
         checkEndHealthFactor(address(aavePM));
         vm.stopPrank();

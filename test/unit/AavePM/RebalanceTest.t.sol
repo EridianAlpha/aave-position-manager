@@ -49,6 +49,13 @@ contract RebalanceTests is AavePMTestSetup {
         // Setup contract using the standard rebalance test
         test_RebalanceSetup();
         vm.startPrank(manager1);
+
+        // The first parameter: Whether to check the event signature.
+        // The second parameter: Whether to check the indexed parameters (topics) of the event.
+        // The third parameter: Whether to check the unindexed parameters (data) of the event.
+        // The fourth parameter: Whether to check the event data's values.
+        vm.expectEmit(true, true, true, false);
+        emit IAavePM.Rebalanced(0); // The data is a placeholder and not checked
         aavePM.rebalance();
         checkEndHealthFactor(address(aavePM));
         vm.stopPrank();

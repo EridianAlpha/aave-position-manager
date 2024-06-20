@@ -14,6 +14,13 @@ contract WithdrawTokensFromContractBalanceTest is AavePMTestSetup {
     function withdrawToken_SetUp() public {
         vm.startPrank(manager1);
         sendEth(address(aavePM), SEND_VALUE);
+
+        // The first parameter: Whether to check the event signature.
+        // The second parameter: Whether to check the indexed parameters (topics) of the event.
+        // The third parameter: Whether to check the unindexed parameters (data) of the event.
+        // The fourth parameter: Whether to check the event data's values.
+        vm.expectEmit(true, true, true, false);
+        emit IAavePM.AaveSuppliedFromContractBalance(0); // The data is a placeholder and not checked
         aavePM.aaveSupplyFromContractBalance();
         aavePM.aaveBorrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
         aavePM.reinvest();
@@ -58,6 +65,8 @@ contract WithdrawTokensFromContractBalanceTest is AavePMTestSetup {
         uint256 contractBalanceBefore = IERC20(USDC).balanceOf(address(aavePM));
         uint256 ownerBalanceBefore = IERC20(USDC).balanceOf(owner1);
 
+        vm.expectEmit();
+        emit IAavePM.TokensWithdrawnFromContractBalance("USDC", contractBalanceBefore);
         aavePM.withdrawTokensFromContractBalance("USDC", owner1);
 
         uint256 contractBalanceAfter = IERC20(USDC).balanceOf(address(aavePM));

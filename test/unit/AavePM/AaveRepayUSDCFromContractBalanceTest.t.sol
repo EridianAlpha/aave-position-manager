@@ -51,6 +51,8 @@ contract AaveRepayUSDCFromContractBalanceTests is AavePMTestSetup {
         assertEq(aavePM.getWithdrawnUSDCTotal(), USDC_BORROW_AMOUNT);
 
         // Repay the USDC debt from the contract balance
+        vm.expectEmit(true, true, true, false);
+        emit IAavePM.AaveRepayedUSDCFromContractBalance(0); // The data is a placeholder and not checked
         aavePM.aaveRepayUSDCFromContractBalance();
 
         // Check that the debt has been repaid
@@ -139,6 +141,8 @@ contract AaveRepayUSDCFromContractBalanceTests is AavePMTestSetup {
 
         // Close the position
         vm.startPrank(manager1);
+        vm.expectEmit();
+        emit IAavePM.AaveClosedPosition(owner1);
         aavePM.aaveClosePosition(owner1);
         vm.stopPrank();
 

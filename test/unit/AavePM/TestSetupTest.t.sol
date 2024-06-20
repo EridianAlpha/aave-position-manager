@@ -62,6 +62,8 @@ contract AavePMTestSetup is Test, HelperFunctions, AavePM {
 
         // Call the _initialize function to set up this test contract,
         // initialized with the same config as the AavePM contract
+        vm.expectEmit();
+        emit IAavePM.AavePMInitialized(msg.sender);
         _initializeState(
             defaultFoundryCaller,
             config.contractAddresses,

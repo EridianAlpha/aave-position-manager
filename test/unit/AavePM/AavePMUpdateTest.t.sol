@@ -124,6 +124,11 @@ contract AavePMUpdateTests is AavePMTestSetup {
         uint16 newManagerDailyInvocationLimit =
             previousManagerDailyInvocationLimit + MANAGER_DAILY_INVOCATION_LIMIT_CHANGE;
 
+        vm.expectEmit();
+        emit IAavePM.ManagerDailyInvocationLimitUpdated(
+            previousManagerDailyInvocationLimit, newManagerDailyInvocationLimit
+        );
+
         vm.startPrank(owner1);
         aavePM.updateManagerDailyInvocationLimit(newManagerDailyInvocationLimit);
         assertEq(aavePM.getManagerDailyInvocationLimit(), newManagerDailyInvocationLimit);

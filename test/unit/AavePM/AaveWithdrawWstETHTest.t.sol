@@ -31,6 +31,9 @@ contract AaveWithdrawWstETHTests is AavePMTestSetup {
             IPool(aavePM.getContractAddress("aavePool")).getUserAccountData(address(aavePM));
 
         // Withdraw immediately
+
+        vm.expectEmit();
+        emit IAavePM.AaveWithdrawnWstETH(owner1, aavePM.getContractBalance("awstETH"));
         uint256 collateralDeltaBase = aavePM.aaveWithdrawWstETH(aavePM.getContractBalance("awstETH"), owner1);
 
         assertEq(collateralDeltaBase, totalCollateralBaseBefore);

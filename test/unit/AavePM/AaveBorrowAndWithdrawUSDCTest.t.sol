@@ -56,6 +56,8 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         aavePM.aaveSupplyFromContractBalance();
 
         // Borrow USDC immediately, without reinvesting
+        vm.expectEmit();
+        emit IAavePM.AaveBorrowedAndWithdrawnUSDC(owner1, USDC_BORROW_AMOUNT);
         aavePM.aaveBorrowAndWithdrawUSDC(USDC_BORROW_AMOUNT, owner1);
 
         // Check the USDC balance of owner1

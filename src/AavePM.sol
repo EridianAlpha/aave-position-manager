@@ -215,8 +215,11 @@ contract AavePM is
         s_slippageTolerance = initialSlippageTolerance;
         s_managerDailyInvocationLimit = initialManagerDailyInvocationLimit;
 
-        // TODO: Emit an event
-        _storeEventBlockNumber();
+        emit AavePMInitialized(msg.sender);
+        // Directly store the block number of the initialization event.
+        // This removes the need for a check for the array length being
+        // 0 in the _storeEventBlockNumber function.
+        s_eventBlockNumbers.push(uint64(block.number));
     }
 
     // ================================================================
@@ -301,6 +304,9 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function updateManagerDailyInvocationLimit(uint16 _managerDailyInvocationLimit) external onlyRole(OWNER_ROLE) {
+        emit ManagerDailyInvocationLimitUpdated(s_managerDailyInvocationLimit, _managerDailyInvocationLimit);
+        _storeEventBlockNumber();
+
         s_managerDailyInvocationLimit = _managerDailyInvocationLimit;
 
         // Reset the s_managerInvocationTimestamps array
@@ -309,11 +315,9 @@ contract AavePM is
 
     /// @notice // TODO: Add comment
     function _storeEventBlockNumber() private {
-        // This can result in duplicate block numbers being stored,
-        // but this will be rare and doesn't add a huge gas cost.
-        // The alternative is to check if the block number is already stored,
-        // but this would add an increasing gas cost for each check as the array grows.
-        s_eventBlockNumbers.push(uint64(block.number));
+        if (s_eventBlockNumbers[s_eventBlockNumbers.length - 1] != uint64(block.number)) {
+            s_eventBlockNumbers.push(uint64(block.number));
+        }
     }
 
     // ================================================================
@@ -344,10 +348,13 @@ contract AavePM is
         } else {
             s_reinvestedDebtTotal = 0;
         }
+
+        emit Rebalance(repaymentAmountUSDC);
+        _storeEventBlockNumber();
     }
 
     /// @notice // TODO: Add comment
-    function reinvest() public onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt) {
+    function reinvest() public payable onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt) {
         checkManagerInvocationLimit();
 
         // Convert any existing tokens to wstETH and supply to Aave.
@@ -362,7 +369,8 @@ contract AavePM is
         );
         if (reinvestedDebt > 0) s_reinvestedDebtTotal += reinvestedDebt;
 
-        // TODO: Emit an event with suppliedCollateral, reinvestedDebt, reinvestedCollateral
+        emit Reinvest(reinvestedDebt);
+        _storeEventBlockNumber();
     }
 
     /// @notice // TODO: Add comment
@@ -376,12 +384,15 @@ contract AavePM is
         }
 
         // Rebalance position to repay all debt.
-        rebalance();
+        uint256 repaymentAmountUSDC = rebalance();
 
         // Reset the Health Factor target to the previous value.
         if (previousHealthFactorTarget != type(uint16).max) {
             s_healthFactorTarget = previousHealthFactorTarget;
         }
+
+        emit Deleverage(repaymentAmountUSDC);
+        _storeEventBlockNumber();
     }
 
     /// @notice // TODO: Add comment
@@ -400,8 +411,12 @@ contract AavePM is
             ),
             (uint256)
         );
-        if (suppliedCollateral > 0) s_suppliedCollateralTotal += suppliedCollateral;
-        // TODO: Add event to emit the suppliedCollateral
+        if (suppliedCollateral > 0) {
+            s_suppliedCollateralTotal += suppliedCollateral;
+
+            emit AaveSupplyFromContractBalance(suppliedCollateral);
+            _storeEventBlockNumber();
+        }
     }
 
     /// @notice // TODO: Add comment
@@ -431,6 +446,9 @@ contract AavePM is
             s_reinvestedDebtTotal = 0;
             s_withdrawnUSDCTotal = 0;
         }
+
+        emit AaveRepayUSDCFromContractBalance(usdcBalance);
+        _storeEventBlockNumber();
     }
 
     /// @notice // TODO: Add comment and move to different heading. How to protect this function?
@@ -490,7 +508,8 @@ contract AavePM is
 
         IERC20(s_tokenAddresses[_identifier]).transfer(_owner, tokenBalance);
 
-        // TODO: Emit event
+        emit TokensWithdrawnFromContractBalance(_identifier, tokenBalance);
+        _storeEventBlockNumber();
     }
 
     /// @notice // TODO: Add comment
@@ -541,7 +560,8 @@ contract AavePM is
             abi.encodeWithSelector(IAaveFunctionsModule.checkHealthFactorAboveMinimum.selector, new bytes(0))
         );
 
-        // TODO: Emit an event
+        emit AaveWithdrawWstETH(_owner, _amount);
+        _storeEventBlockNumber();
     }
 
     /// @notice // TODO: Add comment
@@ -592,6 +612,9 @@ contract AavePM is
             "aaveFunctionsModule",
             abi.encodeWithSelector(IAaveFunctionsModule.checkHealthFactorAboveMinimum.selector, new bytes(0))
         );
+
+        emit AaveBorrowAndWithdrawUSDC(_owner, _amount);
+        _storeEventBlockNumber();
     }
 
     /// @notice // TODO: Add comment
@@ -609,6 +632,9 @@ contract AavePM is
         s_withdrawnUSDCTotal = 0;
         s_reinvestedDebtTotal = 0;
         s_suppliedCollateralTotal = 0;
+
+        emit AaveClosePosition(_owner);
+        _storeEventBlockNumber();
     }
 
     // ================================================================
@@ -859,6 +885,7 @@ contract AavePM is
         override(IAavePM, IAccessControl, AccessControlUpgradeable)
     {
         AccessControlUpgradeable.grantRole(role, account);
+        _storeEventBlockNumber();
     }
 
     /// @notice // TODO: Add comment
@@ -877,6 +904,7 @@ contract AavePM is
         override(IAavePM, IAccessControl, AccessControlUpgradeable)
     {
         AccessControlUpgradeable.renounceRole(role, callerConfirmation);
+        _storeEventBlockNumber();
     }
 
     /// @notice // TODO: Add comment
@@ -885,6 +913,7 @@ contract AavePM is
         override(IAavePM, IAccessControl, AccessControlUpgradeable)
     {
         AccessControlUpgradeable.revokeRole(role, account);
+        _storeEventBlockNumber();
     }
 
     /// @notice // TODO: Add comment
@@ -912,10 +941,17 @@ contract AavePM is
         payable
         override(IAavePM, UUPSUpgradeable)
     {
-        UUPSUpgradeable.upgradeToAndCall(newImplementation, data);
+        // This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1
+        bytes32 slot = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+        address previousImplementation;
+        assembly {
+            previousImplementation := sload(slot)
+        }
 
-        // TODO: Emit an event (or does this function already emit an event?)
+        emit AavePMUpgraded(previousImplementation, newImplementation);
         _storeEventBlockNumber();
+
+        UUPSUpgradeable.upgradeToAndCall(newImplementation, data);
     }
 
     // ================================================================
@@ -936,6 +972,9 @@ contract AavePM is
         external
         returns (bool)
     {
+        emit FlashLoanExecuted(asset, amount, premium);
+        _storeEventBlockNumber();
+
         return _executeOperation(asset, amount, premium, initiator, params);
     }
 }

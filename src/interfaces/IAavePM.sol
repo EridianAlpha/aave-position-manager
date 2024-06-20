@@ -55,16 +55,36 @@ interface IAavePM {
     // ================================================================
 
     // Unindexed string are directly readable from the logs, indexed strings are hashed and not readable
-    event EthRescued(address indexed to, uint256 amount);
+    event AavePMInitialized(address indexed owner);
+
+    // Updates
     event ContractAddressUpdated(
         string identifier, address indexed previousContractAddress, address indexed newContractAddress
     );
     event TokenAddressUpdated(string identifier, address indexed previousTokenAddress, address indexed newTokenAddress);
-    event UniswapV3PoolUpdated(
-        string identifier, address indexed newUniswapV3PoolAddress, uint24 indexed newUniswapV3PoolFee
-    );
+    event UniswapV3PoolUpdated(string identifier, address indexed newUniswapV3PoolAddress, uint24 newUniswapV3PoolFee);
     event HealthFactorTargetUpdated(uint16 previousHealthFactorTarget, uint16 newHealthFactorTarget);
     event SlippageToleranceUpdated(uint16 previousSlippageTolerance, uint16 newSlippageTolerance);
+    event ManagerDailyInvocationLimitUpdated(
+        uint16 previousManagerDailyInvocationLimit, uint16 newManagerDailyInvocationLimit
+    );
+
+    // Core Functions
+    event Rebalance(uint256 repaymentAmountUSDC);
+    event Reinvest(uint256 reinvestedDebt);
+    event Deleverage(uint256 repaymentAmountUSDC);
+    event AaveSupplyFromContractBalance(uint256 suppliedCollateral);
+    event AaveRepayUSDCFromContractBalance(uint256 usdcBalance);
+
+    // Withdraw Functions
+    event EthRescued(address indexed to, uint256 amount);
+    event TokensWithdrawnFromContractBalance(string identifier, uint256 tokenBalance);
+    event AaveWithdrawWstETH(address indexed ownerAddress, uint256 amount);
+    event AaveBorrowAndWithdrawUSDC(address indexed ownerAddress, uint256 amount);
+    event AaveClosePosition(address indexed ownerAddress);
+
+    event AavePMUpgraded(address indexed previousImplementation, address indexed newImplementation);
+    event FlashLoanExecuted(address indexed asset, uint256 amount, uint256 premium);
 
     // ================================================================
     // │                    FUNCTIONS - INITIALIZER                   │
@@ -94,7 +114,7 @@ interface IAavePM {
     // │                   FUNCTIONS - CORE FUNCTIONS                 │
     // ================================================================
     function rebalance() external returns (uint256 repaymentAmountUSDC);
-    function reinvest() external returns (uint256 reinvestedDebt);
+    function reinvest() external payable returns (uint256 reinvestedDebt);
     function deleverage() external;
     function aaveSupplyFromContractBalance() external payable returns (uint256 suppliedCollateral);
     function aaveRepayUSDCFromContractBalance() external;

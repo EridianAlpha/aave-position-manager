@@ -349,7 +349,7 @@ contract AavePM is
             s_reinvestedDebtTotal = 0;
         }
 
-        emit Rebalance(repaymentAmountUSDC);
+        emit Rebalanced(repaymentAmountUSDC);
         _storeEventBlockNumber();
     }
 
@@ -369,7 +369,7 @@ contract AavePM is
         );
         if (reinvestedDebt > 0) s_reinvestedDebtTotal += reinvestedDebt;
 
-        emit Reinvest(reinvestedDebt);
+        emit Reinvested(reinvestedDebt);
         _storeEventBlockNumber();
     }
 
@@ -391,7 +391,7 @@ contract AavePM is
             s_healthFactorTarget = previousHealthFactorTarget;
         }
 
-        emit Deleverage(repaymentAmountUSDC);
+        emit Deleveraged(repaymentAmountUSDC);
         _storeEventBlockNumber();
     }
 
@@ -414,7 +414,7 @@ contract AavePM is
         if (suppliedCollateral > 0) {
             s_suppliedCollateralTotal += suppliedCollateral;
 
-            emit AaveSupplyFromContractBalance(suppliedCollateral);
+            emit AaveSuppliedFromContractBalance(suppliedCollateral);
             _storeEventBlockNumber();
         }
     }
@@ -447,7 +447,7 @@ contract AavePM is
             s_withdrawnUSDCTotal = 0;
         }
 
-        emit AaveRepayUSDCFromContractBalance(usdcBalance);
+        emit AaveRepayedUSDCFromContractBalance(usdcBalance);
         _storeEventBlockNumber();
     }
 
@@ -560,7 +560,7 @@ contract AavePM is
             abi.encodeWithSelector(IAaveFunctionsModule.checkHealthFactorAboveMinimum.selector, new bytes(0))
         );
 
-        emit AaveWithdrawWstETH(_owner, _amount);
+        emit AaveWithdrawnWstETH(_owner, _amount);
         _storeEventBlockNumber();
     }
 
@@ -613,7 +613,7 @@ contract AavePM is
             abi.encodeWithSelector(IAaveFunctionsModule.checkHealthFactorAboveMinimum.selector, new bytes(0))
         );
 
-        emit AaveBorrowAndWithdrawUSDC(_owner, _amount);
+        emit AaveBorrowedAndWithdrawnUSDC(_owner, _amount);
         _storeEventBlockNumber();
     }
 
@@ -633,7 +633,7 @@ contract AavePM is
         s_reinvestedDebtTotal = 0;
         s_suppliedCollateralTotal = 0;
 
-        emit AaveClosePosition(_owner);
+        emit AaveClosedPosition(_owner);
         _storeEventBlockNumber();
     }
 

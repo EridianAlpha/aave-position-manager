@@ -55,7 +55,7 @@ interface IAavePM {
     // ================================================================
 
     // Unindexed string are directly readable from the logs, indexed strings are hashed and not readable
-    event AavePMInitialized(address indexed owner);
+    event AavePMInitialized(address indexed creator);
 
     // Updates
     event ContractAddressUpdated(
@@ -70,19 +70,20 @@ interface IAavePM {
     );
 
     // Core Functions
-    event Rebalance(uint256 repaymentAmountUSDC);
-    event Reinvest(uint256 reinvestedDebt);
-    event Deleverage(uint256 repaymentAmountUSDC);
-    event AaveSupplyFromContractBalance(uint256 suppliedCollateral);
-    event AaveRepayUSDCFromContractBalance(uint256 usdcBalance);
+    event Rebalanced(uint256 repaymentAmountUSDC);
+    event Reinvested(uint256 reinvestedDebt);
+    event Deleveraged(uint256 repaymentAmountUSDC);
+    event AaveSuppliedFromContractBalance(uint256 suppliedCollateral);
+    event AaveRepayedUSDCFromContractBalance(uint256 usdcBalance);
 
     // Withdraw Functions
     event EthRescued(address indexed to, uint256 amount);
     event TokensWithdrawnFromContractBalance(string identifier, uint256 tokenBalance);
-    event AaveWithdrawWstETH(address indexed ownerAddress, uint256 amount);
-    event AaveBorrowAndWithdrawUSDC(address indexed ownerAddress, uint256 amount);
-    event AaveClosePosition(address indexed ownerAddress);
+    event AaveWithdrawnWstETH(address indexed ownerAddress, uint256 amount);
+    event AaveBorrowedAndWithdrawnUSDC(address indexed ownerAddress, uint256 amount);
+    event AaveClosedPosition(address indexed ownerAddress);
 
+    // Inherited Functions
     event AavePMUpgraded(address indexed previousImplementation, address indexed newImplementation);
     event FlashLoanExecuted(address indexed asset, uint256 amount, uint256 premium);
 

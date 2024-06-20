@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/da991a305ddbb93264530b4160032134932a7a08/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -215,7 +215,7 @@
 <pre><code class="language-solidity">function rebalance() external returns (uint256 repaymentAmountUSDC);
 </code></pre>
 <h3 id="reinvest"><a class="header" href="#reinvest">reinvest</a></h3>
-<pre><code class="language-solidity">function reinvest() external returns (uint256 reinvestedDebt);
+<pre><code class="language-solidity">function reinvest() external payable returns (uint256 reinvestedDebt);
 </code></pre>
 <h3 id="deleverage"><a class="header" href="#deleverage">deleverage</a></h3>
 <pre><code class="language-solidity">function deleverage() external;
@@ -343,8 +343,8 @@
     returns (bool);
 </code></pre>
 <h2 id="events"><a class="header" href="#events">Events</a></h2>
-<h3 id="ethrescued"><a class="header" href="#ethrescued">EthRescued</a></h3>
-<pre><code class="language-solidity">event EthRescued(address indexed to, uint256 amount);
+<h3 id="aavepminitialized"><a class="header" href="#aavepminitialized">AavePMInitialized</a></h3>
+<pre><code class="language-solidity">event AavePMInitialized(address indexed creator);
 </code></pre>
 <h3 id="contractaddressupdated"><a class="header" href="#contractaddressupdated">ContractAddressUpdated</a></h3>
 <pre><code class="language-solidity">event ContractAddressUpdated(
@@ -355,15 +355,54 @@
 <pre><code class="language-solidity">event TokenAddressUpdated(string identifier, address indexed previousTokenAddress, address indexed newTokenAddress);
 </code></pre>
 <h3 id="uniswapv3poolupdated"><a class="header" href="#uniswapv3poolupdated">UniswapV3PoolUpdated</a></h3>
-<pre><code class="language-solidity">event UniswapV3PoolUpdated(
-    string identifier, address indexed newUniswapV3PoolAddress, uint24 indexed newUniswapV3PoolFee
-);
+<pre><code class="language-solidity">event UniswapV3PoolUpdated(string identifier, address indexed newUniswapV3PoolAddress, uint24 newUniswapV3PoolFee);
 </code></pre>
 <h3 id="healthfactortargetupdated"><a class="header" href="#healthfactortargetupdated">HealthFactorTargetUpdated</a></h3>
 <pre><code class="language-solidity">event HealthFactorTargetUpdated(uint16 previousHealthFactorTarget, uint16 newHealthFactorTarget);
 </code></pre>
 <h3 id="slippagetoleranceupdated"><a class="header" href="#slippagetoleranceupdated">SlippageToleranceUpdated</a></h3>
 <pre><code class="language-solidity">event SlippageToleranceUpdated(uint16 previousSlippageTolerance, uint16 newSlippageTolerance);
+</code></pre>
+<h3 id="managerdailyinvocationlimitupdated"><a class="header" href="#managerdailyinvocationlimitupdated">ManagerDailyInvocationLimitUpdated</a></h3>
+<pre><code class="language-solidity">event ManagerDailyInvocationLimitUpdated(
+    uint16 previousManagerDailyInvocationLimit, uint16 newManagerDailyInvocationLimit
+);
+</code></pre>
+<h3 id="rebalanced"><a class="header" href="#rebalanced">Rebalanced</a></h3>
+<pre><code class="language-solidity">event Rebalanced(uint256 repaymentAmountUSDC);
+</code></pre>
+<h3 id="reinvested"><a class="header" href="#reinvested">Reinvested</a></h3>
+<pre><code class="language-solidity">event Reinvested(uint256 reinvestedDebt);
+</code></pre>
+<h3 id="deleveraged"><a class="header" href="#deleveraged">Deleveraged</a></h3>
+<pre><code class="language-solidity">event Deleveraged(uint256 repaymentAmountUSDC);
+</code></pre>
+<h3 id="aavesuppliedfromcontractbalance"><a class="header" href="#aavesuppliedfromcontractbalance">AaveSuppliedFromContractBalance</a></h3>
+<pre><code class="language-solidity">event AaveSuppliedFromContractBalance(uint256 suppliedCollateral);
+</code></pre>
+<h3 id="aaverepayedusdcfromcontractbalance"><a class="header" href="#aaverepayedusdcfromcontractbalance">AaveRepayedUSDCFromContractBalance</a></h3>
+<pre><code class="language-solidity">event AaveRepayedUSDCFromContractBalance(uint256 usdcBalance);
+</code></pre>
+<h3 id="ethrescued"><a class="header" href="#ethrescued">EthRescued</a></h3>
+<pre><code class="language-solidity">event EthRescued(address indexed to, uint256 amount);
+</code></pre>
+<h3 id="tokenswithdrawnfromcontractbalance"><a class="header" href="#tokenswithdrawnfromcontractbalance">TokensWithdrawnFromContractBalance</a></h3>
+<pre><code class="language-solidity">event TokensWithdrawnFromContractBalance(string identifier, uint256 tokenBalance);
+</code></pre>
+<h3 id="aavewithdrawnwsteth"><a class="header" href="#aavewithdrawnwsteth">AaveWithdrawnWstETH</a></h3>
+<pre><code class="language-solidity">event AaveWithdrawnWstETH(address indexed ownerAddress, uint256 amount);
+</code></pre>
+<h3 id="aaveborrowedandwithdrawnusdc"><a class="header" href="#aaveborrowedandwithdrawnusdc">AaveBorrowedAndWithdrawnUSDC</a></h3>
+<pre><code class="language-solidity">event AaveBorrowedAndWithdrawnUSDC(address indexed ownerAddress, uint256 amount);
+</code></pre>
+<h3 id="aaveclosedposition"><a class="header" href="#aaveclosedposition">AaveClosedPosition</a></h3>
+<pre><code class="language-solidity">event AaveClosedPosition(address indexed ownerAddress);
+</code></pre>
+<h3 id="aavepmupgraded"><a class="header" href="#aavepmupgraded">AavePMUpgraded</a></h3>
+<pre><code class="language-solidity">event AavePMUpgraded(address indexed previousImplementation, address indexed newImplementation);
+</code></pre>
+<h3 id="flashloanexecuted"><a class="header" href="#flashloanexecuted">FlashLoanExecuted</a></h3>
+<pre><code class="language-solidity">event FlashLoanExecuted(address indexed asset, uint256 amount, uint256 premium);
 </code></pre>
 <h2 id="errors"><a class="header" href="#errors">Errors</a></h2>
 <h3 id="aavepm__nodebttorepay"><a class="header" href="#aavepm__nodebttorepay">AavePM__NoDebtToRepay</a></h3>

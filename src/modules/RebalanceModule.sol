@@ -14,10 +14,12 @@ import {IAaveFunctionsModule} from "src/interfaces/IAaveFunctionsModule.sol";
 import {IRebalanceModule} from "src/interfaces/IRebalanceModule.sol";
 
 // ================================================================
-// │                       REBALANCE CONTRACT                     │
+// │                    REBALANCE MODULE CONTRACT                 │
 // ================================================================
 
-/// @notice // TODO: Add comment
+/// @title Rebalance Module for the Aave Position Manager
+/// @author EridianAlpha
+/// @notice This contract contains the functions for AavePM to rebalance the Aave position by repaying debt to increase the health factor.
 contract RebalanceModule is IRebalanceModule {
     // ================================================================
     // │                         MODULE SETUP                         │

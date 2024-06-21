@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-/// @notice // TODO: Add comment
+/// @title BorrowAndWithdrawUSDCModule interface
+/// @notice This interface defines the essential structures and functions for the BorrowAndWithdrawUSDCModule contract.
 interface IBorrowAndWithdrawUSDCModule {
     error BorrowAndWithdrawUSDCModule__InvalidAavePMProxyAddress();
 

@@ -12,7 +12,9 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 // │                   FUNCTION CHECKS CONTRACT                   │
 // ================================================================
 
-/// @notice // TODO: Add comment
+/// @title Function Checks for the Aave Position Manager
+/// @author EridianAlpha
+/// @notice This contract contains the functions used inside AavePM modifiers.
 contract FunctionChecks {
     /// @notice // TODO: Add comment
     function _checkOwner(address _owner) internal view {

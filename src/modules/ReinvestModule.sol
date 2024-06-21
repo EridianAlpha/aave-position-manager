@@ -15,10 +15,13 @@ import {IAaveFunctionsModule} from "../interfaces/IAaveFunctionsModule.sol";
 import {IReinvestModule} from "../interfaces/IReinvestModule.sol";
 
 // ================================================================
-// │                        REINVEST CONTRACT                     │
+// │                     REINVEST MODULE CONTRACT                 │
 // ================================================================
 
-/// @notice // TODO: Add comment
+/// @title Aave Functions Module for the Aave Position Manager
+/// @author EridianAlpha
+/// @notice This contract contains the functions for AavePM to borrow USDC,
+///         swap to wstETH, and supply to Aave maintaining the target health factor.
 contract ReinvestModule is IReinvestModule {
     // ================================================================
     // │                         MODULE SETUP                         │
@@ -35,7 +38,7 @@ contract ReinvestModule is IReinvestModule {
         return VERSION;
     }
 
-    address immutable public aavePMProxyAddress;
+    address public immutable aavePMProxyAddress;
 
     constructor(address _aavePMProxyAddress) {
         aavePMProxyAddress = _aavePMProxyAddress;

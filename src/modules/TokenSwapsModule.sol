@@ -20,10 +20,12 @@ import {IERC20Extended} from "../interfaces/IERC20Extended.sol";
 import {ITokenSwapsModule} from "../interfaces/ITokenSwapsModule.sol";
 
 // ================================================================
-// │                  TokenSwapsModule CONTRACT                   │
+// │                  TOKEN SWAP MODULE CONTRACT                  │
 // ================================================================
 
-/// @notice // TODO: Add comment
+/// @title Token Swap Module for the Aave Position Manager
+/// @author EridianAlpha
+/// @notice This contract contains the functions for AavePM to swap tokens using UniswapV3.
 contract TokenSwapsModule is ITokenSwapsModule {
     // ================================================================
     // │                         MODULE SETUP                         │

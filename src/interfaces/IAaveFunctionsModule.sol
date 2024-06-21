@@ -3,7 +3,8 @@ pragma solidity 0.8.24;
 
 import {IAavePM} from "./IAavePM.sol";
 
-/// @notice // TODO: Add comment
+/// @title AaveFunctionsModule interface
+/// @notice This interface defines the essential structures and functions for the AaveFunctionsModule contract.
 interface IAaveFunctionsModule {
     error AaveFunctionsModule__InvalidAavePMProxyAddress();
 

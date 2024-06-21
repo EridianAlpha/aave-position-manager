@@ -451,7 +451,7 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment and move to different heading. How to protect this function?
+    /// @notice // TODO: Add comment. How to protect this function?
     function delegateCallHelper(string memory _targetIdentifier, bytes memory _data) public returns (bytes memory) {
         address target = getContractAddress(_targetIdentifier);
         (bool success, bytes memory result) = target.delegatecall(_data);

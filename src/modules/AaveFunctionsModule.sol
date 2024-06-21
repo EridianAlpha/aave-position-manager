@@ -19,10 +19,12 @@ import {ITokenSwapsModule} from "src/interfaces/ITokenSwapsModule.sol";
 import {IAaveFunctionsModule} from "src/interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
-// │                   AAVEFUNCTIONS CONTRACT                     │
+// │                  AAVE FUNCTIONS MODULE CONTRACT              │
 // ================================================================
 
-/// @notice // TODO: Add comment
+/// @title Aave Functions Module for the Aave Position Manager
+/// @author EridianAlpha
+/// @notice This contract contains the functions for AavePM to interact with the Aave protocol.
 contract AaveFunctionsModule is IAaveFunctionsModule {
     // ================================================================
     // │                         MODULE SETUP                         │

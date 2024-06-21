@@ -19,10 +19,12 @@ import {ITokenSwapsModule} from "./interfaces/ITokenSwapsModule.sol";
 import {IAaveFunctionsModule} from "./interfaces/IAaveFunctionsModule.sol";
 
 // ================================================================
-// │                   AAVEFUNCTIONS CONTRACT                     │
+// │                     FLASH LOAN CONTRACT                      │
 // ================================================================
 
-/// @notice // TODO: Add comment
+/// @title Flash Loan for the Aave Position Manager
+/// @author EridianAlpha
+/// @notice This contract contains the functions for AavePM to execute a flash loan to repay debt and withdraw collateral.
 contract FlashLoan {
     /// @notice Flash loan callback function.
     /// @dev This function is called by the Aave pool contract after the flash loan is executed.

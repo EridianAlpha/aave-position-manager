@@ -4,7 +4,8 @@ pragma solidity 0.8.24;
 import {IAavePM} from "./IAavePM.sol";
 import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 
-/// @notice // TODO: Add comment
+/// @title TokenSwapsModule interface
+/// @notice This interface defines the essential structures and functions for the TokenSwapsModule contract.
 interface ITokenSwapsModule {
     error TokenSwapsModule__InvalidAavePMProxyAddress();
 

@@ -15,10 +15,12 @@ import {IAaveFunctionsModule} from "../interfaces/IAaveFunctionsModule.sol";
 import {IBorrowAndWithdrawUSDCModule} from "../interfaces/IBorrowAndWithdrawUSDCModule.sol";
 
 // ================================================================
-// │               BORROW AND WITHDRAW USDC CONTRACT              │
+// │           BORROW AND WITHDRAW USDC MODULE CONTRACT           │
 // ================================================================
 
-/// @notice // TODO: Add comment
+/// @title Borrow and Withdraw USDC Module for the Aave Position Manager
+/// @author EridianAlpha
+/// @notice This contract contains the functions for AavePM to borrow and withdraw USDC from the Aave protocol.
 contract BorrowAndWithdrawUSDCModule is IBorrowAndWithdrawUSDCModule {
     // ================================================================
     // │                         MODULE SETUP                         │

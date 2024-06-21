@@ -7,7 +7,9 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 
 import {IAavePM} from "../../src/interfaces/IAavePM.sol";
 
-/// @notice //TODO Add comment.
+/// @title Aave Position Manager Upgrade Example
+/// @author EridianAlpha
+/// @notice This contract is an example of an upgradeable contract using the UUPS pattern.
 contract AavePMUpgradeExample is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     function test() public {} // Added to remove this whole testing file from coverage report.
 

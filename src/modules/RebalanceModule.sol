@@ -103,7 +103,15 @@ contract RebalanceModule is IRebalanceModule {
         return (repaymentAmountUSDC);
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Repay debt to increase the health factor.
+    /// @dev This function repays debt to increase the health factor.
+    /// @param totalDebtBase The total debt in base units.
+    /// @param aavePoolAddress The address of the Aave pool.
+    /// @param usdcAddress The address of the USDC token.
+    /// @param totalCollateralBase The total collateral in base units.
+    /// @param currentLiquidationThreshold The current liquidation threshold.
+    /// @param healthFactorTarget The target health factor.
+    /// @return repaymentAmountUSDC The amount of USDC repaid.
     function _repayDebt(
         uint256 totalDebtBase,
         address aavePoolAddress,

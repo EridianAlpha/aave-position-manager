@@ -16,14 +16,18 @@ import {IAavePM} from "./interfaces/IAavePM.sol";
 /// @author EridianAlpha
 /// @notice This contract contains the functions used inside AavePM modifiers.
 contract FunctionChecks {
-    /// @notice // TODO: Add comment
+    /// @notice Check if the caller has the `OWNER_ROLE`.
+    /// @dev This function checks if the caller has the `OWNER_ROLE` and reverts if it does not.
+    /// @param _owner The address to check if it has the `OWNER_ROLE`.
     function _checkOwner(address _owner) internal view {
         if (!IAavePM(address(this)).hasRole(keccak256("OWNER_ROLE"), _owner)) {
             revert IAavePM.AavePM__AddressNotAnOwner();
         }
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Check if manager invocations are within the daily limit.
+    /// @dev This function checks if the manager invocations are within the daily limit and reverts if the limit is reached.
+    /// @param managerInvocations The array of manager invocations.
     function _checkManagerInvocationLimit(uint64[] memory managerInvocations) internal view {
         // If the array is smaller than getManagerDailyInvocationLimit, return
         if (managerInvocations.length < IAavePM(address(this)).getManagerDailyInvocationLimit()) return;

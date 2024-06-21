@@ -94,13 +94,17 @@ contract AavePM is
     // │                     MODIFIERS AND CHECKS                     │
     // ================================================================
 
-    /// @notice // TODO: Add comment
+    /// @notice Modifier to check if the caller is the owner.
+    /// @dev The function checks if the caller has the `OWNER_ROLE`.
+    /// @param _owner The address to check if it has the `OWNER_ROLE`.
     modifier checkOwner(address _owner) {
         _checkOwner(_owner);
         _;
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Function to check the manager invocation limit.
+    /// @dev The function checks if the manager has exceeded the daily
+    ///      invocation limit and updates the timestamp array.
     function checkManagerInvocationLimit() internal {
         uint64[] memory managerInvocations = getManagerInvocationTimestamps();
         _checkManagerInvocationLimit(managerInvocations);
@@ -131,10 +135,10 @@ contract AavePM is
         _disableInitializers();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Function to receive ETH when no function matches the call data.
     receive() external payable {}
 
-    /// @notice // TODO: Add comment
+    /// @notice Fallback function to revert calls to functions that do not exist when the msg.data is empty.
     fallback() external payable {
         revert AavePM__FunctionDoesNotExist();
     }
@@ -174,7 +178,15 @@ contract AavePM is
         );
     }
 
-    /// @notice // TODO: Add comment. Just the state setting logic
+    /// @notice Internal function to initialize the state of the contract.
+    /// @dev This function sets up all necessary state variables for the contract.
+    /// @param owner The initial address of the owner of the contract.
+    /// @param contractAddresses An array of `ContractAddress` structures containing addresses of related contracts.
+    /// @param tokenAddresses An array of `TokenAddress` structures containing addresses of relevant ERC-20 tokens.
+    /// @param uniswapV3Pools An array of `UniswapV3Pool` structures containing the address and fee of the UniswapV3 pools.
+    /// @param initialHealthFactorTarget The initial target health factor, used to manage risk.
+    /// @param initialSlippageTolerance The initial slippage tolerance for token swaps.
+    /// @param initialManagerDailyInvocationLimit The initial limit for the number of manager invocations per day.
     function _initializeState(
         address owner,
         ContractAddress[] memory contractAddresses,
@@ -302,7 +314,10 @@ contract AavePM is
         s_slippageTolerance = _slippageTolerance;
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Update the Manager Daily Invocation Limit.
+    /// @dev Caller must have `OWNER_ROLE`.
+    ///      Emits a `ManagerDailyInvocationLimitUpdated` event.
+    /// @param _managerDailyInvocationLimit The new Manager Daily Invocation Limit.
     function updateManagerDailyInvocationLimit(uint16 _managerDailyInvocationLimit) external onlyRole(OWNER_ROLE) {
         emit ManagerDailyInvocationLimitUpdated(s_managerDailyInvocationLimit, _managerDailyInvocationLimit);
         _storeEventBlockNumber();
@@ -313,7 +328,9 @@ contract AavePM is
         delete s_managerInvocationTimestamps;
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Stores the block number of an event.
+    /// @dev This function is called after an event is emitted to store the block number.
+    ///      Duplicates are not stored even if multiple events are emitted in the same block.
     function _storeEventBlockNumber() private {
         if (s_eventBlockNumbers[s_eventBlockNumbers.length - 1] != uint64(block.number)) {
             s_eventBlockNumbers.push(uint64(block.number));
@@ -325,10 +342,12 @@ contract AavePM is
     // ================================================================
 
     /// @notice Rebalance the Aave position.
-    /// @dev Caller must have `MANAGER_ROLE`.
-    ///      The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
+    /// @dev The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
     ///      It then deposits the wstETH into Aave.
     ///      If the health factor is below the target, it repays debt to increase the health factor.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      Emits a `Rebalanced` event.
+    /// @return repaymentAmountUSDC The amount of debt repaid.
     function rebalance() public onlyRole(MANAGER_ROLE) returns (uint256 repaymentAmountUSDC) {
         checkManagerInvocationLimit();
 
@@ -353,7 +372,13 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Reinvest any excess debt or collateral.
+    /// @dev The function reinvests any excess collateral by converting any ETH to WETH, then WETH to wstETH.
+    ///      It then deposits the wstETH into Aave.
+    ///      If the health factor is below the target, outside of the allowed range, this function will fail.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      Emits a `Reinvested` event.
+    /// @return reinvestedDebt The amount of debt reinvested.
     function reinvest() public payable onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt) {
         checkManagerInvocationLimit();
 
@@ -373,7 +398,11 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Deleverage the position by repaying all debt.
+    /// @dev The function deleverages the position by taking out a flashloan to repay all debt
+    ///      after setting the Health Factor target to the maximum value.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      Emits a `Deleveraged` event.
     function deleverage() public onlyRole(MANAGER_ROLE) {
         checkManagerInvocationLimit();
 
@@ -395,7 +424,11 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Convert any tokens in the contract to wstETH and supply to Aave.
+    /// @dev The function converts any tokens in the contract to wstETH and supplies them to Aave.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      Emits a `AaveSuppliedFromContractBalance` event.
+    /// @return suppliedCollateral The amount of collateral supplied to Aave.
     function aaveSupplyFromContractBalance()
         public
         payable
@@ -419,7 +452,10 @@ contract AavePM is
         }
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Repay USDC debt from the contract balance.
+    /// @dev The function repays USDC debt using all the USDC in the contract.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      Emits a `AaveRepayedUSDCFromContractBalance` event.
     function aaveRepayUSDCFromContractBalance() public onlyRole(MANAGER_ROLE) {
         uint256 usdcBalance = getContractBalance("USDC");
         if (usdcBalance == 0) revert AavePM__NoDebtToRepay();
@@ -493,7 +529,14 @@ contract AavePM is
         if (!callSuccess) revert AavePM__RescueEthFailed();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Withdraw specified tokens from the contract balance.
+    /// @dev The function withdraws the specified tokens from the contract balance to the owner.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      Throws `AavePM__InvalidWithdrawalToken` if the token is awstETH.
+    ///      Throws `AavePM__NoTokensToWithdraw` if there are no tokens to withdraw.
+    ///      Emits a `TokensWithdrawnFromContractBalance` event.
+    /// @param _identifier The identifier of the token to withdraw.
+    /// @param _owner The address to send the withdrawn tokens to.
     function withdrawTokensFromContractBalance(string memory _identifier, address _owner)
         public
         onlyRole(MANAGER_ROLE)
@@ -512,7 +555,14 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Withdraw wstETH from Aave.
+    /// @dev The function withdraws wstETH from Aave and sends it to the specified owner.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      Throws `AavePM__NoCollateralToWithdraw` if there is no collateral to withdraw.
+    ///      Emits a `AaveWithdrawnWstETH` event.
+    /// @param _amount The amount of wstETH to withdraw in wstETH units.
+    /// @param _owner The address to send the withdrawn wstETH to.
+    /// @return collateralDeltaBase The change in collateral base value after withdrawing.
     function aaveWithdrawWstETH(uint256 _amount, address _owner)
         public
         onlyRole(MANAGER_ROLE)
@@ -564,7 +614,14 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Borrow and withdraw USDC from Aave.
+    /// @dev The function borrows USDC from Aave and withdraws it to the specified owner.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      Throws `AavePM__ZeroBorrowAmount` if the requested borrow amount is 0.
+    ///      Throws `AavePM__ZeroBorrowAndWithdrawUSDCAvailable` if the available borrow and withdraw amount is 0.
+    ///      Emits a `AaveBorrowedAndWithdrawnUSDC` event.
+    /// @param _amount The amount of USDC to borrow and withdraw.
+    /// @param _owner The address to send the borrowed and withdrawn USDC to.
     function aaveBorrowAndWithdrawUSDC(uint256 _amount, address _owner)
         public
         onlyRole(MANAGER_ROLE)
@@ -617,7 +674,11 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Close the Aave position.
+    /// @dev The function closes the Aave position by repaying all debt and withdrawing all wstETH to the specified owner.
+    ///      Caller must have `MANAGER_ROLE`.
+    ///      Emits a `AaveClosedPosition` event.
+    /// @param _owner The address to send the withdrawn wstETH to.
     function aaveClosePosition(address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner) {
         // Check if position needs to be deleveraged before closing.
         (,,,,, uint256 currentHealthFactor) = IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
@@ -800,7 +861,9 @@ contract AavePM is
         return s_suppliedCollateralTotal;
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Getter function to get the maximum amount of USDC that can be borrowed and withdrawn.
+    /// @dev Public function to allow anyone to view the maximum amount of USDC that can be borrowed and withdrawn.
+    /// @return maxBorrowAndWithdrawUSDCAmount The maximum amount of USDC that can be borrowed and withdrawn.
     function getMaxBorrowAndWithdrawUSDCAmount() public view returns (uint256 maxBorrowAndWithdrawUSDCAmount) {
         address aavePoolAddress = getContractAddress("aavePool");
         (uint256 totalCollateralBase, uint256 totalDebtBase,, uint256 currentLiquidationThreshold,,) =
@@ -818,7 +881,9 @@ contract AavePM is
         return calcMaxBorrowAndWithdrawUSDCAmount > 0 ? uint256(calcMaxBorrowAndWithdrawUSDCAmount) / 1e2 : 0;
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Getter function to get the reinvestable amount.
+    /// @dev Public function to allow anyone to view the reinvestable amount.
+    /// @return reinvestableAmount The reinvestable amount.
     function getReinvestableAmount() public returns (uint256 reinvestableAmount) {
         (uint256 totalCollateralBase, uint256 totalDebtBase,, uint256 currentLiquidationThreshold,,) =
             IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
@@ -849,7 +914,10 @@ contract AavePM is
     // │             INHERITED FUNCTIONS - ACCESS CONTROLS            │
     // ================================================================
 
-    /// @notice // TODO: Add comment
+    /// @notice Getter function to get the role member at the specified index.
+    /// @dev Public function to allow anyone to view the role member at the specified index.
+    /// @param role The role to get the member from in a bytes32 format keccak256("ROLE_NAME").
+    /// @param index The index of the member.
     function getRoleMember(bytes32 role, uint256 index)
         public
         view
@@ -859,7 +927,9 @@ contract AavePM is
         return AccessControlEnumerableUpgradeable.getRoleMember(role, index);
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Getter function to get the number of members in a role.
+    /// @dev Public function to allow anyone to view the number of members in a role.
+    /// @param role The role to get the member count from in a bytes32 format keccak256("ROLE_NAME").
     function getRoleMemberCount(bytes32 role)
         public
         view
@@ -869,7 +939,10 @@ contract AavePM is
         return AccessControlEnumerableUpgradeable.getRoleMemberCount(role);
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Getter function to get the role admin role.
+    /// @dev Public function to allow anyone to view the role admin role.
+    /// @param role The role to get the admin role from in a bytes32 format keccak256("ROLE_NAME").
+    /// @return The role admin role.
     function getRoleAdmin(bytes32 role)
         public
         view
@@ -879,7 +952,10 @@ contract AavePM is
         return AccessControlUpgradeable.getRoleAdmin(role);
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Grant a role to an account.
+    /// @dev Caller must be an admin for the role.
+    /// @param role The role to grant in a bytes32 format keccak256("ROLE_NAME").
+    /// @param account The account to grant the role to.
     function grantRole(bytes32 role, address account)
         public
         override(IAavePM, IAccessControl, AccessControlUpgradeable)
@@ -888,7 +964,11 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Check if an account has a role.
+    /// @dev Public function to allow anyone to check if an account has a role.
+    /// @param role The role to check in a bytes32 format keccak256("ROLE_NAME").
+    /// @param account The account to check if they have the role.
+    /// @return True if the account has the role, otherwise false.
     function hasRole(bytes32 role, address account)
         public
         view
@@ -898,7 +978,10 @@ contract AavePM is
         return AccessControlUpgradeable.hasRole(role, account);
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Renounce a role from an account.
+    /// @dev Caller must have the role.
+    /// @param role The role to renounce in a bytes32 format keccak256("ROLE_NAME").
+    /// @param account The account to renounce the role from.
     function renounceRole(bytes32 role, address callerConfirmation)
         public
         override(IAavePM, IAccessControl, AccessControlUpgradeable)
@@ -907,7 +990,10 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Revoke a role from an account.
+    /// @dev Caller must be an admin for the role.
+    /// @param role The role to revoke in a bytes32 format keccak256("ROLE_NAME").
+    /// @param account The account to revoke the role from.
     function revokeRole(bytes32 role, address account)
         public
         override(IAavePM, IAccessControl, AccessControlUpgradeable)
@@ -916,7 +1002,10 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Supports interface.
+    /// @dev Public function to allow anyone to check if the contract supports the interface.
+    /// @param interfaceId The interface ID to check.
+    /// @return True if the contract supports the interface, otherwise false.
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -935,7 +1024,10 @@ contract AavePM is
     /// @param _newImplementation Address of the new contract implementation.
     function _authorizeUpgrade(address _newImplementation) internal override onlyRole(OWNER_ROLE) {}
 
-    /// @notice // TODO: Add comment
+    /// @notice Upgrade the contract to a new implementation.
+    /// @dev Caller must have `OWNER_ROLE`.
+    /// @param newImplementation Address of the new contract implementation.
+    /// @param data Data to send to the new implementation.
     function upgradeToAndCall(address newImplementation, bytes memory data)
         public
         payable

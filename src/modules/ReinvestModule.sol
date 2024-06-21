@@ -53,7 +53,9 @@ contract ReinvestModule is IReinvestModule {
     // │                       MODULE FUNCTIONS                       │
     // ================================================================
 
-    /// @notice // TODO: Add comment
+    /// @notice Reinvest the Aave position.
+    /// @dev This function reinvests the Aave position by borrowing USDC, swapping to wstETH, and supplying it back to Aave.
+    /// @return reinvestedDebt The amount of debt reinvested.
     function reinvest() public onlyAavePM returns (uint256 reinvestedDebt) {
         IAavePM aavePM = IAavePM(address(this));
 
@@ -106,7 +108,17 @@ contract ReinvestModule is IReinvestModule {
         return (reinvestedDebt);
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Reinvest the Aave position.
+    /// @dev This function actions the reinvestment of the Aave position.
+    /// @param aavePM The Aave Position Manager contract.
+    /// @param totalDebtBase The total debt in base units.
+    /// @param aavePoolAddress The address of the Aave pool.
+    /// @param usdcAddress The address of the USDC token.
+    /// @param wstETHAddress The address of the wstETH token.
+    /// @param initialCollateralBase The initial collateral in base units.
+    /// @param currentLiquidationThreshold The current liquidation threshold.
+    /// @param healthFactorTarget The target health factor.
+    /// @return borrowAmountUSDC The amount of USDC borrowed.
     function _reinvestAction(
         IAavePM aavePM,
         uint256 totalDebtBase,

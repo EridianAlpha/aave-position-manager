@@ -57,7 +57,10 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
     // ================================================================
 
     /// @notice Deposit all wstETH into Aave.
-    ///      // TODO: Update comment.
+    /// @dev This function is used to deposit all wstETH into Aave.
+    /// @param aavePoolAddress The address of the Aave pool contract.
+    /// @param tokenAddress The address of the token to deposit.
+    /// @param tokenBalance The contract balance of the token to deposit.
     function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) public onlyAavePM {
         // Takes all tokens in the contract and deposits it into Aave
         TransferHelper.safeApprove(tokenAddress, aavePoolAddress, tokenBalance);
@@ -65,7 +68,10 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
     }
 
     /// @notice Withdraw wstETH from Aave.
-    ///      // TODO: Update comment.
+    /// @dev This function is used to withdraw wstETH from Aave.
+    /// @param aavePoolAddress The address of the Aave pool contract.
+    /// @param tokenAddress The address of the token to withdraw.
+    /// @param withdrawAmount The amount of the token to withdraw.
     function aaveWithdrawCollateral(address aavePoolAddress, address tokenAddress, uint256 withdrawAmount)
         public
         onlyAavePM
@@ -74,22 +80,35 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
     }
 
     /// @notice Borrow USDC from Aave.
-    ///      // TODO: Update comment.
+    /// @dev This function is used to borrow USDC from Aave.
+    /// @param aavePoolAddress The address of the Aave pool contract.
+    /// @param tokenAddress The address of the token to borrow.
     /// @param borrowAmount The amount of USDC to borrow. 8 decimal places to the dollar. e.g. 100000000 = $1.00.
     function aaveBorrow(address aavePoolAddress, address tokenAddress, uint256 borrowAmount) public onlyAavePM {
         IPool(aavePoolAddress).borrow(tokenAddress, borrowAmount, 2, 0, address(this));
     }
 
     /// @notice Repay USDC debt to Aave.
-    ///      // TODO: Update comment.
+    /// @dev This function is used to repay USDC debt to Aave.
+    /// @param aavePoolAddress The address of the Aave pool contract.
+    /// @param tokenAddress The address of the token to repay.
     /// @param repayAmount The amount of USDC to repay. 8 decimal places to the dollar. e.g. 100000000 = $1.00.
     function aaveRepayDebt(address aavePoolAddress, address tokenAddress, uint256 repayAmount) public onlyAavePM {
         TransferHelper.safeApprove(tokenAddress, aavePoolAddress, repayAmount);
         IPool(aavePoolAddress).repay(tokenAddress, repayAmount, 2, address(this));
     }
 
-    /// @notice // TODO: Add comment.
+    /// @notice Getter function to get the current position values.
     /// @dev This function is used to avoid code duplication in the Reinvest and Rebalance contracts.
+    /// @param aavePM The Aave Position Manager contract.
+    /// @return initialCollateralBase The initial collateral in USD base unit with 8 decimals to the dollar.
+    /// @return totalDebtBase The total debt in USD base unit with 8 decimals to the dollar.
+    /// @return currentLiquidationThreshold The current liquidation threshold.
+    /// @return initialHealthFactorScaled The initial health factor scaled to 2 decimal places.
+    /// @return healthFactorTarget The health factor target.
+    /// @return aavePoolAddress The address of the Aave pool contract.
+    /// @return wstETHAddress The address of the wstETH token.
+    /// @return usdcAddress The address of the USDC token.
     function getCurrentPositionValues(IAavePM aavePM)
         public
         view
@@ -136,7 +155,14 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
         );
     }
 
-    /// @notice // TODO: Add comment.
+    /// @notice Check if the health factor is above the minimum.
+    /// @dev This function is used to check if the health factor is above the minimum.
+    /// @return totalCollateralBase The total collateral in USD base unit with 8 decimals to the dollar.
+    /// @return totalDebtBase The total debt in USD base unit with 8 decimals to the dollar.
+    /// @return availableBorrowsBase The available borrows in USD base unit with 8 decimals to the dollar.
+    /// @return currentLiquidationThreshold The current liquidation threshold.
+    /// @return ltv The loan to value ratio.
+    /// @return healthFactor The health factor.
     function checkHealthFactorAboveMinimum()
         public
         view
@@ -164,7 +190,13 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
             (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor);
     }
 
-    /// @notice // TODO: Add comment.
+    /// @notice Getter function to get the total collateral delta.
+    /// @dev This function is used to calculate the total collateral delta.
+    /// @param totalCollateralBase The total collateral in USD base unit with 8 decimals to the dollar.
+    /// @param reinvestedDebtTotal The reinvested debt total in USD base unit with 8 decimals to the dollar.
+    /// @param suppliedCollateralTotal The supplied collateral total in USD base unit with 8 decimals to the dollar.
+    /// @return delta The total collateral delta.
+    /// @return isPositive A boolean to indicate if the delta is positive.
     function getTotalCollateralDelta(
         uint256 totalCollateralBase,
         uint256 reinvestedDebtTotal,
@@ -181,7 +213,9 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
         return (delta, isPositive);
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Convert existing balance to wstETH and supply to Aave.
+    /// @dev This function is used to convert the existing balance to wstETH and supply to Aave.
+    /// @return suppliedCollateral The amount of wstETH supplied to Aave.
     function convertExistingBalanceToWstETHAndSupplyToAave() public onlyAavePM returns (uint256 suppliedCollateral) {
         IAavePM aavePM = IAavePM(address(this));
         address aavePoolAddress = aavePM.getContractAddress("aavePool");
@@ -232,7 +266,12 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
         }
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Calculate the minimum amount of tokens received from a Uniswap V3 swap.
+    /// @dev This function is used to calculate the minimum amount of tokens received from a Uniswap V3 swap.
+    /// @param totalCollateralBase The total collateral in USD base unit with 8 decimals to the dollar.
+    /// @param totalDebtBase The total debt in USD base unit with 8 decimals to the dollar.
+    /// @param currentLiquidationThreshold The current liquidation threshold.
+    /// @param healthFactorTarget The health factor target.
     function calculateMaxBorrowUSDC(
         uint256 totalCollateralBase,
         uint256 totalDebtBase,

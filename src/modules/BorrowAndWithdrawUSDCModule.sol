@@ -52,7 +52,11 @@ contract BorrowAndWithdrawUSDCModule is IBorrowAndWithdrawUSDCModule {
     // │                       MODULE FUNCTIONS                       │
     // ================================================================
 
-    /// @notice // TODO: Add comment
+    /// @notice Borrow USDC from the Aave protocol and withdraw it to the specified owner.
+    /// @dev This function borrows USDC from the Aave protocol and withdraws it to the specified owner.
+    /// @param borrowAmountUSDC The amount of USDC to borrow.
+    /// @param _owner The address to withdraw the USDC to.
+    /// @return repaidReinvestedDebt The amount of reinvested debt repaid (if any) to increase the Health Factor.
     function borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
         public
         onlyAavePM
@@ -101,7 +105,14 @@ contract BorrowAndWithdrawUSDCModule is IBorrowAndWithdrawUSDCModule {
         return (repaidReinvestedDebt);
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Calculate the amount of reinvested debt to repay to increase the Health Factor.
+    /// @dev This function calculates the amount of reinvested debt to repay to increase the Health Factor.
+    /// @param totalCollateralBase The total collateral base in the Aave pool.
+    /// @param totalDebtBase The total debt base in the Aave pool.
+    /// @param currentLiquidationThreshold The current liquidation threshold in the Aave pool.
+    /// @param borrowAmountUSDC The amount of USDC to borrow.
+    /// @param healthFactorTarget The target Health Factor.
+    /// @return repaidReinvestedDebt The amount of reinvested debt repaid to increase the Health Factor.
     function _borrowCalculation(
         uint256 totalCollateralBase,
         uint256 totalDebtBase,

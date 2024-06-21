@@ -57,9 +57,11 @@ contract TokenSwapsModule is ITokenSwapsModule {
     // │                       MODULE FUNCTIONS                       │
     // ================================================================
 
-    /// @notice Swaps the contract's entire specified token balance using a UniswapV3 pool.
-    /// @dev Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
-    ///      Reverts if there are no tokens in the contract or if the transaction doesn't meet the `amountOutMinimum` criteria due to price movements.
+    /// @notice Swaps the entire specified token balance of the contract using a UniswapV3 pool.
+    /// @dev Calculates the minimum amount that should be received based on the
+    ///      current pool price ratio and a predefined slippage tolerance.
+    ///      Reverts if there are no tokens in the contract or if the transaction does not
+    ///      meet the `amountOutMinimum` criteria due to price movements.
     /// @param _uniswapV3PoolIdentifier The identifier of the UniswapV3 pool to use for the swap.
     /// @param _tokenInIdentifier The identifier of the token to swap.
     /// @param _tokenOutIdentifier The identifier of the token to receive from the swap.
@@ -105,7 +107,12 @@ contract TokenSwapsModule is ITokenSwapsModule {
         return (_tokenOutIdentifier, approveAndExecuteSwap(aavePM, params, currentBalance));
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Approves and executes the swap using the UniswapV3 router.
+    /// @dev Approves the swapRouter to spend the tokenIn and executes the swap.
+    /// @param aavePM The Aave Position Manager contract.
+    /// @param params The swap parameters.
+    /// @param currentBalance The current balance of the token to swap.
+    /// @return amountOut The amount of tokens received from the swap.
     function approveAndExecuteSwap(
         IAavePM aavePM,
         ISwapRouter.ExactInputSingleParams memory params,
@@ -118,7 +125,8 @@ contract TokenSwapsModule is ITokenSwapsModule {
         return amountOut;
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Wraps all ETH in the contract to WETH.
+    /// @dev Wraps all ETH in the contract to WETH even if the amount is 0.
     function wrapETHToWETH() public payable onlyAavePM {
         IWETH9(IAavePM(address(this)).getTokenAddress("WETH")).deposit{value: address(this).balance}();
     }
@@ -127,7 +135,14 @@ contract TokenSwapsModule is ITokenSwapsModule {
     // │                   FUNCTIONS - CALCULATIONS                   │
     // ================================================================
 
-    /// @notice // TODO: Add comment
+    /// @notice Calculates the minimum amount of tokens to receive from a UniswapV3 swap.
+    /// @dev Uses the current pool price ratio and a predefined slippage tolerance to calculate the minimum amount.
+    /// @param aavePM The Aave Position Manager contract.
+    /// @param _currentBalance The current balance of the token to swap.
+    /// @param _uniswapV3PoolAddress The address of the UniswapV3 pool to use for the swap.
+    /// @param tokenInAddress The address of the token to swap.
+    /// @param tokenOutAddress The address of the token to receive from the swap.
+    /// @return minOut The minimum amount of tokens to receive from the swap.
     function uniswapV3CalculateMinOut(
         IAavePM aavePM,
         uint256 _currentBalance,
@@ -153,7 +168,10 @@ contract TokenSwapsModule is ITokenSwapsModule {
         return minOut = expectedOut - slippageTolerance;
     }
 
-    /// @notice // TODO: Add comment
+    /// @notice Checks if the identifier is for ETH.
+    /// @dev Compares the identifier to the ETH identifier and returns true if they match.
+    /// @param identifier The identifier to check.
+    /// @return isETH True if the identifier is for ETH.
     function _isIdentifierETH(string memory identifier) private pure returns (bool) {
         return (keccak256(abi.encodePacked(identifier)) == keccak256(abi.encodePacked("ETH"))) ? true : false;
     }

@@ -85,7 +85,7 @@ contract ReinvestTests is AavePMTestSetup {
         sendEth(address(this), SEND_VALUE);
         vm.stopPrank();
 
-        delegateCallHelper(
+        _delegateCallHelper(
             "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "USDC/ETH", "ETH", "USDC")
         );
         reinvest();

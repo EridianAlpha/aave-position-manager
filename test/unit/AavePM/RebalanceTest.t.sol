@@ -144,6 +144,6 @@ contract RebalanceTests is AavePMTestSetup {
         // https://github.com/foundry-rs/foundry/issues/5806#issuecomment-1713846184
         // So instead the entire test is set to testFail, but this means that the specific
         // revert error message cannot be checked.
-        delegateCallHelper("rebalanceModule", abi.encodeWithSelector(IRebalanceModule.rebalance.selector, new bytes(0)));
+        _delegateCallHelper("rebalanceModule", abi.encodeWithSelector(IRebalanceModule.rebalance.selector, new bytes(0)));
     }
 }

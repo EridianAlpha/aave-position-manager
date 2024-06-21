@@ -487,8 +487,12 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
-    /// @notice // TODO: Add comment. How to protect this function?
-    function delegateCallHelper(string memory _targetIdentifier, bytes memory _data) public returns (bytes memory) {
+    /// @notice Delegate call helper function.
+    /// @dev The internal function is used to delegate calls to other contracts.
+    /// @param _targetIdentifier The identifier of the target contract.
+    /// @param _data The data to send to the target contract.
+    /// @return result The result of the delegate call.
+    function _delegateCallHelper(string memory _targetIdentifier, bytes memory _data) internal returns (bytes memory) {
         address target = getContractAddress(_targetIdentifier);
         (bool success, bytes memory result) = target.delegatecall(_data);
         if (!success) {
@@ -504,6 +508,20 @@ contract AavePM is
             }
         }
         return result;
+    }
+
+    /// @notice Delegate call helper function for the manager to call any function.
+    /// @dev The public function is used to delegate calls to other contracts.
+    ///      Caller must have `MANAGER_ROLE`.
+    /// @param _targetIdentifier The identifier of the target contract.
+    /// @param _data The data to send to the target contract.
+    /// @return result The result of the delegate call.
+    function delegateCallHelper(string memory _targetIdentifier, bytes memory _data)
+        public
+        onlyRole(MANAGER_ROLE)
+        returns (bytes memory result)
+    {
+        return _delegateCallHelper(_targetIdentifier, _data);
     }
 
     // ================================================================
@@ -841,7 +859,7 @@ contract AavePM is
     function getTotalCollateralDelta() public returns (uint256 totalCollateralDelta, bool isPositive) {
         (uint256 totalCollateralBase,,,,,) = IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
         return abi.decode(
-            delegateCallHelper(
+            _delegateCallHelper(
                 "aaveFunctionsModule",
                 abi.encodeWithSelector(
                     IAaveFunctionsModule.getTotalCollateralDelta.selector,
@@ -889,7 +907,7 @@ contract AavePM is
             IPool(getContractAddress("aavePool")).getUserAccountData(address(this));
 
         uint256 maxBorrowUSDC = abi.decode(
-            delegateCallHelper(
+            _delegateCallHelper(
                 "aaveFunctionsModule",
                 abi.encodeWithSelector(
                     IAaveFunctionsModule.calculateMaxBorrowUSDC.selector,

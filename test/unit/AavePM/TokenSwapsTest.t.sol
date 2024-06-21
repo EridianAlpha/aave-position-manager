@@ -19,13 +19,13 @@ contract TokenSwapsTests is AavePMTestSetup {
         vm.stopPrank();
 
         // Wrap the ETH to WETH
-        delegateCallHelper(
+        _delegateCallHelper(
             "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.wrapETHToWETH.selector, new bytes(0))
         );
     }
 
     function test_Exposed_WrapETHToWETHZeroETH() public {
-        delegateCallHelper(
+        _delegateCallHelper(
             "tokenSwapsModule", abi.encodeWithSelector(ITokenSwapsModule.wrapETHToWETH.selector, new bytes(0))
         );
     }

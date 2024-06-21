@@ -178,7 +178,7 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         // https://github.com/foundry-rs/foundry/issues/5806#issuecomment-1713846184
         // So instead the entire test is set to testFail, but this means that the specific
         // revert error message cannot be checked.
-        delegateCallHelper(
+        _delegateCallHelper(
             "borrowAndWithdrawUSDCModule",
             abi.encodeWithSelector(
                 IBorrowAndWithdrawUSDCModule.borrowAndWithdrawUSDC.selector, USDC_BORROW_AMOUNT, attacker1

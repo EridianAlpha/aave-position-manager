@@ -46,7 +46,7 @@ contract AavePMAaveTests is AavePMTestSetup {
 
         // Collateral $1000, reinvested collateral debt $0, supplied collateral $500
         (uint256 delta1, bool isPositive1) = abi.decode(
-            delegateCallHelper(
+            _delegateCallHelper(
                 "aaveFunctionsModule",
                 abi.encodeWithSelector(
                     IAaveFunctionsModule.getTotalCollateralDelta.selector, 1000 * 1e8, 0 * 1e6, 500 * 1e6
@@ -59,7 +59,7 @@ contract AavePMAaveTests is AavePMTestSetup {
 
         // Collateral $1000, reinvested collateral $0, supplied collateral $1500
         (uint256 delta2, bool isPositive2) = abi.decode(
-            delegateCallHelper(
+            _delegateCallHelper(
                 "aaveFunctionsModule",
                 abi.encodeWithSelector(IAaveFunctionsModule.getTotalCollateralDelta.selector, 1000 * 1e8, 0, 1000 * 1e6)
             ),
@@ -70,7 +70,7 @@ contract AavePMAaveTests is AavePMTestSetup {
 
         // Collateral $1000, reinvested collateral $0, supplied collateral $1500
         (uint256 delta3, bool isPositive3) = abi.decode(
-            delegateCallHelper(
+            _delegateCallHelper(
                 "aaveFunctionsModule",
                 abi.encodeWithSelector(IAaveFunctionsModule.getTotalCollateralDelta.selector, 1000 * 1e8, 0, 1500 * 1e6)
             ),
@@ -81,7 +81,7 @@ contract AavePMAaveTests is AavePMTestSetup {
 
         // Collateral $1000, reinvested collateral $200, supplied collateral $300
         (uint256 delta4, bool isPositive4) = abi.decode(
-            delegateCallHelper(
+            _delegateCallHelper(
                 "aaveFunctionsModule",
                 abi.encodeWithSelector(
                     IAaveFunctionsModule.getTotalCollateralDelta.selector, 1000 * 1e8, 200 * 1e6, 300 * 1e6
@@ -94,7 +94,7 @@ contract AavePMAaveTests is AavePMTestSetup {
 
         // Collateral $1000, reinvested collateral $200, supplied collateral $1000
         (uint256 delta5, bool isPositive5) = abi.decode(
-            delegateCallHelper(
+            _delegateCallHelper(
                 "aaveFunctionsModule",
                 abi.encodeWithSelector(
                     IAaveFunctionsModule.getTotalCollateralDelta.selector, 1000 * 1e8, 200 * 1e6, 1000 * 1e6

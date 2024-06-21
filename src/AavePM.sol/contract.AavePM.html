@@ -178,7 +178,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="/src/FunctionChecks.sol/contract.FunctionChecks.html">FunctionChecks</a>, <a href="/src/FlashLoan.sol/contract.FlashLoan.html">FlashLoan</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -250,11 +250,19 @@ A contract upgrade is required to change this value.</em></p>
 </code></pre>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="checkowner"><a class="header" href="#checkowner">checkOwner</a></h3>
-<p>// TODO: Add comment</p>
+<p>Modifier to check if the caller is the owner.</p>
+<p><em>The function checks if the caller has the <code>OWNER_ROLE</code>.</em></p>
 <pre><code class="language-solidity">modifier checkOwner(address _owner);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to check if it has the <code>OWNER_ROLE</code>.</td></tr>
+</tbody></table>
+</div>
 <h3 id="checkmanagerinvocationlimit"><a class="header" href="#checkmanagerinvocationlimit">checkManagerInvocationLimit</a></h3>
-<p>// TODO: Add comment</p>
+<p>Function to check the manager invocation limit.</p>
+<p><em>The function checks if the manager has exceeded the daily
+invocation limit and updates the timestamp array.</em></p>
 <pre><code class="language-solidity">function checkManagerInvocationLimit() internal;
 </code></pre>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
@@ -263,11 +271,11 @@ A contract upgrade is required to change this value.</em></p>
 <pre><code class="language-solidity">constructor();
 </code></pre>
 <h3 id="receive"><a class="header" href="#receive">receive</a></h3>
-<p>// TODO: Add comment</p>
+<p>Function to receive ETH when no function matches the call data.</p>
 <pre><code class="language-solidity">receive() external payable;
 </code></pre>
 <h3 id="fallback"><a class="header" href="#fallback">fallback</a></h3>
-<p>// TODO: Add comment</p>
+<p>Fallback function to revert calls to functions that do not exist when the msg.data is empty.</p>
 <pre><code class="language-solidity">fallback() external payable;
 </code></pre>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -295,7 +303,8 @@ A contract upgrade is required to change this value.</em></p>
 </tbody></table>
 </div>
 <h3 id="_initializestate"><a class="header" href="#_initializestate">_initializeState</a></h3>
-<p>// TODO: Add comment. Just the state setting logic</p>
+<p>Internal function to initialize the state of the contract.</p>
+<p><em>This function sets up all necessary state variables for the contract.</em></p>
 <pre><code class="language-solidity">function _initializeState(
     address owner,
     ContractAddress[] memory contractAddresses,
@@ -306,6 +315,17 @@ A contract upgrade is required to change this value.</em></p>
     uint16 initialManagerDailyInvocationLimit
 ) internal;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>owner</code></td><td><code>address</code></td><td>The initial address of the owner of the contract.</td></tr>
+<tr><td><code>contractAddresses</code></td><td><code>ContractAddress[]</code></td><td>An array of <code>ContractAddress</code> structures containing addresses of related contracts.</td></tr>
+<tr><td><code>tokenAddresses</code></td><td><code>TokenAddress[]</code></td><td>An array of <code>TokenAddress</code> structures containing addresses of relevant ERC-20 tokens.</td></tr>
+<tr><td><code>uniswapV3Pools</code></td><td><code>UniswapV3Pool[]</code></td><td>An array of <code>UniswapV3Pool</code> structures containing the address and fee of the UniswapV3 pools.</td></tr>
+<tr><td><code>initialHealthFactorTarget</code></td><td><code>uint16</code></td><td>The initial target health factor, used to manage risk.</td></tr>
+<tr><td><code>initialSlippageTolerance</code></td><td><code>uint16</code></td><td>The initial slippage tolerance for token swaps.</td></tr>
+<tr><td><code>initialManagerDailyInvocationLimit</code></td><td><code>uint16</code></td><td>The initial limit for the number of manager invocations per day.</td></tr>
+</tbody></table>
+</div>
 <h3 id="updatecontractaddress"><a class="header" href="#updatecontractaddress">updateContractAddress</a></h3>
 <p>Generic update function to set the contract address for a given identifier.</p>
 <p><em>Caller must have <code>OWNER_ROLE</code>.
@@ -361,39 +381,79 @@ Emits a <code>SlippageToleranceUpdated</code> event.</em></p>
 </tbody></table>
 </div>
 <h3 id="updatemanagerdailyinvocationlimit"><a class="header" href="#updatemanagerdailyinvocationlimit">updateManagerDailyInvocationLimit</a></h3>
-<p>// TODO: Add comment</p>
+<p>Update the Manager Daily Invocation Limit.</p>
+<p><em>Caller must have <code>OWNER_ROLE</code>.
+Emits a <code>ManagerDailyInvocationLimitUpdated</code> event.</em></p>
 <pre><code class="language-solidity">function updateManagerDailyInvocationLimit(uint16 _managerDailyInvocationLimit) external onlyRole(OWNER_ROLE);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_managerDailyInvocationLimit</code></td><td><code>uint16</code></td><td>The new Manager Daily Invocation Limit.</td></tr>
+</tbody></table>
+</div>
 <h3 id="_storeeventblocknumber"><a class="header" href="#_storeeventblocknumber">_storeEventBlockNumber</a></h3>
-<p>// TODO: Add comment</p>
+<p>Stores the block number of an event.</p>
+<p><em>This function is called after an event is emitted to store the block number.
+Duplicates are not stored even if multiple events are emitted in the same block.</em></p>
 <pre><code class="language-solidity">function _storeEventBlockNumber() private;
 </code></pre>
 <h3 id="rebalance"><a class="header" href="#rebalance">rebalance</a></h3>
 <p>Rebalance the Aave position.</p>
-<p><em>Caller must have <code>MANAGER_ROLE</code>.
-The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
+<p><em>The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
 It then deposits the wstETH into Aave.
-If the health factor is below the target, it repays debt to increase the health factor.</em></p>
+If the health factor is below the target, it repays debt to increase the health factor.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>Rebalanced</code> event.</em></p>
 <pre><code class="language-solidity">function rebalance() public onlyRole(MANAGER_ROLE) returns (uint256 repaymentAmountUSDC);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>repaymentAmountUSDC</code></td><td><code>uint256</code></td><td>The amount of debt repaid.</td></tr>
+</tbody></table>
+</div>
 <h3 id="reinvest"><a class="header" href="#reinvest">reinvest</a></h3>
-<p>// TODO: Add comment</p>
+<p>Reinvest any excess debt or collateral.</p>
+<p><em>The function reinvests any excess collateral by converting any ETH to WETH, then WETH to wstETH.
+It then deposits the wstETH into Aave.
+If the health factor is below the target, outside of the allowed range, this function will fail.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>Reinvested</code> event.</em></p>
 <pre><code class="language-solidity">function reinvest() public payable onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>reinvestedDebt</code></td><td><code>uint256</code></td><td>The amount of debt reinvested.</td></tr>
+</tbody></table>
+</div>
 <h3 id="deleverage"><a class="header" href="#deleverage">deleverage</a></h3>
-<p>// TODO: Add comment</p>
+<p>Deleverage the position by repaying all debt.</p>
+<p><em>The function deleverages the position by taking out a flashloan to repay all debt
+after setting the Health Factor target to the maximum value.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>Deleveraged</code> event.</em></p>
 <pre><code class="language-solidity">function deleverage() public onlyRole(MANAGER_ROLE);
 </code></pre>
 <h3 id="aavesupplyfromcontractbalance"><a class="header" href="#aavesupplyfromcontractbalance">aaveSupplyFromContractBalance</a></h3>
-<p>// TODO: Add comment</p>
+<p>Convert any tokens in the contract to wstETH and supply to Aave.</p>
+<p><em>The function converts any tokens in the contract to wstETH and supplies them to Aave.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>AaveSuppliedFromContractBalance</code> event.</em></p>
 <pre><code class="language-solidity">function aaveSupplyFromContractBalance() public payable onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>suppliedCollateral</code></td><td><code>uint256</code></td><td>The amount of collateral supplied to Aave.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aaverepayusdcfromcontractbalance"><a class="header" href="#aaverepayusdcfromcontractbalance">aaveRepayUSDCFromContractBalance</a></h3>
-<p>// TODO: Add comment</p>
+<p>Repay USDC debt from the contract balance.</p>
+<p><em>The function repays USDC debt using all the USDC in the contract.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>AaveRepayedUSDCFromContractBalance</code> event.</em></p>
 <pre><code class="language-solidity">function aaveRepayUSDCFromContractBalance() public onlyRole(MANAGER_ROLE);
 </code></pre>
 <h3 id="delegatecallhelper"><a class="header" href="#delegatecallhelper">delegateCallHelper</a></h3>
-<p>// TODO: Add comment and move to different heading. How to protect this function?</p>
+<p>// TODO: Add comment. How to protect this function?</p>
 <pre><code class="language-solidity">function delegateCallHelper(string memory _targetIdentifier, bytes memory _data) public returns (bytes memory);
 </code></pre>
 <h3 id="rescueeth"><a class="header" href="#rescueeth">rescueEth</a></h3>
@@ -415,28 +475,73 @@ Emits a <code>RescueEth</code> event.</em></p>
 </tbody></table>
 </div>
 <h3 id="withdrawtokensfromcontractbalance"><a class="header" href="#withdrawtokensfromcontractbalance">withdrawTokensFromContractBalance</a></h3>
-<p>// TODO: Add comment</p>
+<p>Withdraw specified tokens from the contract balance.</p>
+<p><em>The function withdraws the specified tokens from the contract balance to the owner.
+Caller must have <code>MANAGER_ROLE</code>.
+Throws <code>AavePM__InvalidWithdrawalToken</code> if the token is awstETH.
+Throws <code>AavePM__NoTokensToWithdraw</code> if there are no tokens to withdraw.
+Emits a <code>TokensWithdrawnFromContractBalance</code> event.</em></p>
 <pre><code class="language-solidity">function withdrawTokensFromContractBalance(string memory _identifier, address _owner)
     public
     onlyRole(MANAGER_ROLE)
     checkOwner(_owner);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_identifier</code></td><td><code>string</code></td><td>The identifier of the token to withdraw.</td></tr>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to send the withdrawn tokens to.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aavewithdrawwsteth"><a class="header" href="#aavewithdrawwsteth">aaveWithdrawWstETH</a></h3>
-<p>// TODO: Add comment</p>
+<p>Withdraw wstETH from Aave.</p>
+<p><em>The function withdraws wstETH from Aave and sends it to the specified owner.
+Caller must have <code>MANAGER_ROLE</code>.
+Throws <code>AavePM__NoCollateralToWithdraw</code> if there is no collateral to withdraw.
+Emits a <code>AaveWithdrawnWstETH</code> event.</em></p>
 <pre><code class="language-solidity">function aaveWithdrawWstETH(uint256 _amount, address _owner)
     public
     onlyRole(MANAGER_ROLE)
     checkOwner(_owner)
     returns (uint256 collateralDeltaBase);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_amount</code></td><td><code>uint256</code></td><td>The amount of wstETH to withdraw in wstETH units.</td></tr>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to send the withdrawn wstETH to.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>collateralDeltaBase</code></td><td><code>uint256</code></td><td>The change in collateral base value after withdrawing.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aaveborrowandwithdrawusdc"><a class="header" href="#aaveborrowandwithdrawusdc">aaveBorrowAndWithdrawUSDC</a></h3>
-<p>// TODO: Add comment</p>
+<p>Borrow and withdraw USDC from Aave.</p>
+<p><em>The function borrows USDC from Aave and withdraws it to the specified owner.
+Caller must have <code>MANAGER_ROLE</code>.
+Throws <code>AavePM__ZeroBorrowAmount</code> if the requested borrow amount is 0.
+Throws <code>AavePM__ZeroBorrowAndWithdrawUSDCAvailable</code> if the available borrow and withdraw amount is 0.
+Emits a <code>AaveBorrowedAndWithdrawnUSDC</code> event.</em></p>
 <pre><code class="language-solidity">function aaveBorrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_amount</code></td><td><code>uint256</code></td><td>The amount of USDC to borrow and withdraw.</td></tr>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to send the borrowed and withdrawn USDC to.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aavecloseposition"><a class="header" href="#aavecloseposition">aaveClosePosition</a></h3>
-<p>// TODO: Add comment</p>
+<p>Close the Aave position.</p>
+<p><em>The function closes the Aave position by repaying all debt and withdrawing all wstETH to the specified owner.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>AaveClosedPosition</code> event.</em></p>
 <pre><code class="language-solidity">function aaveClosePosition(address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to send the withdrawn wstETH to.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getcreator"><a class="header" href="#getcreator">getCreator</a></h3>
 <p>Getter function to get the i_creator address.</p>
 <p><em>Public function to allow anyone to view the contract creator.</em></p>
@@ -648,67 +753,147 @@ Emits a <code>RescueEth</code> event.</em></p>
 </tbody></table>
 </div>
 <h3 id="getmaxborrowandwithdrawusdcamount"><a class="header" href="#getmaxborrowandwithdrawusdcamount">getMaxBorrowAndWithdrawUSDCAmount</a></h3>
-<p>// TODO: Add comment</p>
+<p>Getter function to get the maximum amount of USDC that can be borrowed and withdrawn.</p>
+<p><em>Public function to allow anyone to view the maximum amount of USDC that can be borrowed and withdrawn.</em></p>
 <pre><code class="language-solidity">function getMaxBorrowAndWithdrawUSDCAmount() public view returns (uint256 maxBorrowAndWithdrawUSDCAmount);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>maxBorrowAndWithdrawUSDCAmount</code></td><td><code>uint256</code></td><td>The maximum amount of USDC that can be borrowed and withdrawn.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getreinvestableamount"><a class="header" href="#getreinvestableamount">getReinvestableAmount</a></h3>
-<p>// TODO: Add comment</p>
+<p>Getter function to get the reinvestable amount.</p>
+<p><em>Public function to allow anyone to view the reinvestable amount.</em></p>
 <pre><code class="language-solidity">function getReinvestableAmount() public returns (uint256 reinvestableAmount);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>reinvestableAmount</code></td><td><code>uint256</code></td><td>The reinvestable amount.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getrolemember"><a class="header" href="#getrolemember">getRoleMember</a></h3>
-<p>// TODO: Add comment</p>
+<p>Getter function to get the role member at the specified index.</p>
+<p><em>Public function to allow anyone to view the role member at the specified index.</em></p>
 <pre><code class="language-solidity">function getRoleMember(bytes32 role, uint256 index)
     public
     view
     override(IAavePM, AccessControlEnumerableUpgradeable)
     returns (address);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to get the member from in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+<tr><td><code>index</code></td><td><code>uint256</code></td><td>The index of the member.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getrolemembercount"><a class="header" href="#getrolemembercount">getRoleMemberCount</a></h3>
-<p>// TODO: Add comment</p>
+<p>Getter function to get the number of members in a role.</p>
+<p><em>Public function to allow anyone to view the number of members in a role.</em></p>
 <pre><code class="language-solidity">function getRoleMemberCount(bytes32 role)
     public
     view
     override(IAavePM, AccessControlEnumerableUpgradeable)
     returns (uint256);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to get the member count from in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+</tbody></table>
+</div>
 <h3 id="getroleadmin"><a class="header" href="#getroleadmin">getRoleAdmin</a></h3>
-<p>// TODO: Add comment</p>
+<p>Getter function to get the role admin role.</p>
+<p><em>Public function to allow anyone to view the role admin role.</em></p>
 <pre><code class="language-solidity">function getRoleAdmin(bytes32 role)
     public
     view
     override(IAavePM, IAccessControl, AccessControlUpgradeable)
     returns (bytes32);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to get the admin role from in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bytes32</code></td><td>The role admin role.</td></tr>
+</tbody></table>
+</div>
 <h3 id="grantrole"><a class="header" href="#grantrole">grantRole</a></h3>
-<p>// TODO: Add comment</p>
+<p>Grant a role to an account.</p>
+<p><em>Caller must be an admin for the role.</em></p>
 <pre><code class="language-solidity">function grantRole(bytes32 role, address account) public override(IAavePM, IAccessControl, AccessControlUpgradeable);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to grant in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+<tr><td><code>account</code></td><td><code>address</code></td><td>The account to grant the role to.</td></tr>
+</tbody></table>
+</div>
 <h3 id="hasrole"><a class="header" href="#hasrole">hasRole</a></h3>
-<p>// TODO: Add comment</p>
+<p>Check if an account has a role.</p>
+<p><em>Public function to allow anyone to check if an account has a role.</em></p>
 <pre><code class="language-solidity">function hasRole(bytes32 role, address account)
     public
     view
     override(IAavePM, IAccessControl, AccessControlUpgradeable)
     returns (bool);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to check in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+<tr><td><code>account</code></td><td><code>address</code></td><td>The account to check if they have the role.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>True if the account has the role, otherwise false.</td></tr>
+</tbody></table>
+</div>
 <h3 id="renouncerole"><a class="header" href="#renouncerole">renounceRole</a></h3>
-<p>// TODO: Add comment</p>
+<p>Renounce a role from an account.</p>
+<p><em>Caller must have the role.</em></p>
 <pre><code class="language-solidity">function renounceRole(bytes32 role, address callerConfirmation)
     public
     override(IAavePM, IAccessControl, AccessControlUpgradeable);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to renounce in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+<tr><td><code>callerConfirmation</code></td><td><code>address</code></td><td>The account to renounce the role from.</td></tr>
+</tbody></table>
+</div>
 <h3 id="revokerole"><a class="header" href="#revokerole">revokeRole</a></h3>
-<p>// TODO: Add comment</p>
+<p>Revoke a role from an account.</p>
+<p><em>Caller must be an admin for the role.</em></p>
 <pre><code class="language-solidity">function revokeRole(bytes32 role, address account) public override(IAavePM, IAccessControl, AccessControlUpgradeable);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to revoke in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+<tr><td><code>account</code></td><td><code>address</code></td><td>The account to revoke the role from.</td></tr>
+</tbody></table>
+</div>
 <h3 id="supportsinterface"><a class="header" href="#supportsinterface">supportsInterface</a></h3>
-<p>// TODO: Add comment</p>
+<p>Supports interface.</p>
+<p><em>Public function to allow anyone to check if the contract supports the interface.</em></p>
 <pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId)
     public
     view
     override(IAavePM, AccessControlEnumerableUpgradeable)
     returns (bool);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>interfaceId</code></td><td><code>bytes4</code></td><td>The interface ID to check.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>True if the contract supports the interface, otherwise false.</td></tr>
+</tbody></table>
+</div>
 <h3 id="_authorizeupgrade"><a class="header" href="#_authorizeupgrade">_authorizeUpgrade</a></h3>
 <p>Internal function to authorize an upgrade.</p>
 <p><em>Caller must have <code>OWNER_ROLE</code>.</em></p>
@@ -720,12 +905,19 @@ Emits a <code>RescueEth</code> event.</em></p>
 </tbody></table>
 </div>
 <h3 id="upgradetoandcall"><a class="header" href="#upgradetoandcall">upgradeToAndCall</a></h3>
-<p>// TODO: Add comment</p>
+<p>Upgrade the contract to a new implementation.</p>
+<p><em>Caller must have <code>OWNER_ROLE</code>.</em></p>
 <pre><code class="language-solidity">function upgradeToAndCall(address newImplementation, bytes memory data)
     public
     payable
     override(IAavePM, UUPSUpgradeable);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>newImplementation</code></td><td><code>address</code></td><td>Address of the new contract implementation.</td></tr>
+<tr><td><code>data</code></td><td><code>bytes</code></td><td>Data to send to the new implementation.</td></tr>
+</tbody></table>
+</div>
 <h3 id="executeoperation"><a class="header" href="#executeoperation">executeOperation</a></h3>
 <p>Flash loan callback function.</p>
 <p><em>This function is called by the Aave pool contract after the flash loan is executed.

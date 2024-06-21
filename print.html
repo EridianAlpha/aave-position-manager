@@ -397,8 +397,8 @@ TODO: Add threshold details.</p>
 <li><a href="src/interfaces/IWETH9.sol/interface.IWETH9.html">IWETH9</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavefunctionsmodule"><a class="header" href="#iaavefunctionsmodule">IAaveFunctionsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/interfaces/IAaveFunctionsModule.sol">Git Source</a></p>
-<p>// TODO: Add comment</p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/interfaces/IAaveFunctionsModule.sol">Git Source</a></p>
+<p>This interface defines the essential structures and functions for the AaveFunctionsModule contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="getversion"><a class="header" href="#getversion">getVersion</a></h3>
 <pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
@@ -466,7 +466,7 @@ TODO: Add threshold details.</p>
 <pre><code class="language-solidity">error AaveFunctionsModule__InvalidAavePMProxyAddress();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -515,7 +515,6 @@ TODO: Add threshold details.</p>
 <pre><code class="language-solidity">function aaveRepayUSDCFromContractBalance() external;
 </code></pre>
 <h3 id="delegatecallhelper"><a class="header" href="#delegatecallhelper">delegateCallHelper</a></h3>
-<p>TODO: Move to different heading</p>
 <pre><code class="language-solidity">function delegateCallHelper(string memory _targetIdentifier, bytes memory _data) external returns (bytes memory);
 </code></pre>
 <h3 id="rescueeth"><a class="header" href="#rescueeth">rescueEth</a></h3>
@@ -777,8 +776,8 @@ TODO: Add threshold details.</p>
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iborrowandwithdrawusdcmodule"><a class="header" href="#iborrowandwithdrawusdcmodule">IBorrowAndWithdrawUSDCModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/interfaces/IBorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
-<p>// TODO: Add comment</p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/interfaces/IBorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
+<p>This interface defines the essential structures and functions for the BorrowAndWithdrawUSDCModule contract.</p>
 <h2 id="functions-2"><a class="header" href="#functions-2">Functions</a></h2>
 <h3 id="getversion-2"><a class="header" href="#getversion-2">getVersion</a></h3>
 <pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
@@ -793,7 +792,7 @@ TODO: Add threshold details.</p>
 <pre><code class="language-solidity">error BorrowAndWithdrawUSDCModule__InvalidAavePMProxyAddress();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ierc20extended"><a class="header" href="#ierc20extended">IERC20Extended</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/interfaces/IERC20Extended.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/interfaces/IERC20Extended.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 IERC20</p>
 <p>This interface extends the ERC20 interface with the decimals function.</p>
@@ -802,8 +801,8 @@ IERC20</p>
 <pre><code class="language-solidity">function decimals() external view returns (uint8);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="irebalancemodule"><a class="header" href="#irebalancemodule">IRebalanceModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/interfaces/IRebalanceModule.sol">Git Source</a></p>
-<p>// TODO: Add comment</p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/interfaces/IRebalanceModule.sol">Git Source</a></p>
+<p>This interface defines the essential structures and functions for the RebalanceModule contract.</p>
 <h2 id="functions-4"><a class="header" href="#functions-4">Functions</a></h2>
 <h3 id="getversion-3"><a class="header" href="#getversion-3">getVersion</a></h3>
 <pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
@@ -816,8 +815,8 @@ IERC20</p>
 <pre><code class="language-solidity">error RebalanceModule__InvalidAavePMProxyAddress();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ireinvestmodule"><a class="header" href="#ireinvestmodule">IReinvestModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/interfaces/IReinvestModule.sol">Git Source</a></p>
-<p>// TODO: Add comment</p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/interfaces/IReinvestModule.sol">Git Source</a></p>
+<p>This interface defines the essential structures and functions for the ReinvestModule contract.</p>
 <h2 id="functions-5"><a class="header" href="#functions-5">Functions</a></h2>
 <h3 id="getversion-4"><a class="header" href="#getversion-4">getVersion</a></h3>
 <pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
@@ -830,8 +829,8 @@ IERC20</p>
 <pre><code class="language-solidity">error ReinvestModule__InvalidAavePMProxyAddress();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="itokenswapsmodule"><a class="header" href="#itokenswapsmodule">ITokenSwapsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/interfaces/ITokenSwapsModule.sol">Git Source</a></p>
-<p>// TODO: Add comment</p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/interfaces/ITokenSwapsModule.sol">Git Source</a></p>
+<p>This interface defines the essential structures and functions for the TokenSwapsModule contract.</p>
 <h2 id="functions-6"><a class="header" href="#functions-6">Functions</a></h2>
 <h3 id="getversion-5"><a class="header" href="#getversion-5">getVersion</a></h3>
 <pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
@@ -851,7 +850,7 @@ IERC20</p>
 <pre><code class="language-solidity">error TokenSwapsModule__InvalidAavePMProxyAddress();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iweth9"><a class="header" href="#iweth9">IWETH9</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/interfaces/IWETH9.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/interfaces/IWETH9.sol">Git Source</a></p>
 <p>This interface enables the wrapping and unwrapping of ETH to WETH.</p>
 <h2 id="functions-7"><a class="header" href="#functions-7">Functions</a></h2>
 <h3 id="deposit"><a class="header" href="#deposit">deposit</a></h3>
@@ -869,10 +868,12 @@ IERC20</p>
 <li><a href="src/modules/TokenSwapsModule.sol/contract.TokenSwapsModule.html">TokenSwapsModule</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavefunctionsmodule"><a class="header" href="#aavefunctionsmodule">AaveFunctionsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/modules/AaveFunctionsModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/modules/AaveFunctionsModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/AaveFunctionsModule.sol//src/interfaces/IAaveFunctionsModule.sol/interface.IAaveFunctionsModule.html">IAaveFunctionsModule</a></p>
-<p>// TODO: Add comment</p>
+<p><strong>Author:</strong>
+EridianAlpha</p>
+<p>This contract contains the functions for AavePM to interact with the Aave protocol.</p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="version"><a class="header" href="#version">VERSION</a></h3>
 <p>The version of the contract.</p>
@@ -900,43 +901,57 @@ IERC20</p>
 <pre><code class="language-solidity">modifier onlyAavePM();
 </code></pre>
 <h3 id="aavesupply-1"><a class="header" href="#aavesupply-1">aaveSupply</a></h3>
-<p>Deposit all wstETH into Aave.
-TODO: Update comment.</p>
+<p>Deposit all wstETH into Aave.</p>
+<p><em>This function is used to deposit all wstETH into Aave.</em></p>
 <pre><code class="language-solidity">function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) public onlyAavePM;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool contract.</td></tr>
+<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The address of the token to deposit.</td></tr>
+<tr><td><code>tokenBalance</code></td><td><code>uint256</code></td><td>The contract balance of the token to deposit.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aavewithdrawcollateral-1"><a class="header" href="#aavewithdrawcollateral-1">aaveWithdrawCollateral</a></h3>
-<p>Withdraw wstETH from Aave.
-TODO: Update comment.</p>
+<p>Withdraw wstETH from Aave.</p>
+<p><em>This function is used to withdraw wstETH from Aave.</em></p>
 <pre><code class="language-solidity">function aaveWithdrawCollateral(address aavePoolAddress, address tokenAddress, uint256 withdrawAmount)
     public
     onlyAavePM;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool contract.</td></tr>
+<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The address of the token to withdraw.</td></tr>
+<tr><td><code>withdrawAmount</code></td><td><code>uint256</code></td><td>The amount of the token to withdraw.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aaveborrow-1"><a class="header" href="#aaveborrow-1">aaveBorrow</a></h3>
-<p>Borrow USDC from Aave.
-TODO: Update comment.</p>
+<p>Borrow USDC from Aave.</p>
+<p><em>This function is used to borrow USDC from Aave.</em></p>
 <pre><code class="language-solidity">function aaveBorrow(address aavePoolAddress, address tokenAddress, uint256 borrowAmount) public onlyAavePM;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td></td></tr>
-<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td></td></tr>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool contract.</td></tr>
+<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The address of the token to borrow.</td></tr>
 <tr><td><code>borrowAmount</code></td><td><code>uint256</code></td><td>The amount of USDC to borrow. 8 decimal places to the dollar. e.g. 100000000 = $1.00.</td></tr>
 </tbody></table>
 </div>
 <h3 id="aaverepaydebt-1"><a class="header" href="#aaverepaydebt-1">aaveRepayDebt</a></h3>
-<p>Repay USDC debt to Aave.
-TODO: Update comment.</p>
+<p>Repay USDC debt to Aave.</p>
+<p><em>This function is used to repay USDC debt to Aave.</em></p>
 <pre><code class="language-solidity">function aaveRepayDebt(address aavePoolAddress, address tokenAddress, uint256 repayAmount) public onlyAavePM;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td></td></tr>
-<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td></td></tr>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool contract.</td></tr>
+<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The address of the token to repay.</td></tr>
 <tr><td><code>repayAmount</code></td><td><code>uint256</code></td><td>The amount of USDC to repay. 8 decimal places to the dollar. e.g. 100000000 = $1.00.</td></tr>
 </tbody></table>
 </div>
 <h3 id="getcurrentpositionvalues-1"><a class="header" href="#getcurrentpositionvalues-1">getCurrentPositionValues</a></h3>
-<p>// TODO: Add comment.</p>
+<p>Getter function to get the current position values.</p>
 <p><em>This function is used to avoid code duplication in the Reinvest and Rebalance contracts.</em></p>
 <pre><code class="language-solidity">function getCurrentPositionValues(IAavePM aavePM)
     public
@@ -952,8 +967,26 @@ TODO: Update comment.</p>
         address usdcAddress
     );
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>aavePM</code></td><td><code>IAavePM</code></td><td>The Aave Position Manager contract.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>initialCollateralBase</code></td><td><code>uint256</code></td><td>The initial collateral in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold.</td></tr>
+<tr><td><code>initialHealthFactorScaled</code></td><td><code>uint256</code></td><td>The initial health factor scaled to 2 decimal places.</td></tr>
+<tr><td><code>healthFactorTarget</code></td><td><code>uint16</code></td><td>The health factor target.</td></tr>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool contract.</td></tr>
+<tr><td><code>wstETHAddress</code></td><td><code>address</code></td><td>The address of the wstETH token.</td></tr>
+<tr><td><code>usdcAddress</code></td><td><code>address</code></td><td>The address of the USDC token.</td></tr>
+</tbody></table>
+</div>
 <h3 id="checkhealthfactoraboveminimum-1"><a class="header" href="#checkhealthfactoraboveminimum-1">checkHealthFactorAboveMinimum</a></h3>
-<p>// TODO: Add comment.</p>
+<p>Check if the health factor is above the minimum.</p>
+<p><em>This function is used to check if the health factor is above the minimum.</em></p>
 <pre><code class="language-solidity">function checkHealthFactorAboveMinimum()
     public
     view
@@ -966,20 +999,51 @@ TODO: Update comment.</p>
         uint256 healthFactor
     );
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>totalCollateralBase</code></td><td><code>uint256</code></td><td>The total collateral in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>availableBorrowsBase</code></td><td><code>uint256</code></td><td>The available borrows in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold.</td></tr>
+<tr><td><code>ltv</code></td><td><code>uint256</code></td><td>The loan to value ratio.</td></tr>
+<tr><td><code>healthFactor</code></td><td><code>uint256</code></td><td>The health factor.</td></tr>
+</tbody></table>
+</div>
 <h3 id="gettotalcollateraldelta-2"><a class="header" href="#gettotalcollateraldelta-2">getTotalCollateralDelta</a></h3>
-<p>// TODO: Add comment.</p>
+<p>Getter function to get the total collateral delta.</p>
+<p><em>This function is used to calculate the total collateral delta.</em></p>
 <pre><code class="language-solidity">function getTotalCollateralDelta(
     uint256 totalCollateralBase,
     uint256 reinvestedDebtTotal,
     uint256 suppliedCollateralTotal
 ) public pure returns (uint256 delta, bool isPositive);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>totalCollateralBase</code></td><td><code>uint256</code></td><td>The total collateral in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>reinvestedDebtTotal</code></td><td><code>uint256</code></td><td>The reinvested debt total in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>suppliedCollateralTotal</code></td><td><code>uint256</code></td><td>The supplied collateral total in USD base unit with 8 decimals to the dollar.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>delta</code></td><td><code>uint256</code></td><td>The total collateral delta.</td></tr>
+<tr><td><code>isPositive</code></td><td><code>bool</code></td><td>A boolean to indicate if the delta is positive.</td></tr>
+</tbody></table>
+</div>
 <h3 id="convertexistingbalancetowstethandsupplytoaave-1"><a class="header" href="#convertexistingbalancetowstethandsupplytoaave-1">convertExistingBalanceToWstETHAndSupplyToAave</a></h3>
-<p>// TODO: Add comment</p>
+<p>Convert existing balance to wstETH and supply to Aave.</p>
+<p><em>This function is used to convert the existing balance to wstETH and supply to Aave.</em></p>
 <pre><code class="language-solidity">function convertExistingBalanceToWstETHAndSupplyToAave() public onlyAavePM returns (uint256 suppliedCollateral);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>suppliedCollateral</code></td><td><code>uint256</code></td><td>The amount of wstETH supplied to Aave.</td></tr>
+</tbody></table>
+</div>
 <h3 id="calculatemaxborrowusdc-1"><a class="header" href="#calculatemaxborrowusdc-1">calculateMaxBorrowUSDC</a></h3>
-<p>// TODO: Add comment</p>
+<p>Calculate the minimum amount of tokens received from a Uniswap V3 swap.</p>
+<p><em>This function is used to calculate the minimum amount of tokens received from a Uniswap V3 swap.</em></p>
 <pre><code class="language-solidity">function calculateMaxBorrowUSDC(
     uint256 totalCollateralBase,
     uint256 totalDebtBase,
@@ -987,11 +1051,20 @@ TODO: Update comment.</p>
     uint16 healthFactorTarget
 ) public pure returns (uint256 maxBorrowUSDC);
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="borrowandwithdrawusdcmodule"><a class="header" href="#borrowandwithdrawusdcmodule">BorrowAndWithdrawUSDCModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/modules/BorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>totalCollateralBase</code></td><td><code>uint256</code></td><td>The total collateral in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold.</td></tr>
+<tr><td><code>healthFactorTarget</code></td><td><code>uint16</code></td><td>The health factor target.</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="borrowandwithdrawusdcmodule"><a class="header" href="#borrowandwithdrawusdcmodule">BorrowAndWithdrawUSDCModule</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/modules/BorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/BorrowAndWithdrawUSDCModule.sol//src/interfaces/IBorrowAndWithdrawUSDCModule.sol/interface.IBorrowAndWithdrawUSDCModule.html">IBorrowAndWithdrawUSDCModule</a></p>
-<p>// TODO: Add comment</p>
+<p><strong>Author:</strong>
+EridianAlpha</p>
+<p>This contract contains the functions for AavePM to borrow and withdraw USDC from the Aave protocol.</p>
 <h2 id="state-variables-1"><a class="header" href="#state-variables-1">State Variables</a></h2>
 <h3 id="version-1"><a class="header" href="#version-1">VERSION</a></h3>
 <p>The version of the contract.</p>
@@ -1019,14 +1092,27 @@ TODO: Update comment.</p>
 <pre><code class="language-solidity">modifier onlyAavePM();
 </code></pre>
 <h3 id="borrowandwithdrawusdc-1"><a class="header" href="#borrowandwithdrawusdc-1">borrowAndWithdrawUSDC</a></h3>
-<p>// TODO: Add comment</p>
+<p>Borrow USDC from the Aave protocol and withdraw it to the specified owner.</p>
+<p><em>This function borrows USDC from the Aave protocol and withdraws it to the specified owner.</em></p>
 <pre><code class="language-solidity">function borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
     public
     onlyAavePM
     returns (uint256 repaidReinvestedDebt);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>borrowAmountUSDC</code></td><td><code>uint256</code></td><td>The amount of USDC to borrow.</td></tr>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to withdraw the USDC to.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>repaidReinvestedDebt</code></td><td><code>uint256</code></td><td>The amount of reinvested debt repaid (if any) to increase the Health Factor.</td></tr>
+</tbody></table>
+</div>
 <h3 id="_borrowcalculation"><a class="header" href="#_borrowcalculation">_borrowCalculation</a></h3>
-<p>// TODO: Add comment</p>
+<p>Calculate the amount of reinvested debt to repay to increase the Health Factor.</p>
+<p><em>This function calculates the amount of reinvested debt to repay to increase the Health Factor.</em></p>
 <pre><code class="language-solidity">function _borrowCalculation(
     uint256 totalCollateralBase,
     uint256 totalDebtBase,
@@ -1035,11 +1121,26 @@ TODO: Update comment.</p>
     uint256 healthFactorTarget
 ) private pure returns (uint256 repaidReinvestedDebt);
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="rebalancemodule"><a class="header" href="#rebalancemodule">RebalanceModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/modules/RebalanceModule.sol">Git Source</a></p>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>totalCollateralBase</code></td><td><code>uint256</code></td><td>The total collateral base in the Aave pool.</td></tr>
+<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt base in the Aave pool.</td></tr>
+<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold in the Aave pool.</td></tr>
+<tr><td><code>borrowAmountUSDC</code></td><td><code>uint256</code></td><td>The amount of USDC to borrow.</td></tr>
+<tr><td><code>healthFactorTarget</code></td><td><code>uint256</code></td><td>The target Health Factor.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>repaidReinvestedDebt</code></td><td><code>uint256</code></td><td>The amount of reinvested debt repaid to increase the Health Factor.</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="rebalancemodule"><a class="header" href="#rebalancemodule">RebalanceModule</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/modules/RebalanceModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/RebalanceModule.sol//src/interfaces/IRebalanceModule.sol/interface.IRebalanceModule.html">IRebalanceModule</a></p>
-<p>// TODO: Add comment</p>
+<p><strong>Author:</strong>
+EridianAlpha</p>
+<p>This contract contains the functions for AavePM to rebalance the Aave position by repaying debt to increase the health factor.</p>
 <h2 id="state-variables-2"><a class="header" href="#state-variables-2">State Variables</a></h2>
 <h3 id="version-2"><a class="header" href="#version-2">VERSION</a></h3>
 <p>The version of the contract.</p>
@@ -1074,7 +1175,8 @@ If the health factor is below the target, it repays debt to increase the health 
 <pre><code class="language-solidity">function rebalance() public onlyAavePM returns (uint256 repaymentAmountUSDC);
 </code></pre>
 <h3 id="_repaydebt"><a class="header" href="#_repaydebt">_repayDebt</a></h3>
-<p>// TODO: Add comment</p>
+<p>Repay debt to increase the health factor.</p>
+<p><em>This function repays debt to increase the health factor.</em></p>
 <pre><code class="language-solidity">function _repayDebt(
     uint256 totalDebtBase,
     address aavePoolAddress,
@@ -1084,11 +1186,28 @@ If the health factor is below the target, it repays debt to increase the health 
     uint16 healthFactorTarget
 ) private returns (uint256 repaymentAmountUSDC);
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="reinvestmodule"><a class="header" href="#reinvestmodule">ReinvestModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/modules/ReinvestModule.sol">Git Source</a></p>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt in base units.</td></tr>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool.</td></tr>
+<tr><td><code>usdcAddress</code></td><td><code>address</code></td><td>The address of the USDC token.</td></tr>
+<tr><td><code>totalCollateralBase</code></td><td><code>uint256</code></td><td>The total collateral in base units.</td></tr>
+<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold.</td></tr>
+<tr><td><code>healthFactorTarget</code></td><td><code>uint16</code></td><td>The target health factor.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>repaymentAmountUSDC</code></td><td><code>uint256</code></td><td>The amount of USDC repaid.</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="reinvestmodule"><a class="header" href="#reinvestmodule">ReinvestModule</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/modules/ReinvestModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/ReinvestModule.sol//src/interfaces/IReinvestModule.sol/interface.IReinvestModule.html">IReinvestModule</a></p>
-<p>// TODO: Add comment</p>
+<p><strong>Author:</strong>
+EridianAlpha</p>
+<p>This contract contains the functions for AavePM to borrow USDC,
+swap to wstETH, and supply to Aave maintaining the target health factor.</p>
 <h2 id="state-variables-3"><a class="header" href="#state-variables-3">State Variables</a></h2>
 <h3 id="version-3"><a class="header" href="#version-3">VERSION</a></h3>
 <p>The version of the contract.</p>
@@ -1116,11 +1235,18 @@ If the health factor is below the target, it repays debt to increase the health 
 <pre><code class="language-solidity">modifier onlyAavePM();
 </code></pre>
 <h3 id="reinvest-2"><a class="header" href="#reinvest-2">reinvest</a></h3>
-<p>// TODO: Add comment</p>
+<p>Reinvest the Aave position.</p>
+<p><em>This function reinvests the Aave position by borrowing USDC, swapping to wstETH, and supplying it back to Aave.</em></p>
 <pre><code class="language-solidity">function reinvest() public onlyAavePM returns (uint256 reinvestedDebt);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>reinvestedDebt</code></td><td><code>uint256</code></td><td>The amount of debt reinvested.</td></tr>
+</tbody></table>
+</div>
 <h3 id="_reinvestaction"><a class="header" href="#_reinvestaction">_reinvestAction</a></h3>
-<p>// TODO: Add comment</p>
+<p>Reinvest the Aave position.</p>
+<p><em>This function actions the reinvestment of the Aave position.</em></p>
 <pre><code class="language-solidity">function _reinvestAction(
     IAavePM aavePM,
     uint256 totalDebtBase,
@@ -1132,11 +1258,29 @@ If the health factor is below the target, it repays debt to increase the health 
     uint16 healthFactorTarget
 ) private returns (uint256 borrowAmountUSDC);
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="tokenswapsmodule"><a class="header" href="#tokenswapsmodule">TokenSwapsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/modules/TokenSwapsModule.sol">Git Source</a></p>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>aavePM</code></td><td><code>IAavePM</code></td><td>The Aave Position Manager contract.</td></tr>
+<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt in base units.</td></tr>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool.</td></tr>
+<tr><td><code>usdcAddress</code></td><td><code>address</code></td><td>The address of the USDC token.</td></tr>
+<tr><td><code>wstETHAddress</code></td><td><code>address</code></td><td>The address of the wstETH token.</td></tr>
+<tr><td><code>initialCollateralBase</code></td><td><code>uint256</code></td><td>The initial collateral in base units.</td></tr>
+<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold.</td></tr>
+<tr><td><code>healthFactorTarget</code></td><td><code>uint16</code></td><td>The target health factor.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>borrowAmountUSDC</code></td><td><code>uint256</code></td><td>The amount of USDC borrowed.</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="tokenswapsmodule"><a class="header" href="#tokenswapsmodule">TokenSwapsModule</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/modules/TokenSwapsModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/TokenSwapsModule.sol//src/interfaces/ITokenSwapsModule.sol/interface.ITokenSwapsModule.html">ITokenSwapsModule</a></p>
-<p>// TODO: Add comment</p>
+<p><strong>Author:</strong>
+EridianAlpha</p>
+<p>This contract contains the functions for AavePM to swap tokens using UniswapV3.</p>
 <h2 id="state-variables-4"><a class="header" href="#state-variables-4">State Variables</a></h2>
 <h3 id="version-4"><a class="header" href="#version-4">VERSION</a></h3>
 <p>The version of the contract.</p>
@@ -1164,9 +1308,11 @@ If the health factor is below the target, it repays debt to increase the health 
 <pre><code class="language-solidity">modifier onlyAavePM();
 </code></pre>
 <h3 id="swaptokens-1"><a class="header" href="#swaptokens-1">swapTokens</a></h3>
-<p>Swaps the contract's entire specified token balance using a UniswapV3 pool.</p>
-<p><em>Calculates the minimum amount that should be received based on the current pool's price ratio and a predefined slippage tolerance.
-Reverts if there are no tokens in the contract or if the transaction doesn't meet the <code>amountOutMinimum</code> criteria due to price movements.</em></p>
+<p>Swaps the entire specified token balance of the contract using a UniswapV3 pool.</p>
+<p><em>Calculates the minimum amount that should be received based on the
+current pool price ratio and a predefined slippage tolerance.
+Reverts if there are no tokens in the contract or if the transaction does not
+meet the <code>amountOutMinimum</code> criteria due to price movements.</em></p>
 <pre><code class="language-solidity">function swapTokens(
     string memory _uniswapV3PoolIdentifier,
     string memory _tokenInIdentifier,
@@ -1187,17 +1333,32 @@ Reverts if there are no tokens in the contract or if the transaction doesn't mee
 </tbody></table>
 </div>
 <h3 id="approveandexecuteswap"><a class="header" href="#approveandexecuteswap">approveAndExecuteSwap</a></h3>
-<p>// TODO: Add comment</p>
+<p>Approves and executes the swap using the UniswapV3 router.</p>
+<p><em>Approves the swapRouter to spend the tokenIn and executes the swap.</em></p>
 <pre><code class="language-solidity">function approveAndExecuteSwap(IAavePM aavePM, ISwapRouter.ExactInputSingleParams memory params, uint256 currentBalance)
     private
     returns (uint256 amountOut);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>aavePM</code></td><td><code>IAavePM</code></td><td>The Aave Position Manager contract.</td></tr>
+<tr><td><code>params</code></td><td><code>ISwapRouter.ExactInputSingleParams</code></td><td>The swap parameters.</td></tr>
+<tr><td><code>currentBalance</code></td><td><code>uint256</code></td><td>The current balance of the token to swap.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>amountOut</code></td><td><code>uint256</code></td><td>The amount of tokens received from the swap.</td></tr>
+</tbody></table>
+</div>
 <h3 id="wrapethtoweth-1"><a class="header" href="#wrapethtoweth-1">wrapETHToWETH</a></h3>
-<p>// TODO: Add comment</p>
+<p>Wraps all ETH in the contract to WETH.</p>
+<p><em>Wraps all ETH in the contract to WETH even if the amount is 0.</em></p>
 <pre><code class="language-solidity">function wrapETHToWETH() public payable onlyAavePM;
 </code></pre>
 <h3 id="uniswapv3calculateminout"><a class="header" href="#uniswapv3calculateminout">uniswapV3CalculateMinOut</a></h3>
-<p>// TODO: Add comment</p>
+<p>Calculates the minimum amount of tokens to receive from a UniswapV3 swap.</p>
+<p><em>Uses the current pool price ratio and a predefined slippage tolerance to calculate the minimum amount.</em></p>
 <pre><code class="language-solidity">function uniswapV3CalculateMinOut(
     IAavePM aavePM,
     uint256 _currentBalance,
@@ -1206,12 +1367,36 @@ Reverts if there are no tokens in the contract or if the transaction doesn't mee
     address tokenOutAddress
 ) private view returns (uint256 minOut);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>aavePM</code></td><td><code>IAavePM</code></td><td>The Aave Position Manager contract.</td></tr>
+<tr><td><code>_currentBalance</code></td><td><code>uint256</code></td><td>The current balance of the token to swap.</td></tr>
+<tr><td><code>_uniswapV3PoolAddress</code></td><td><code>address</code></td><td>The address of the UniswapV3 pool to use for the swap.</td></tr>
+<tr><td><code>tokenInAddress</code></td><td><code>address</code></td><td>The address of the token to swap.</td></tr>
+<tr><td><code>tokenOutAddress</code></td><td><code>address</code></td><td>The address of the token to receive from the swap.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>minOut</code></td><td><code>uint256</code></td><td>The minimum amount of tokens to receive from the swap.</td></tr>
+</tbody></table>
+</div>
 <h3 id="_isidentifiereth"><a class="header" href="#_isidentifiereth">_isIdentifierETH</a></h3>
-<p>// TODO: Add comment</p>
+<p>Checks if the identifier is for ETH.</p>
+<p><em>Compares the identifier to the ETH identifier and returns true if they match.</em></p>
 <pre><code class="language-solidity">function _isIdentifierETH(string memory identifier) private pure returns (bool);
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/AavePM.sol">Git Source</a></p>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>identifier</code></td><td><code>string</code></td><td>The identifier to check.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>isETH True if the identifier is for ETH.</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AavePM.sol//src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="src/AavePM.sol//src/FunctionChecks.sol/contract.FunctionChecks.html">FunctionChecks</a>, <a href="src/AavePM.sol//src/FlashLoan.sol/contract.FlashLoan.html">FlashLoan</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -1283,11 +1468,19 @@ A contract upgrade is required to change this value.</em></p>
 </code></pre>
 <h2 id="functions-13"><a class="header" href="#functions-13">Functions</a></h2>
 <h3 id="checkowner"><a class="header" href="#checkowner">checkOwner</a></h3>
-<p>// TODO: Add comment</p>
+<p>Modifier to check if the caller is the owner.</p>
+<p><em>The function checks if the caller has the <code>OWNER_ROLE</code>.</em></p>
 <pre><code class="language-solidity">modifier checkOwner(address _owner);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to check if it has the <code>OWNER_ROLE</code>.</td></tr>
+</tbody></table>
+</div>
 <h3 id="checkmanagerinvocationlimit"><a class="header" href="#checkmanagerinvocationlimit">checkManagerInvocationLimit</a></h3>
-<p>// TODO: Add comment</p>
+<p>Function to check the manager invocation limit.</p>
+<p><em>The function checks if the manager has exceeded the daily
+invocation limit and updates the timestamp array.</em></p>
 <pre><code class="language-solidity">function checkManagerInvocationLimit() internal;
 </code></pre>
 <h3 id="constructor-5"><a class="header" href="#constructor-5">constructor</a></h3>
@@ -1296,11 +1489,11 @@ A contract upgrade is required to change this value.</em></p>
 <pre><code class="language-solidity">constructor();
 </code></pre>
 <h3 id="receive"><a class="header" href="#receive">receive</a></h3>
-<p>// TODO: Add comment</p>
+<p>Function to receive ETH when no function matches the call data.</p>
 <pre><code class="language-solidity">receive() external payable;
 </code></pre>
 <h3 id="fallback"><a class="header" href="#fallback">fallback</a></h3>
-<p>// TODO: Add comment</p>
+<p>Fallback function to revert calls to functions that do not exist when the msg.data is empty.</p>
 <pre><code class="language-solidity">fallback() external payable;
 </code></pre>
 <h3 id="initialize-1"><a class="header" href="#initialize-1">initialize</a></h3>
@@ -1328,7 +1521,8 @@ A contract upgrade is required to change this value.</em></p>
 </tbody></table>
 </div>
 <h3 id="_initializestate"><a class="header" href="#_initializestate">_initializeState</a></h3>
-<p>// TODO: Add comment. Just the state setting logic</p>
+<p>Internal function to initialize the state of the contract.</p>
+<p><em>This function sets up all necessary state variables for the contract.</em></p>
 <pre><code class="language-solidity">function _initializeState(
     address owner,
     ContractAddress[] memory contractAddresses,
@@ -1339,6 +1533,17 @@ A contract upgrade is required to change this value.</em></p>
     uint16 initialManagerDailyInvocationLimit
 ) internal;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>owner</code></td><td><code>address</code></td><td>The initial address of the owner of the contract.</td></tr>
+<tr><td><code>contractAddresses</code></td><td><code>ContractAddress[]</code></td><td>An array of <code>ContractAddress</code> structures containing addresses of related contracts.</td></tr>
+<tr><td><code>tokenAddresses</code></td><td><code>TokenAddress[]</code></td><td>An array of <code>TokenAddress</code> structures containing addresses of relevant ERC-20 tokens.</td></tr>
+<tr><td><code>uniswapV3Pools</code></td><td><code>UniswapV3Pool[]</code></td><td>An array of <code>UniswapV3Pool</code> structures containing the address and fee of the UniswapV3 pools.</td></tr>
+<tr><td><code>initialHealthFactorTarget</code></td><td><code>uint16</code></td><td>The initial target health factor, used to manage risk.</td></tr>
+<tr><td><code>initialSlippageTolerance</code></td><td><code>uint16</code></td><td>The initial slippage tolerance for token swaps.</td></tr>
+<tr><td><code>initialManagerDailyInvocationLimit</code></td><td><code>uint16</code></td><td>The initial limit for the number of manager invocations per day.</td></tr>
+</tbody></table>
+</div>
 <h3 id="updatecontractaddress-1"><a class="header" href="#updatecontractaddress-1">updateContractAddress</a></h3>
 <p>Generic update function to set the contract address for a given identifier.</p>
 <p><em>Caller must have <code>OWNER_ROLE</code>.
@@ -1394,39 +1599,79 @@ Emits a <code>SlippageToleranceUpdated</code> event.</em></p>
 </tbody></table>
 </div>
 <h3 id="updatemanagerdailyinvocationlimit-1"><a class="header" href="#updatemanagerdailyinvocationlimit-1">updateManagerDailyInvocationLimit</a></h3>
-<p>// TODO: Add comment</p>
+<p>Update the Manager Daily Invocation Limit.</p>
+<p><em>Caller must have <code>OWNER_ROLE</code>.
+Emits a <code>ManagerDailyInvocationLimitUpdated</code> event.</em></p>
 <pre><code class="language-solidity">function updateManagerDailyInvocationLimit(uint16 _managerDailyInvocationLimit) external onlyRole(OWNER_ROLE);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_managerDailyInvocationLimit</code></td><td><code>uint16</code></td><td>The new Manager Daily Invocation Limit.</td></tr>
+</tbody></table>
+</div>
 <h3 id="_storeeventblocknumber"><a class="header" href="#_storeeventblocknumber">_storeEventBlockNumber</a></h3>
-<p>// TODO: Add comment</p>
+<p>Stores the block number of an event.</p>
+<p><em>This function is called after an event is emitted to store the block number.
+Duplicates are not stored even if multiple events are emitted in the same block.</em></p>
 <pre><code class="language-solidity">function _storeEventBlockNumber() private;
 </code></pre>
 <h3 id="rebalance-3"><a class="header" href="#rebalance-3">rebalance</a></h3>
 <p>Rebalance the Aave position.</p>
-<p><em>Caller must have <code>MANAGER_ROLE</code>.
-The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
+<p><em>The function rebalances the Aave position by converting any ETH to WETH, then WETH to wstETH.
 It then deposits the wstETH into Aave.
-If the health factor is below the target, it repays debt to increase the health factor.</em></p>
+If the health factor is below the target, it repays debt to increase the health factor.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>Rebalanced</code> event.</em></p>
 <pre><code class="language-solidity">function rebalance() public onlyRole(MANAGER_ROLE) returns (uint256 repaymentAmountUSDC);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>repaymentAmountUSDC</code></td><td><code>uint256</code></td><td>The amount of debt repaid.</td></tr>
+</tbody></table>
+</div>
 <h3 id="reinvest-3"><a class="header" href="#reinvest-3">reinvest</a></h3>
-<p>// TODO: Add comment</p>
+<p>Reinvest any excess debt or collateral.</p>
+<p><em>The function reinvests any excess collateral by converting any ETH to WETH, then WETH to wstETH.
+It then deposits the wstETH into Aave.
+If the health factor is below the target, outside of the allowed range, this function will fail.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>Reinvested</code> event.</em></p>
 <pre><code class="language-solidity">function reinvest() public payable onlyRole(MANAGER_ROLE) returns (uint256 reinvestedDebt);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>reinvestedDebt</code></td><td><code>uint256</code></td><td>The amount of debt reinvested.</td></tr>
+</tbody></table>
+</div>
 <h3 id="deleverage-1"><a class="header" href="#deleverage-1">deleverage</a></h3>
-<p>// TODO: Add comment</p>
+<p>Deleverage the position by repaying all debt.</p>
+<p><em>The function deleverages the position by taking out a flashloan to repay all debt
+after setting the Health Factor target to the maximum value.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>Deleveraged</code> event.</em></p>
 <pre><code class="language-solidity">function deleverage() public onlyRole(MANAGER_ROLE);
 </code></pre>
 <h3 id="aavesupplyfromcontractbalance-1"><a class="header" href="#aavesupplyfromcontractbalance-1">aaveSupplyFromContractBalance</a></h3>
-<p>// TODO: Add comment</p>
+<p>Convert any tokens in the contract to wstETH and supply to Aave.</p>
+<p><em>The function converts any tokens in the contract to wstETH and supplies them to Aave.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>AaveSuppliedFromContractBalance</code> event.</em></p>
 <pre><code class="language-solidity">function aaveSupplyFromContractBalance() public payable onlyRole(MANAGER_ROLE) returns (uint256 suppliedCollateral);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>suppliedCollateral</code></td><td><code>uint256</code></td><td>The amount of collateral supplied to Aave.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aaverepayusdcfromcontractbalance-1"><a class="header" href="#aaverepayusdcfromcontractbalance-1">aaveRepayUSDCFromContractBalance</a></h3>
-<p>// TODO: Add comment</p>
+<p>Repay USDC debt from the contract balance.</p>
+<p><em>The function repays USDC debt using all the USDC in the contract.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>AaveRepayedUSDCFromContractBalance</code> event.</em></p>
 <pre><code class="language-solidity">function aaveRepayUSDCFromContractBalance() public onlyRole(MANAGER_ROLE);
 </code></pre>
 <h3 id="delegatecallhelper-1"><a class="header" href="#delegatecallhelper-1">delegateCallHelper</a></h3>
-<p>// TODO: Add comment and move to different heading. How to protect this function?</p>
+<p>// TODO: Add comment. How to protect this function?</p>
 <pre><code class="language-solidity">function delegateCallHelper(string memory _targetIdentifier, bytes memory _data) public returns (bytes memory);
 </code></pre>
 <h3 id="rescueeth-1"><a class="header" href="#rescueeth-1">rescueEth</a></h3>
@@ -1448,28 +1693,73 @@ Emits a <code>RescueEth</code> event.</em></p>
 </tbody></table>
 </div>
 <h3 id="withdrawtokensfromcontractbalance-1"><a class="header" href="#withdrawtokensfromcontractbalance-1">withdrawTokensFromContractBalance</a></h3>
-<p>// TODO: Add comment</p>
+<p>Withdraw specified tokens from the contract balance.</p>
+<p><em>The function withdraws the specified tokens from the contract balance to the owner.
+Caller must have <code>MANAGER_ROLE</code>.
+Throws <code>AavePM__InvalidWithdrawalToken</code> if the token is awstETH.
+Throws <code>AavePM__NoTokensToWithdraw</code> if there are no tokens to withdraw.
+Emits a <code>TokensWithdrawnFromContractBalance</code> event.</em></p>
 <pre><code class="language-solidity">function withdrawTokensFromContractBalance(string memory _identifier, address _owner)
     public
     onlyRole(MANAGER_ROLE)
     checkOwner(_owner);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_identifier</code></td><td><code>string</code></td><td>The identifier of the token to withdraw.</td></tr>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to send the withdrawn tokens to.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aavewithdrawwsteth-1"><a class="header" href="#aavewithdrawwsteth-1">aaveWithdrawWstETH</a></h3>
-<p>// TODO: Add comment</p>
+<p>Withdraw wstETH from Aave.</p>
+<p><em>The function withdraws wstETH from Aave and sends it to the specified owner.
+Caller must have <code>MANAGER_ROLE</code>.
+Throws <code>AavePM__NoCollateralToWithdraw</code> if there is no collateral to withdraw.
+Emits a <code>AaveWithdrawnWstETH</code> event.</em></p>
 <pre><code class="language-solidity">function aaveWithdrawWstETH(uint256 _amount, address _owner)
     public
     onlyRole(MANAGER_ROLE)
     checkOwner(_owner)
     returns (uint256 collateralDeltaBase);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_amount</code></td><td><code>uint256</code></td><td>The amount of wstETH to withdraw in wstETH units.</td></tr>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to send the withdrawn wstETH to.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>collateralDeltaBase</code></td><td><code>uint256</code></td><td>The change in collateral base value after withdrawing.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aaveborrowandwithdrawusdc-1"><a class="header" href="#aaveborrowandwithdrawusdc-1">aaveBorrowAndWithdrawUSDC</a></h3>
-<p>// TODO: Add comment</p>
+<p>Borrow and withdraw USDC from Aave.</p>
+<p><em>The function borrows USDC from Aave and withdraws it to the specified owner.
+Caller must have <code>MANAGER_ROLE</code>.
+Throws <code>AavePM__ZeroBorrowAmount</code> if the requested borrow amount is 0.
+Throws <code>AavePM__ZeroBorrowAndWithdrawUSDCAvailable</code> if the available borrow and withdraw amount is 0.
+Emits a <code>AaveBorrowedAndWithdrawnUSDC</code> event.</em></p>
 <pre><code class="language-solidity">function aaveBorrowAndWithdrawUSDC(uint256 _amount, address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_amount</code></td><td><code>uint256</code></td><td>The amount of USDC to borrow and withdraw.</td></tr>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to send the borrowed and withdrawn USDC to.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aavecloseposition-1"><a class="header" href="#aavecloseposition-1">aaveClosePosition</a></h3>
-<p>// TODO: Add comment</p>
+<p>Close the Aave position.</p>
+<p><em>The function closes the Aave position by repaying all debt and withdrawing all wstETH to the specified owner.
+Caller must have <code>MANAGER_ROLE</code>.
+Emits a <code>AaveClosedPosition</code> event.</em></p>
 <pre><code class="language-solidity">function aaveClosePosition(address _owner) public onlyRole(MANAGER_ROLE) checkOwner(_owner);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to send the withdrawn wstETH to.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getcreator-1"><a class="header" href="#getcreator-1">getCreator</a></h3>
 <p>Getter function to get the i_creator address.</p>
 <p><em>Public function to allow anyone to view the contract creator.</em></p>
@@ -1681,67 +1971,147 @@ Emits a <code>RescueEth</code> event.</em></p>
 </tbody></table>
 </div>
 <h3 id="getmaxborrowandwithdrawusdcamount-1"><a class="header" href="#getmaxborrowandwithdrawusdcamount-1">getMaxBorrowAndWithdrawUSDCAmount</a></h3>
-<p>// TODO: Add comment</p>
+<p>Getter function to get the maximum amount of USDC that can be borrowed and withdrawn.</p>
+<p><em>Public function to allow anyone to view the maximum amount of USDC that can be borrowed and withdrawn.</em></p>
 <pre><code class="language-solidity">function getMaxBorrowAndWithdrawUSDCAmount() public view returns (uint256 maxBorrowAndWithdrawUSDCAmount);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>maxBorrowAndWithdrawUSDCAmount</code></td><td><code>uint256</code></td><td>The maximum amount of USDC that can be borrowed and withdrawn.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getreinvestableamount-1"><a class="header" href="#getreinvestableamount-1">getReinvestableAmount</a></h3>
-<p>// TODO: Add comment</p>
+<p>Getter function to get the reinvestable amount.</p>
+<p><em>Public function to allow anyone to view the reinvestable amount.</em></p>
 <pre><code class="language-solidity">function getReinvestableAmount() public returns (uint256 reinvestableAmount);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>reinvestableAmount</code></td><td><code>uint256</code></td><td>The reinvestable amount.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getrolemember-1"><a class="header" href="#getrolemember-1">getRoleMember</a></h3>
-<p>// TODO: Add comment</p>
+<p>Getter function to get the role member at the specified index.</p>
+<p><em>Public function to allow anyone to view the role member at the specified index.</em></p>
 <pre><code class="language-solidity">function getRoleMember(bytes32 role, uint256 index)
     public
     view
     override(IAavePM, AccessControlEnumerableUpgradeable)
     returns (address);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to get the member from in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+<tr><td><code>index</code></td><td><code>uint256</code></td><td>The index of the member.</td></tr>
+</tbody></table>
+</div>
 <h3 id="getrolemembercount-1"><a class="header" href="#getrolemembercount-1">getRoleMemberCount</a></h3>
-<p>// TODO: Add comment</p>
+<p>Getter function to get the number of members in a role.</p>
+<p><em>Public function to allow anyone to view the number of members in a role.</em></p>
 <pre><code class="language-solidity">function getRoleMemberCount(bytes32 role)
     public
     view
     override(IAavePM, AccessControlEnumerableUpgradeable)
     returns (uint256);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to get the member count from in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+</tbody></table>
+</div>
 <h3 id="getroleadmin-1"><a class="header" href="#getroleadmin-1">getRoleAdmin</a></h3>
-<p>// TODO: Add comment</p>
+<p>Getter function to get the role admin role.</p>
+<p><em>Public function to allow anyone to view the role admin role.</em></p>
 <pre><code class="language-solidity">function getRoleAdmin(bytes32 role)
     public
     view
     override(IAavePM, IAccessControl, AccessControlUpgradeable)
     returns (bytes32);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to get the admin role from in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bytes32</code></td><td>The role admin role.</td></tr>
+</tbody></table>
+</div>
 <h3 id="grantrole-1"><a class="header" href="#grantrole-1">grantRole</a></h3>
-<p>// TODO: Add comment</p>
+<p>Grant a role to an account.</p>
+<p><em>Caller must be an admin for the role.</em></p>
 <pre><code class="language-solidity">function grantRole(bytes32 role, address account) public override(IAavePM, IAccessControl, AccessControlUpgradeable);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to grant in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+<tr><td><code>account</code></td><td><code>address</code></td><td>The account to grant the role to.</td></tr>
+</tbody></table>
+</div>
 <h3 id="hasrole-1"><a class="header" href="#hasrole-1">hasRole</a></h3>
-<p>// TODO: Add comment</p>
+<p>Check if an account has a role.</p>
+<p><em>Public function to allow anyone to check if an account has a role.</em></p>
 <pre><code class="language-solidity">function hasRole(bytes32 role, address account)
     public
     view
     override(IAavePM, IAccessControl, AccessControlUpgradeable)
     returns (bool);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to check in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+<tr><td><code>account</code></td><td><code>address</code></td><td>The account to check if they have the role.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>True if the account has the role, otherwise false.</td></tr>
+</tbody></table>
+</div>
 <h3 id="renouncerole-1"><a class="header" href="#renouncerole-1">renounceRole</a></h3>
-<p>// TODO: Add comment</p>
+<p>Renounce a role from an account.</p>
+<p><em>Caller must have the role.</em></p>
 <pre><code class="language-solidity">function renounceRole(bytes32 role, address callerConfirmation)
     public
     override(IAavePM, IAccessControl, AccessControlUpgradeable);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to renounce in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+<tr><td><code>callerConfirmation</code></td><td><code>address</code></td><td>The account to renounce the role from.</td></tr>
+</tbody></table>
+</div>
 <h3 id="revokerole-1"><a class="header" href="#revokerole-1">revokeRole</a></h3>
-<p>// TODO: Add comment</p>
+<p>Revoke a role from an account.</p>
+<p><em>Caller must be an admin for the role.</em></p>
 <pre><code class="language-solidity">function revokeRole(bytes32 role, address account) public override(IAavePM, IAccessControl, AccessControlUpgradeable);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td><code>bytes32</code></td><td>The role to revoke in a bytes32 format keccak256(&quot;ROLE_NAME&quot;).</td></tr>
+<tr><td><code>account</code></td><td><code>address</code></td><td>The account to revoke the role from.</td></tr>
+</tbody></table>
+</div>
 <h3 id="supportsinterface-1"><a class="header" href="#supportsinterface-1">supportsInterface</a></h3>
-<p>// TODO: Add comment</p>
+<p>Supports interface.</p>
+<p><em>Public function to allow anyone to check if the contract supports the interface.</em></p>
 <pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId)
     public
     view
     override(IAavePM, AccessControlEnumerableUpgradeable)
     returns (bool);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>interfaceId</code></td><td><code>bytes4</code></td><td>The interface ID to check.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>True if the contract supports the interface, otherwise false.</td></tr>
+</tbody></table>
+</div>
 <h3 id="_authorizeupgrade"><a class="header" href="#_authorizeupgrade">_authorizeUpgrade</a></h3>
 <p>Internal function to authorize an upgrade.</p>
 <p><em>Caller must have <code>OWNER_ROLE</code>.</em></p>
@@ -1753,12 +2123,19 @@ Emits a <code>RescueEth</code> event.</em></p>
 </tbody></table>
 </div>
 <h3 id="upgradetoandcall-1"><a class="header" href="#upgradetoandcall-1">upgradeToAndCall</a></h3>
-<p>// TODO: Add comment</p>
+<p>Upgrade the contract to a new implementation.</p>
+<p><em>Caller must have <code>OWNER_ROLE</code>.</em></p>
 <pre><code class="language-solidity">function upgradeToAndCall(address newImplementation, bytes memory data)
     public
     payable
     override(IAavePM, UUPSUpgradeable);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>newImplementation</code></td><td><code>address</code></td><td>Address of the new contract implementation.</td></tr>
+<tr><td><code>data</code></td><td><code>bytes</code></td><td>Data to send to the new implementation.</td></tr>
+</tbody></table>
+</div>
 <h3 id="executeoperation-1"><a class="header" href="#executeoperation-1">executeOperation</a></h3>
 <p>Flash loan callback function.</p>
 <p><em>This function is called by the Aave pool contract after the flash loan is executed.
@@ -1782,8 +2159,10 @@ The function is called by the Aave pool contract and is not intended to be calle
 <tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>bool True if the operation was successful.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="flashloan"><a class="header" href="#flashloan">FlashLoan</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/FlashLoan.sol">Git Source</a></p>
-<p>// TODO: Add comment</p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/FlashLoan.sol">Git Source</a></p>
+<p><strong>Author:</strong>
+EridianAlpha</p>
+<p>This contract contains the functions for AavePM to execute a flash loan to repay debt and withdraw collateral.</p>
 <h2 id="functions-14"><a class="header" href="#functions-14">Functions</a></h2>
 <h3 id="_executeoperation"><a class="header" href="#_executeoperation">_executeOperation</a></h3>
 <p>Flash loan callback function.</p>
@@ -1808,18 +2187,31 @@ The function is called by the Aave pool contract and is not intended to be calle
 <tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>bool True if the operation was successful.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="functionchecks"><a class="header" href="#functionchecks">FunctionChecks</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/FunctionChecks.sol">Git Source</a></p>
-<p>// TODO: Add comment</p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/FunctionChecks.sol">Git Source</a></p>
+<p><strong>Author:</strong>
+EridianAlpha</p>
+<p>This contract contains the functions used inside AavePM modifiers.</p>
 <h2 id="functions-15"><a class="header" href="#functions-15">Functions</a></h2>
 <h3 id="_checkowner"><a class="header" href="#_checkowner">_checkOwner</a></h3>
-<p>// TODO: Add comment</p>
+<p>Check if the caller has the <code>OWNER_ROLE</code>.</p>
+<p><em>This function checks if the caller has the <code>OWNER_ROLE</code> and reverts if it does not.</em></p>
 <pre><code class="language-solidity">function _checkOwner(address _owner) internal view;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_owner</code></td><td><code>address</code></td><td>The address to check if it has the <code>OWNER_ROLE</code>.</td></tr>
+</tbody></table>
+</div>
 <h3 id="_checkmanagerinvocationlimit"><a class="header" href="#_checkmanagerinvocationlimit">_checkManagerInvocationLimit</a></h3>
-<p>// TODO: Add comment</p>
+<p>Check if manager invocations are within the daily limit.</p>
+<p><em>This function checks if the manager invocations are within the daily limit and reverts if the limit is reached.</em></p>
 <pre><code class="language-solidity">function _checkManagerInvocationLimit(uint64[] memory managerInvocations) internal view;
 </code></pre>
-
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>managerInvocations</code></td><td><code>uint64[]</code></td><td>The array of manager invocations.</td></tr>
+</tbody></table>
+</div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

@@ -178,10 +178,12 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="aavefunctionsmodule"><a class="header" href="#aavefunctionsmodule">AaveFunctionsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/73a14a0c893db1122079d6dc0e08cd6357b495ad/src/modules/AaveFunctionsModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/7460c8b2b4307b3b074427e2dd030151e972ad9b/src/modules/AaveFunctionsModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/src/interfaces/IAaveFunctionsModule.sol/interface.IAaveFunctionsModule.html">IAaveFunctionsModule</a></p>
-<p>// TODO: Add comment</p>
+<p><strong>Author:</strong>
+EridianAlpha</p>
+<p>This contract contains the functions for AavePM to interact with the Aave protocol.</p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="version"><a class="header" href="#version">VERSION</a></h3>
 <p>The version of the contract.</p>
@@ -209,43 +211,57 @@
 <pre><code class="language-solidity">modifier onlyAavePM();
 </code></pre>
 <h3 id="aavesupply"><a class="header" href="#aavesupply">aaveSupply</a></h3>
-<p>Deposit all wstETH into Aave.
-TODO: Update comment.</p>
+<p>Deposit all wstETH into Aave.</p>
+<p><em>This function is used to deposit all wstETH into Aave.</em></p>
 <pre><code class="language-solidity">function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) public onlyAavePM;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool contract.</td></tr>
+<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The address of the token to deposit.</td></tr>
+<tr><td><code>tokenBalance</code></td><td><code>uint256</code></td><td>The contract balance of the token to deposit.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aavewithdrawcollateral"><a class="header" href="#aavewithdrawcollateral">aaveWithdrawCollateral</a></h3>
-<p>Withdraw wstETH from Aave.
-TODO: Update comment.</p>
+<p>Withdraw wstETH from Aave.</p>
+<p><em>This function is used to withdraw wstETH from Aave.</em></p>
 <pre><code class="language-solidity">function aaveWithdrawCollateral(address aavePoolAddress, address tokenAddress, uint256 withdrawAmount)
     public
     onlyAavePM;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool contract.</td></tr>
+<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The address of the token to withdraw.</td></tr>
+<tr><td><code>withdrawAmount</code></td><td><code>uint256</code></td><td>The amount of the token to withdraw.</td></tr>
+</tbody></table>
+</div>
 <h3 id="aaveborrow"><a class="header" href="#aaveborrow">aaveBorrow</a></h3>
-<p>Borrow USDC from Aave.
-TODO: Update comment.</p>
+<p>Borrow USDC from Aave.</p>
+<p><em>This function is used to borrow USDC from Aave.</em></p>
 <pre><code class="language-solidity">function aaveBorrow(address aavePoolAddress, address tokenAddress, uint256 borrowAmount) public onlyAavePM;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td></td></tr>
-<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td></td></tr>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool contract.</td></tr>
+<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The address of the token to borrow.</td></tr>
 <tr><td><code>borrowAmount</code></td><td><code>uint256</code></td><td>The amount of USDC to borrow. 8 decimal places to the dollar. e.g. 100000000 = $1.00.</td></tr>
 </tbody></table>
 </div>
 <h3 id="aaverepaydebt"><a class="header" href="#aaverepaydebt">aaveRepayDebt</a></h3>
-<p>Repay USDC debt to Aave.
-TODO: Update comment.</p>
+<p>Repay USDC debt to Aave.</p>
+<p><em>This function is used to repay USDC debt to Aave.</em></p>
 <pre><code class="language-solidity">function aaveRepayDebt(address aavePoolAddress, address tokenAddress, uint256 repayAmount) public onlyAavePM;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td></td></tr>
-<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td></td></tr>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool contract.</td></tr>
+<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The address of the token to repay.</td></tr>
 <tr><td><code>repayAmount</code></td><td><code>uint256</code></td><td>The amount of USDC to repay. 8 decimal places to the dollar. e.g. 100000000 = $1.00.</td></tr>
 </tbody></table>
 </div>
 <h3 id="getcurrentpositionvalues"><a class="header" href="#getcurrentpositionvalues">getCurrentPositionValues</a></h3>
-<p>// TODO: Add comment.</p>
+<p>Getter function to get the current position values.</p>
 <p><em>This function is used to avoid code duplication in the Reinvest and Rebalance contracts.</em></p>
 <pre><code class="language-solidity">function getCurrentPositionValues(IAavePM aavePM)
     public
@@ -261,8 +277,26 @@ TODO: Update comment.</p>
         address usdcAddress
     );
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>aavePM</code></td><td><code>IAavePM</code></td><td>The Aave Position Manager contract.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>initialCollateralBase</code></td><td><code>uint256</code></td><td>The initial collateral in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold.</td></tr>
+<tr><td><code>initialHealthFactorScaled</code></td><td><code>uint256</code></td><td>The initial health factor scaled to 2 decimal places.</td></tr>
+<tr><td><code>healthFactorTarget</code></td><td><code>uint16</code></td><td>The health factor target.</td></tr>
+<tr><td><code>aavePoolAddress</code></td><td><code>address</code></td><td>The address of the Aave pool contract.</td></tr>
+<tr><td><code>wstETHAddress</code></td><td><code>address</code></td><td>The address of the wstETH token.</td></tr>
+<tr><td><code>usdcAddress</code></td><td><code>address</code></td><td>The address of the USDC token.</td></tr>
+</tbody></table>
+</div>
 <h3 id="checkhealthfactoraboveminimum"><a class="header" href="#checkhealthfactoraboveminimum">checkHealthFactorAboveMinimum</a></h3>
-<p>// TODO: Add comment.</p>
+<p>Check if the health factor is above the minimum.</p>
+<p><em>This function is used to check if the health factor is above the minimum.</em></p>
 <pre><code class="language-solidity">function checkHealthFactorAboveMinimum()
     public
     view
@@ -275,20 +309,51 @@ TODO: Update comment.</p>
         uint256 healthFactor
     );
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>totalCollateralBase</code></td><td><code>uint256</code></td><td>The total collateral in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>availableBorrowsBase</code></td><td><code>uint256</code></td><td>The available borrows in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold.</td></tr>
+<tr><td><code>ltv</code></td><td><code>uint256</code></td><td>The loan to value ratio.</td></tr>
+<tr><td><code>healthFactor</code></td><td><code>uint256</code></td><td>The health factor.</td></tr>
+</tbody></table>
+</div>
 <h3 id="gettotalcollateraldelta"><a class="header" href="#gettotalcollateraldelta">getTotalCollateralDelta</a></h3>
-<p>// TODO: Add comment.</p>
+<p>Getter function to get the total collateral delta.</p>
+<p><em>This function is used to calculate the total collateral delta.</em></p>
 <pre><code class="language-solidity">function getTotalCollateralDelta(
     uint256 totalCollateralBase,
     uint256 reinvestedDebtTotal,
     uint256 suppliedCollateralTotal
 ) public pure returns (uint256 delta, bool isPositive);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>totalCollateralBase</code></td><td><code>uint256</code></td><td>The total collateral in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>reinvestedDebtTotal</code></td><td><code>uint256</code></td><td>The reinvested debt total in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>suppliedCollateralTotal</code></td><td><code>uint256</code></td><td>The supplied collateral total in USD base unit with 8 decimals to the dollar.</td></tr>
+</tbody></table>
+</div>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>delta</code></td><td><code>uint256</code></td><td>The total collateral delta.</td></tr>
+<tr><td><code>isPositive</code></td><td><code>bool</code></td><td>A boolean to indicate if the delta is positive.</td></tr>
+</tbody></table>
+</div>
 <h3 id="convertexistingbalancetowstethandsupplytoaave"><a class="header" href="#convertexistingbalancetowstethandsupplytoaave">convertExistingBalanceToWstETHAndSupplyToAave</a></h3>
-<p>// TODO: Add comment</p>
+<p>Convert existing balance to wstETH and supply to Aave.</p>
+<p><em>This function is used to convert the existing balance to wstETH and supply to Aave.</em></p>
 <pre><code class="language-solidity">function convertExistingBalanceToWstETHAndSupplyToAave() public onlyAavePM returns (uint256 suppliedCollateral);
 </code></pre>
+<p><strong>Returns</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>suppliedCollateral</code></td><td><code>uint256</code></td><td>The amount of wstETH supplied to Aave.</td></tr>
+</tbody></table>
+</div>
 <h3 id="calculatemaxborrowusdc"><a class="header" href="#calculatemaxborrowusdc">calculateMaxBorrowUSDC</a></h3>
-<p>// TODO: Add comment</p>
+<p>Calculate the minimum amount of tokens received from a Uniswap V3 swap.</p>
+<p><em>This function is used to calculate the minimum amount of tokens received from a Uniswap V3 swap.</em></p>
 <pre><code class="language-solidity">function calculateMaxBorrowUSDC(
     uint256 totalCollateralBase,
     uint256 totalDebtBase,
@@ -296,7 +361,14 @@ TODO: Update comment.</p>
     uint16 healthFactorTarget
 ) public pure returns (uint256 maxBorrowUSDC);
 </code></pre>
-
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>totalCollateralBase</code></td><td><code>uint256</code></td><td>The total collateral in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>totalDebtBase</code></td><td><code>uint256</code></td><td>The total debt in USD base unit with 8 decimals to the dollar.</td></tr>
+<tr><td><code>currentLiquidationThreshold</code></td><td><code>uint256</code></td><td>The current liquidation threshold.</td></tr>
+<tr><td><code>healthFactorTarget</code></td><td><code>uint16</code></td><td>The health factor target.</td></tr>
+</tbody></table>
+</div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

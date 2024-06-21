@@ -487,6 +487,10 @@ contract AavePM is
         _storeEventBlockNumber();
     }
 
+    // ================================================================
+    // │              FUNCTIONS - DELEGATE CALL FUNCTIONS             │
+    // ================================================================
+
     /// @notice Delegate call helper function.
     /// @dev The internal function is used to delegate calls to other contracts.
     /// @param _targetIdentifier The identifier of the target contract.

@@ -981,7 +981,7 @@ contract AavePM is
     /// @notice Renounce a role from an account.
     /// @dev Caller must have the role.
     /// @param role The role to renounce in a bytes32 format keccak256("ROLE_NAME").
-    /// @param account The account to renounce the role from.
+    /// @param callerConfirmation The account to renounce the role from.
     function renounceRole(bytes32 role, address callerConfirmation)
         public
         override(IAavePM, IAccessControl, AccessControlUpgradeable)

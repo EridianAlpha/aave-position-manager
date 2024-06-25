@@ -52,6 +52,9 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
         _;
     }
 
+    /// @notice The buffer for the Health Factor Target minimum calculation
+    uint16 public constant HFT_MINIMUM_BUFFER = 1;
+
     // ================================================================
     // │                       MODULE FUNCTIONS                       │
     // ================================================================
@@ -178,11 +181,10 @@ contract AaveFunctionsModule is IAaveFunctionsModule {
         IAavePM aavePM = IAavePM(address(this));
         address aavePoolAddress = aavePM.getContractAddress("aavePool");
 
-        // TODO: Improve check.
         (totalCollateralBase, totalDebtBase, availableBorrowsBase, currentLiquidationThreshold, ltv, healthFactor) =
             IPool(aavePoolAddress).getUserAccountData(address(this));
         uint256 healthFactorScaled = healthFactor / 1e16;
-        if (healthFactorScaled < (aavePM.getHealthFactorTargetMinimum() - 1)) {
+        if (healthFactorScaled < (aavePM.getHealthFactorTargetMinimum() - HFT_MINIMUM_BUFFER)) {
             revert IAavePM.AavePM__HealthFactorBelowMinimum();
         }
 

@@ -9,7 +9,9 @@ import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRoute
 interface ITokenSwapsModule {
     error TokenSwapsModule__InvalidAavePMProxyAddress();
 
-    function getVersion() external pure returns (string memory version);
+    function VERSION() external pure returns (string memory version);
+    function aavePMProxyAddress() external view returns (address aavePMProxyAddress);
+
     function swapTokens(
         string memory _uniswapV3PoolIdentifier,
         string memory _tokenInIdentifier,

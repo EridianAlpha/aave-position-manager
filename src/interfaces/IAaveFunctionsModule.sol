@@ -8,7 +8,9 @@ import {IAavePM} from "./IAavePM.sol";
 interface IAaveFunctionsModule {
     error AaveFunctionsModule__InvalidAavePMProxyAddress();
 
-    function getVersion() external pure returns (string memory version);
+    function VERSION() external pure returns (string memory version);
+    function aavePMProxyAddress() external view returns (address aavePMProxyAddress);
+
     function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) external;
     function aaveWithdrawCollateral(address aavePoolAddress, address tokenAddress, uint256 withdrawAmount) external;
     function aaveBorrow(address aavePoolAddress, address tokenAddress, uint256 borrowAmount) external;

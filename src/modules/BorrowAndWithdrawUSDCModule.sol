@@ -28,25 +28,28 @@ contract BorrowAndWithdrawUSDCModule is IBorrowAndWithdrawUSDCModule {
 
     /// @notice The version of the contract.
     /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
-    string internal constant VERSION = "0.0.1";
+    string public constant VERSION = "0.0.1";
 
-    /// @notice Getter function to get the contract version.
-    /// @dev Public function to allow anyone to view the contract version.
-    /// @return version The contract version.
-    function getVersion() public pure returns (string memory version) {
-        return VERSION;
-    }
-
+    /// @notice The address of the AavePM proxy contract.
+    /// @dev The AavePM proxy address is set on deployment and is immutable.
     address public immutable aavePMProxyAddress;
 
+    /// @notice Contract constructor to set the AavePM proxy address.
+    /// @dev The AavePM proxy address is set on deployment and is immutable.
+    /// @param _aavePMProxyAddress The address of the AavePM proxy contract.
     constructor(address _aavePMProxyAddress) {
         aavePMProxyAddress = _aavePMProxyAddress;
     }
 
+    /// @notice Modifier to check that only the AavePM contract is the caller.
+    /// @dev Uses `address(this)` since this contract is called by the AavePM contract using delegatecall.
     modifier onlyAavePM() {
         if (address(this) != aavePMProxyAddress) revert BorrowAndWithdrawUSDCModule__InvalidAavePMProxyAddress();
         _;
     }
+
+    /// @notice The buffer for the Health Factor Target calculation
+    uint16 public constant HFT_BUFFER = 2;
 
     // ================================================================
     // │                       MODULE FUNCTIONS                       │
@@ -79,8 +82,8 @@ contract BorrowAndWithdrawUSDCModule is IBorrowAndWithdrawUSDCModule {
         // Set the initial repaid reinvested debt to 0.
         repaidReinvestedDebt = 0;
 
-        // TODO: Improve check. This is a temporary solution to give full branch coverage.
-        if (healthFactorAfterBorrowOnlyScaled > healthFactorTarget - 2) {
+        // TODO: This is a temporary solution (if doing nothing, else logic action) to give full branch coverage.
+        if (healthFactorAfterBorrowOnlyScaled > healthFactorTarget - HFT_BUFFER) {
             // The HF is above target after borrow of USDC only,
             // so the USDC can be borrowed without repaying reinvested debt.
         } else {

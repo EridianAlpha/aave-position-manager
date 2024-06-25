@@ -26,7 +26,7 @@ contract AaveFunctionsModuleTests is Test, AaveFunctionsModule {
 
     function test_GetVersion() public {
         AaveFunctionsModule aaveFunctionsModule = new AaveFunctionsModule(address(this));
-        assertEq(keccak256(abi.encodePacked(aaveFunctionsModule.getVersion())), keccak256(abi.encodePacked(VERSION)));
+        assertEq(keccak256(abi.encodePacked(aaveFunctionsModule.VERSION())), keccak256(abi.encodePacked(VERSION)));
     }
 
     function test_CheckAavePMProxyAddress() public {
@@ -60,7 +60,7 @@ contract BorrowAndWithdrawUSDCModuleTests is Test, BorrowAndWithdrawUSDCModule {
     function test_GetVersion() public {
         BorrowAndWithdrawUSDCModule borrowAndWithdrawUSDCModule = new BorrowAndWithdrawUSDCModule(address(this));
         assertEq(
-            keccak256(abi.encodePacked(borrowAndWithdrawUSDCModule.getVersion())), keccak256(abi.encodePacked(VERSION))
+            keccak256(abi.encodePacked(borrowAndWithdrawUSDCModule.VERSION())), keccak256(abi.encodePacked(VERSION))
         );
     }
 
@@ -82,7 +82,7 @@ contract RebalanceModuleTests is Test, RebalanceModule {
 
     function test_GetVersion() public {
         RebalanceModule rebalanceModule = new RebalanceModule(address(this));
-        assertEq(keccak256(abi.encodePacked(rebalanceModule.getVersion())), keccak256(abi.encodePacked(VERSION)));
+        assertEq(keccak256(abi.encodePacked(rebalanceModule.VERSION())), keccak256(abi.encodePacked(VERSION)));
     }
 
     function test_CheckAavePMProxyAddress() public {
@@ -103,7 +103,7 @@ contract ReinvestModuleTests is Test, ReinvestModule {
 
     function test_GetVersion() public {
         ReinvestModule reinvestModule = new ReinvestModule(address(this));
-        assertEq(keccak256(abi.encodePacked(reinvestModule.getVersion())), keccak256(abi.encodePacked(VERSION)));
+        assertEq(keccak256(abi.encodePacked(reinvestModule.VERSION())), keccak256(abi.encodePacked(VERSION)));
     }
 
     function test_CheckAavePMProxyAddress() public {
@@ -124,7 +124,7 @@ contract TokenSwapsModuleTests is Test, TokenSwapsModule {
 
     function test_GetVersion() public {
         TokenSwapsModule tokenSwapsModule = new TokenSwapsModule(address(this));
-        assertEq(keccak256(abi.encodePacked(tokenSwapsModule.getVersion())), keccak256(abi.encodePacked(VERSION)));
+        assertEq(keccak256(abi.encodePacked(tokenSwapsModule.VERSION())), keccak256(abi.encodePacked(VERSION)));
     }
 
     function test_CheckAavePMProxyAddress() public {

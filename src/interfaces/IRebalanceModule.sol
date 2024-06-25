@@ -6,6 +6,8 @@ pragma solidity 0.8.24;
 interface IRebalanceModule {
     error RebalanceModule__InvalidAavePMProxyAddress();
 
-    function getVersion() external pure returns (string memory version);
+    function VERSION() external pure returns (string memory version);
+    function aavePMProxyAddress() external view returns (address aavePMProxyAddress);
+
     function rebalance() external returns (uint256 repaymentAmountUSDC);
 }

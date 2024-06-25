@@ -33,21 +33,21 @@ contract TokenSwapsModule is ITokenSwapsModule {
 
     /// @notice The version of the contract.
     /// @dev Contract is upgradeable so the version is a constant set on each implementation contract.
-    string internal constant VERSION = "0.0.1";
+    string public constant VERSION = "0.0.1";
 
-    /// @notice Getter function to get the contract version.
-    /// @dev Public function to allow anyone to view the contract version.
-    /// @return version The contract version.
-    function getVersion() public pure returns (string memory version) {
-        return VERSION;
-    }
-
+    /// @notice The address of the AavePM proxy contract.
+    /// @dev The AavePM proxy address is set on deployment and is immutable.
     address public immutable aavePMProxyAddress;
 
+    /// @notice Contract constructor to set the AavePM proxy address.
+    /// @dev The AavePM proxy address is set on deployment and is immutable.
+    /// @param _aavePMProxyAddress The address of the AavePM proxy contract.
     constructor(address _aavePMProxyAddress) {
         aavePMProxyAddress = _aavePMProxyAddress;
     }
 
+    /// @notice Modifier to check that only the AavePM contract is the caller.
+    /// @dev Uses `address(this)` since this contract is called by the AavePM contract using delegatecall.
     modifier onlyAavePM() {
         if (address(this) != aavePMProxyAddress) revert TokenSwapsModule__InvalidAavePMProxyAddress();
         _;

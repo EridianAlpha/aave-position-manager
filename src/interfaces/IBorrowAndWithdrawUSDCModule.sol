@@ -6,7 +6,9 @@ pragma solidity 0.8.24;
 interface IBorrowAndWithdrawUSDCModule {
     error BorrowAndWithdrawUSDCModule__InvalidAavePMProxyAddress();
 
-    function getVersion() external pure returns (string memory version);
+    function VERSION() external pure returns (string memory version);
+    function aavePMProxyAddress() external view returns (address aavePMProxyAddress);
+
     function borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
         external
         returns (uint256 repaidReinvestedDebt);

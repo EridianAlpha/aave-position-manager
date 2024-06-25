@@ -67,7 +67,7 @@ contract FlashLoan {
         uint256 wstETHPrice = IPriceOracle(aavePM.getContractAddress("aaveOracle")).getAssetPrice(wstETHAddress);
 
         // Calculate the amount of wstETH to withdraw.
-        // TODO: Why 1e20 ?
+        // 1e20 for the 1e18 of the wstETH and 1e2 for the USDC (from USDC to base units)
         uint256 wstETHToWithdraw = (repaymentAmountTotalUSDC * 1e20) / wstETHPrice;
 
         // When calculating slippageAllowance, multiple by 10 to allow for 1 decimal place.

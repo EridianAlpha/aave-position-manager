@@ -181,7 +181,7 @@
                         <h1 id="aavepm---aave-position-manager"><a class="header" href="#aavepm---aave-position-manager">AavePM - Aave Position Manager</a></h1>
 <blockquote>
 <hr />
-<p>🏗️ UNDER DEVELOPMENT 🏗️</p>
+<p>🧪 ALPHA TESTING PHASE 🧪</p>
 <hr />
 </blockquote>
 <ul>
@@ -206,8 +206,8 @@
 </li>
 <li><a href="index.html#4-testing">4. Testing</a>
 <ul>
-<li><a href="index.html#41-tests">4.1. Tests</a></li>
-<li><a href="index.html#42-coverage">4.2. Coverage</a></li>
+<li><a href="index.html#41-tests-mainnet-fork">4.1. Tests (Mainnet Fork)</a></li>
+<li><a href="index.html#42-coverage-mainnet-fork">4.2. Coverage (Mainnet Fork)</a></li>
 </ul>
 </li>
 <li><a href="index.html#5-deployment">5. Deployment</a></li>
@@ -223,9 +223,10 @@
 <li><a href="index.html#77-repay">7.7. Repay</a></li>
 <li><a href="index.html#78-close-position">7.8. Close Position</a></li>
 <li><a href="index.html#79-withdraw-wsteth">7.9. Withdraw wstETH</a></li>
-<li><a href="index.html#710-borrow-usdc">7.10. Borrow USDC</a></li>
-<li><a href="index.html#711-get-contract-balance">7.11. Get Contract Balance</a></li>
-<li><a href="index.html#712-get-aave-account-data">7.12. Get Aave Account Data</a></li>
+<li><a href="index.html#710-withdraw-token">7.10. Withdraw Token</a></li>
+<li><a href="index.html#711-borrow-usdc">7.11. Borrow USDC</a></li>
+<li><a href="index.html#712-get-contract-balance">7.12. Get Contract Balance</a></li>
+<li><a href="index.html#713-get-aave-account-data">7.13. Get Aave Account Data</a></li>
 </ul>
 </li>
 <li><a href="index.html#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></li>
@@ -238,8 +239,9 @@
 <p>A smart contract manager for Aave positions.</p>
 <ol>
 <li>Set a desired Health Factor.</li>
-<li>Deposit assets (ETH, WETH, wstETH or USDC) into the position.</li>
+<li>Deposit assets (ETH, WETH, wstETH, or USDC) into the position.</li>
 <li>Reinvest and rebalance the position to maintain the desired Health Factor, either manually or with a bot.</li>
+<li>Borrow and withdraw USDC from the position while maintaining the desired Health Factor.</li>
 </ol>
 <h3 id="11-key-functions"><a class="header" href="#11-key-functions">1.1. Key Functions</a></h3>
 <h4 id="111-owner-functions"><a class="header" href="#111-owner-functions">1.1.1. Owner Functions</a></h4>
@@ -248,6 +250,7 @@
 <tr><td>updateContractAddress</td><td><code>OWNER_ROLE</code></td><td>Update the specified contract address.</td></tr>
 <tr><td>updateTokenAddress</td><td><code>OWNER_ROLE</code></td><td>Update the specified token address.</td></tr>
 <tr><td>updateUniswapV3Pool</td><td><code>OWNER_ROLE</code></td><td>Update the specified Uniswap V3 pool.</td></tr>
+<tr><td>updateManagerDailyInvocationLimit</td><td><code>OWNER_ROLE</code></td><td>Update the daily invocation limit for the manager role.</td></tr>
 </tbody></table>
 </div>
 <h4 id="112-manager-functions"><a class="header" href="#112-manager-functions">1.1.2. Manager Functions</a></h4>
@@ -260,14 +263,15 @@
 <tr><td>withdrawTokensFromContractBalance</td><td><code>MANAGER_ROLE</code></td><td>Withdraw all the specified tokens from the contract to the specified owner.</td></tr>
 <tr><td>aaveBorrowAndWithdrawUSDC</td><td><code>MANAGER_ROLE</code></td><td>Borrow USDC from Aave and withdraw to the specified owner.</td></tr>
 <tr><td>aaveWithdrawWstETH</td><td><code>MANAGER_ROLE</code></td><td>Withdraw wstETH collateral from the Aave position to the specified owner.</td></tr>
-<tr><td>aaveClosePosition</td><td><code>MANAGER_ROLE</code></td><td>Close the Aave position by repaying all debt and withdrawing all collateral.</td></tr>
+<tr><td>aaveClosePosition</td><td><code>MANAGER_ROLE</code></td><td>Close the Aave position by repaying all debt and withdrawing all collateral to the specified owner.</td></tr>
 <tr><td>updateHealthFactorTarget</td><td><code>MANAGER_ROLE</code></td><td>Set the desired Health Factor target.</td></tr>
 <tr><td>updateSlippageTolerance</td><td><code>MANAGER_ROLE</code></td><td>Set the slippage tolerance for Uniswap V3 swaps.</td></tr>
 <tr><td>rescueEth</td><td><code>MANAGER_ROLE</code></td><td>Rescue ETH from the contract to the specified owner.</td></tr>
+<tr><td>delegateCallHelper</td><td><code>MANAGER_ROLE</code></td><td>Execute a delegate call to the specified module.</td></tr>
 </tbody></table>
 </div>
 <h2 id="2-webapp"><a class="header" href="#2-webapp">2. WebApp</a></h2>
-<p>A WebApp is being developed to allow easy interaction with the smart contract and will be linked here when ready.</p>
+<p>A WebApp is being developed to allow easy interaction with the smart contract and will be linked here when available.</p>
 <h2 id="3-installation"><a class="header" href="#3-installation">3. Installation</a></h2>
 <h3 id="31-clone-repository"><a class="header" href="#31-clone-repository">3.1. Clone repository</a></h3>
 <pre><code class="language-bash">git clone https://github.com/EridianAlpha/aave-position-manager.git
@@ -281,104 +285,140 @@ make install
 <h3 id="33-create-the-env-file"><a class="header" href="#33-create-the-env-file">3.3. Create the <code>.env</code> file</a></h3>
 <p>Use the <code>.env.example</code> file as a template to create a <code>.env</code> file.</p>
 <h3 id="34-configure-ethernal-optional"><a class="header" href="#34-configure-ethernal-optional">3.4. Configure Ethernal (optional)</a></h3>
-<p>Configure an Ethernal account to interact with the smart contract through a UI (like Etherscan but for a local network).</p>
+<p>Configure an Ethernal account to interact with the smart contract through a UI. Ethernal is like Etherscan but for a custom network.</p>
 <p><a href="https://docs.eridianalpha.com/ethereum-dev/useful-tools/ethernal">https://docs.eridianalpha.com/ethereum-dev/useful-tools/ethernal</a></p>
 <pre><code class="language-bash">make ethernal
 </code></pre>
 <h2 id="4-testing"><a class="header" href="#4-testing">4. Testing</a></h2>
-<h3 id="41-tests"><a class="header" href="#41-tests">4.1. Tests</a></h3>
+<h3 id="41-tests-mainnet-fork"><a class="header" href="#41-tests-mainnet-fork">4.1. Tests (Mainnet Fork)</a></h3>
 <pre><code class="language-bash">make test-fork-mainnet
 make test-fork-mainnet-v
 make test-fork-mainnet-summary
 </code></pre>
-<h3 id="42-coverage"><a class="header" href="#42-coverage">4.2. Coverage</a></h3>
+<h3 id="42-coverage-mainnet-fork"><a class="header" href="#42-coverage-mainnet-fork">4.2. Coverage (Mainnet Fork)</a></h3>
 <pre><code class="language-bash">make coverage
 make coverage-report
 </code></pre>
 <h2 id="5-deployment"><a class="header" href="#5-deployment">5. Deployment</a></h2>
+<p>Deploys AavePM and all modules to the Anvil chain specified in the <code>.env</code> file.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make deploy-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make deploy anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make deploy base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="6-upgrades"><a class="header" href="#6-upgrades">6. Upgrades</a></h2>
-<p>Upgrade the contract to a new logic implementation while maintaining the same proxy address.</p>
+<p>Upgrade the contract to a new logic implementation while maintaining the same proxy address.
+This also redeploys all modules and updates their contract addresses on AavePM.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make upgrade-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make upgrade anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make upgrade base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="7-interactions"><a class="header" href="#7-interactions">7. Interactions</a></h2>
 <p>Interactions are defined in <code>./script/Interactions.s.sol</code></p>
+<p>If <code>DEPLOYED_CONTRACT_ADDRESS</code> is set in the <code>.env</code> file, that contract address will be used for interactions.
+If that variable is not set, the latest deployment on the specified chain will be used.</p>
 <h3 id="71-fund-contract-with-eth"><a class="header" href="#71-fund-contract-with-eth">7.1. Fund contract with ETH</a></h3>
 <p>Input value in ETH e.g. <code>0.15</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make send-ETH-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make send-ETH anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make send-ETH base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="72-update-health-factor-target"><a class="header" href="#72-update-health-factor-target">7.2. Update Health Factor Target</a></h3>
 <p>Input value to 2 decimal places e.g. <code>225</code> for a Health Factor target of <code>2.25</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make update-hft-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make update-hft anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make update-hft base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="73-update-slippage-tolerance"><a class="header" href="#73-update-slippage-tolerance">7.3. Update Slippage Tolerance</a></h3>
 <p>Input value to 2 decimal places e.g. <code>200</code> for a Slippage Tolerance of <code>0.5%</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make update-st-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make update-st anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make update-st base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="74-rebalance"><a class="header" href="#74-rebalance">7.4. Rebalance</a></h3>
 <p>Rebalances the Aave position to maintain the desired Health Factor target.
-TODO: Add threshold details.</p>
+<code>REBALANCE_HFT_BUFFER</code> is a constant in the module that determines if a rebalance is required.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make rebalance-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make rebalance anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make rebalance base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="75-reinvest"><a class="header" href="#75-reinvest">7.5. Reinvest</a></h3>
-<p>Reinvests any collateral above the Health Factor target.</p>
+<p>Reinvests any collateral above the Health Factor target.
+<code>REINVEST_HFT_BUFFER</code> is a constant in the module that determines if a reinvest is required.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make reinvest-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make reinvest anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make reinvest base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="76-supply"><a class="header" href="#76-supply">7.6. Supply</a></h3>
-<p>Supplies any ETH, WETH, wstETH or USDC in the contract to Aave.</p>
+<p>Supplies any ETH, WETH, wstETH, or USDC in the contract to Aave.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make supply-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make supply anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make supply base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="77-repay"><a class="header" href="#77-repay">7.7. Repay</a></h3>
 <p>Repay any USDC debt in the contract to repay Aave position debt.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make repay-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make repay anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make repay base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="78-close-position"><a class="header" href="#78-close-position">7.8. Close Position</a></h3>
-<p>Close the Aave position by repaying all debt and withdrawing all collateral.</p>
+<p>Close the Aave position by repaying all debt and withdrawing all collateral.
+Input value as an owner address. e.g. <code>0x123...</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make closePosition-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make closePosition anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make closePosition base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="79-withdraw-wsteth"><a class="header" href="#79-withdraw-wsteth">7.9. Withdraw wstETH</a></h3>
-<p>Withdraw wstETH collateral from the Aave position to the specified owner.</p>
+<p>Withdraw wstETH collateral from the Aave position to the specified owner.
+Input value 1 in ETH e.g. <code>0.15</code>.
+Input value 2 as an owner address e.g. <code>0x123...</code>.
+Combined input value e.g. <code>0.15,0x123...</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make withdrawWstETH-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make withdrawWstETH anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make withdrawWstETH base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="710-borrow-usdc"><a class="header" href="#710-borrow-usdc">7.10. Borrow USDC</a></h3>
-<p>Borrow USDC from Aave and withdraw to the specified owner.</p>
+<h3 id="710-withdraw-token"><a class="header" href="#710-withdraw-token">7.10. Withdraw Token</a></h3>
+<p>Withdraw the specified token from the contract to the specified owner.
+Input value 1 in token identifier e.g. <code>USDC</code>.
+Input value 2 as an owner address e.g. <code>0x123...</code>.
+Combined input value e.g. <code>USDC,0x123...</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make borrowUSDC-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make withdrawToken anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make withdrawToken base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="711-get-contract-balance"><a class="header" href="#711-get-contract-balance">7.11. Get Contract Balance</a></h3>
+<h3 id="711-borrow-usdc"><a class="header" href="#711-borrow-usdc">7.11. Borrow USDC</a></h3>
+<p>Borrow USDC from Aave and withdraw to the specified owner.
+Input value 1 in USDC e.g. <code>200</code> for $200 USDC.
+Input value 2 as an owner address e.g. <code>0x123...</code>.
+Combined input value e.g. <code>200,0x123...</code>.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make borrowUSDC anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make borrowUSDC base-mainnet</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="712-get-contract-balance"><a class="header" href="#712-get-contract-balance">7.12. Get Contract Balance</a></h3>
 <p>Input value as token identifier e.g. <code>USDC</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make getContractBalance-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make getContractBalance anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make getContractBalance base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="712-get-aave-account-data"><a class="header" href="#712-get-aave-account-data">7.12. Get Aave Account Data</a></h3>
+<h3 id="713-get-aave-account-data"><a class="header" href="#713-get-aave-account-data">7.13. Get Aave Account Data</a></h3>
 <p>Returns the Aave account data for the contract.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make getAaveAccountData-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make getAaveAccountData anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make getAaveAccountData base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="8-build-and-deploy-documentation"><a class="header" href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></h2>
@@ -397,11 +437,14 @@ TODO: Add threshold details.</p>
 <li><a href="src/interfaces/IWETH9.sol/interface.IWETH9.html">IWETH9</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavefunctionsmodule"><a class="header" href="#iaavefunctionsmodule">IAaveFunctionsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/interfaces/IAaveFunctionsModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/interfaces/IAaveFunctionsModule.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AaveFunctionsModule contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
-<h3 id="getversion"><a class="header" href="#getversion">getVersion</a></h3>
-<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
+<h3 id="version"><a class="header" href="#version">VERSION</a></h3>
+<pre><code class="language-solidity">function VERSION() external pure returns (string memory version);
+</code></pre>
+<h3 id="aavepmproxyaddress"><a class="header" href="#aavepmproxyaddress">aavePMProxyAddress</a></h3>
+<pre><code class="language-solidity">function aavePMProxyAddress() external view returns (address aavePMProxyAddress);
 </code></pre>
 <h3 id="aavesupply"><a class="header" href="#aavesupply">aaveSupply</a></h3>
 <pre><code class="language-solidity">function aaveSupply(address aavePoolAddress, address tokenAddress, uint256 tokenBalance) external;
@@ -466,7 +509,7 @@ TODO: Add threshold details.</p>
 <pre><code class="language-solidity">error AaveFunctionsModule__InvalidAavePMProxyAddress();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iaavepm"><a class="header" href="#iaavepm">IAavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/interfaces/IAavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/interfaces/IAavePM.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the AavePM contract.</p>
 <h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -540,7 +583,7 @@ TODO: Add threshold details.</p>
 <h3 id="geteventblocknumbers"><a class="header" href="#geteventblocknumbers">getEventBlockNumbers</a></h3>
 <pre><code class="language-solidity">function getEventBlockNumbers() external view returns (uint64[] memory);
 </code></pre>
-<h3 id="getversion-1"><a class="header" href="#getversion-1">getVersion</a></h3>
+<h3 id="getversion"><a class="header" href="#getversion">getVersion</a></h3>
 <pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
 </code></pre>
 <h3 id="getcontractaddress"><a class="header" href="#getcontractaddress">getContractAddress</a></h3>
@@ -776,11 +819,14 @@ TODO: Add threshold details.</p>
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iborrowandwithdrawusdcmodule"><a class="header" href="#iborrowandwithdrawusdcmodule">IBorrowAndWithdrawUSDCModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/interfaces/IBorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/interfaces/IBorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the BorrowAndWithdrawUSDCModule contract.</p>
 <h2 id="functions-2"><a class="header" href="#functions-2">Functions</a></h2>
-<h3 id="getversion-2"><a class="header" href="#getversion-2">getVersion</a></h3>
-<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
+<h3 id="version-1"><a class="header" href="#version-1">VERSION</a></h3>
+<pre><code class="language-solidity">function VERSION() external pure returns (string memory version);
+</code></pre>
+<h3 id="aavepmproxyaddress-1"><a class="header" href="#aavepmproxyaddress-1">aavePMProxyAddress</a></h3>
+<pre><code class="language-solidity">function aavePMProxyAddress() external view returns (address aavePMProxyAddress);
 </code></pre>
 <h3 id="borrowandwithdrawusdc"><a class="header" href="#borrowandwithdrawusdc">borrowAndWithdrawUSDC</a></h3>
 <pre><code class="language-solidity">function borrowAndWithdrawUSDC(uint256 borrowAmountUSDC, address _owner)
@@ -792,7 +838,7 @@ TODO: Add threshold details.</p>
 <pre><code class="language-solidity">error BorrowAndWithdrawUSDCModule__InvalidAavePMProxyAddress();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ierc20extended"><a class="header" href="#ierc20extended">IERC20Extended</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/interfaces/IERC20Extended.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/interfaces/IERC20Extended.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 IERC20</p>
 <p>This interface extends the ERC20 interface with the decimals function.</p>
@@ -801,11 +847,14 @@ IERC20</p>
 <pre><code class="language-solidity">function decimals() external view returns (uint8);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="irebalancemodule"><a class="header" href="#irebalancemodule">IRebalanceModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/interfaces/IRebalanceModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/interfaces/IRebalanceModule.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the RebalanceModule contract.</p>
 <h2 id="functions-4"><a class="header" href="#functions-4">Functions</a></h2>
-<h3 id="getversion-3"><a class="header" href="#getversion-3">getVersion</a></h3>
-<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
+<h3 id="version-2"><a class="header" href="#version-2">VERSION</a></h3>
+<pre><code class="language-solidity">function VERSION() external pure returns (string memory version);
+</code></pre>
+<h3 id="aavepmproxyaddress-2"><a class="header" href="#aavepmproxyaddress-2">aavePMProxyAddress</a></h3>
+<pre><code class="language-solidity">function aavePMProxyAddress() external view returns (address aavePMProxyAddress);
 </code></pre>
 <h3 id="rebalance-1"><a class="header" href="#rebalance-1">rebalance</a></h3>
 <pre><code class="language-solidity">function rebalance() external returns (uint256 repaymentAmountUSDC);
@@ -815,11 +864,14 @@ IERC20</p>
 <pre><code class="language-solidity">error RebalanceModule__InvalidAavePMProxyAddress();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ireinvestmodule"><a class="header" href="#ireinvestmodule">IReinvestModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/interfaces/IReinvestModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/interfaces/IReinvestModule.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the ReinvestModule contract.</p>
 <h2 id="functions-5"><a class="header" href="#functions-5">Functions</a></h2>
-<h3 id="getversion-4"><a class="header" href="#getversion-4">getVersion</a></h3>
-<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
+<h3 id="version-3"><a class="header" href="#version-3">VERSION</a></h3>
+<pre><code class="language-solidity">function VERSION() external pure returns (string memory version);
+</code></pre>
+<h3 id="aavepmproxyaddress-3"><a class="header" href="#aavepmproxyaddress-3">aavePMProxyAddress</a></h3>
+<pre><code class="language-solidity">function aavePMProxyAddress() external view returns (address aavePMProxyAddress);
 </code></pre>
 <h3 id="reinvest-1"><a class="header" href="#reinvest-1">reinvest</a></h3>
 <pre><code class="language-solidity">function reinvest() external returns (uint256 reinvestedDebt);
@@ -829,11 +881,14 @@ IERC20</p>
 <pre><code class="language-solidity">error ReinvestModule__InvalidAavePMProxyAddress();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="itokenswapsmodule"><a class="header" href="#itokenswapsmodule">ITokenSwapsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/interfaces/ITokenSwapsModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/interfaces/ITokenSwapsModule.sol">Git Source</a></p>
 <p>This interface defines the essential structures and functions for the TokenSwapsModule contract.</p>
 <h2 id="functions-6"><a class="header" href="#functions-6">Functions</a></h2>
-<h3 id="getversion-5"><a class="header" href="#getversion-5">getVersion</a></h3>
-<pre><code class="language-solidity">function getVersion() external pure returns (string memory version);
+<h3 id="version-4"><a class="header" href="#version-4">VERSION</a></h3>
+<pre><code class="language-solidity">function VERSION() external pure returns (string memory version);
+</code></pre>
+<h3 id="aavepmproxyaddress-4"><a class="header" href="#aavepmproxyaddress-4">aavePMProxyAddress</a></h3>
+<pre><code class="language-solidity">function aavePMProxyAddress() external view returns (address aavePMProxyAddress);
 </code></pre>
 <h3 id="swaptokens"><a class="header" href="#swaptokens">swapTokens</a></h3>
 <pre><code class="language-solidity">function swapTokens(
@@ -850,7 +905,7 @@ IERC20</p>
 <pre><code class="language-solidity">error TokenSwapsModule__InvalidAavePMProxyAddress();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="iweth9"><a class="header" href="#iweth9">IWETH9</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/interfaces/IWETH9.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/interfaces/IWETH9.sol">Git Source</a></p>
 <p>This interface enables the wrapping and unwrapping of ETH to WETH.</p>
 <h2 id="functions-7"><a class="header" href="#functions-7">Functions</a></h2>
 <h3 id="deposit"><a class="header" href="#deposit">deposit</a></h3>
@@ -868,36 +923,41 @@ IERC20</p>
 <li><a href="src/modules/TokenSwapsModule.sol/contract.TokenSwapsModule.html">TokenSwapsModule</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aavefunctionsmodule"><a class="header" href="#aavefunctionsmodule">AaveFunctionsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/modules/AaveFunctionsModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/modules/AaveFunctionsModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/AaveFunctionsModule.sol//src/interfaces/IAaveFunctionsModule.sol/interface.IAaveFunctionsModule.html">IAaveFunctionsModule</a></p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>This contract contains the functions for AavePM to interact with the Aave protocol.</p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
-<h3 id="version"><a class="header" href="#version">VERSION</a></h3>
+<h3 id="version-5"><a class="header" href="#version-5">VERSION</a></h3>
 <p>The version of the contract.</p>
 <p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
-<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
+<pre><code class="language-solidity">string public constant VERSION = &quot;0.0.1&quot;;
 </code></pre>
-<h3 id="aavepmproxyaddress"><a class="header" href="#aavepmproxyaddress">aavePMProxyAddress</a></h3>
+<h3 id="aavepmproxyaddress-5"><a class="header" href="#aavepmproxyaddress-5">aavePMProxyAddress</a></h3>
+<p>The address of the AavePM proxy contract.</p>
+<p><em>The AavePM proxy address is set on deployment and is immutable.</em></p>
 <pre><code class="language-solidity">address public immutable aavePMProxyAddress;
 </code></pre>
-<h2 id="functions-8"><a class="header" href="#functions-8">Functions</a></h2>
-<h3 id="getversion-6"><a class="header" href="#getversion-6">getVersion</a></h3>
-<p>Getter function to get the contract version.</p>
-<p><em>Public function to allow anyone to view the contract version.</em></p>
-<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
+<h3 id="hft_minimum_buffer"><a class="header" href="#hft_minimum_buffer">HFT_MINIMUM_BUFFER</a></h3>
+<p>The buffer for the Health Factor Target minimum calculation</p>
+<pre><code class="language-solidity">uint16 public constant HFT_MINIMUM_BUFFER = 1;
 </code></pre>
-<p><strong>Returns</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
-</tbody></table>
-</div>
+<h2 id="functions-8"><a class="header" href="#functions-8">Functions</a></h2>
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
+<p>Contract constructor to set the AavePM proxy address.</p>
+<p><em>The AavePM proxy address is set on deployment and is immutable.</em></p>
 <pre><code class="language-solidity">constructor(address _aavePMProxyAddress);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_aavePMProxyAddress</code></td><td><code>address</code></td><td>The address of the AavePM proxy contract.</td></tr>
+</tbody></table>
+</div>
 <h3 id="onlyaavepm"><a class="header" href="#onlyaavepm">onlyAavePM</a></h3>
+<p>Modifier to check that only the AavePM contract is the caller.</p>
+<p><em>Uses <code>address(this)</code> since this contract is called by the AavePM contract using delegatecall.</em></p>
 <pre><code class="language-solidity">modifier onlyAavePM();
 </code></pre>
 <h3 id="aavesupply-1"><a class="header" href="#aavesupply-1">aaveSupply</a></h3>
@@ -1059,36 +1119,41 @@ EridianAlpha</p>
 <tr><td><code>healthFactorTarget</code></td><td><code>uint16</code></td><td>The health factor target.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="borrowandwithdrawusdcmodule"><a class="header" href="#borrowandwithdrawusdcmodule">BorrowAndWithdrawUSDCModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/modules/BorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/modules/BorrowAndWithdrawUSDCModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/BorrowAndWithdrawUSDCModule.sol//src/interfaces/IBorrowAndWithdrawUSDCModule.sol/interface.IBorrowAndWithdrawUSDCModule.html">IBorrowAndWithdrawUSDCModule</a></p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>This contract contains the functions for AavePM to borrow and withdraw USDC from the Aave protocol.</p>
 <h2 id="state-variables-1"><a class="header" href="#state-variables-1">State Variables</a></h2>
-<h3 id="version-1"><a class="header" href="#version-1">VERSION</a></h3>
+<h3 id="version-6"><a class="header" href="#version-6">VERSION</a></h3>
 <p>The version of the contract.</p>
 <p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
-<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
+<pre><code class="language-solidity">string public constant VERSION = &quot;0.0.1&quot;;
 </code></pre>
-<h3 id="aavepmproxyaddress-1"><a class="header" href="#aavepmproxyaddress-1">aavePMProxyAddress</a></h3>
+<h3 id="aavepmproxyaddress-6"><a class="header" href="#aavepmproxyaddress-6">aavePMProxyAddress</a></h3>
+<p>The address of the AavePM proxy contract.</p>
+<p><em>The AavePM proxy address is set on deployment and is immutable.</em></p>
 <pre><code class="language-solidity">address public immutable aavePMProxyAddress;
 </code></pre>
-<h2 id="functions-9"><a class="header" href="#functions-9">Functions</a></h2>
-<h3 id="getversion-7"><a class="header" href="#getversion-7">getVersion</a></h3>
-<p>Getter function to get the contract version.</p>
-<p><em>Public function to allow anyone to view the contract version.</em></p>
-<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
+<h3 id="hft_buffer"><a class="header" href="#hft_buffer">HFT_BUFFER</a></h3>
+<p>The buffer for the Health Factor Target calculation</p>
+<pre><code class="language-solidity">uint16 public constant HFT_BUFFER = 2;
 </code></pre>
-<p><strong>Returns</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
-</tbody></table>
-</div>
+<h2 id="functions-9"><a class="header" href="#functions-9">Functions</a></h2>
 <h3 id="constructor-1"><a class="header" href="#constructor-1">constructor</a></h3>
+<p>Contract constructor to set the AavePM proxy address.</p>
+<p><em>The AavePM proxy address is set on deployment and is immutable.</em></p>
 <pre><code class="language-solidity">constructor(address _aavePMProxyAddress);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_aavePMProxyAddress</code></td><td><code>address</code></td><td>The address of the AavePM proxy contract.</td></tr>
+</tbody></table>
+</div>
 <h3 id="onlyaavepm-1"><a class="header" href="#onlyaavepm-1">onlyAavePM</a></h3>
+<p>Modifier to check that only the AavePM contract is the caller.</p>
+<p><em>Uses <code>address(this)</code> since this contract is called by the AavePM contract using delegatecall.</em></p>
 <pre><code class="language-solidity">modifier onlyAavePM();
 </code></pre>
 <h3 id="borrowandwithdrawusdc-1"><a class="header" href="#borrowandwithdrawusdc-1">borrowAndWithdrawUSDC</a></h3>
@@ -1135,36 +1200,41 @@ EridianAlpha</p>
 <tr><td><code>repaidReinvestedDebt</code></td><td><code>uint256</code></td><td>The amount of reinvested debt repaid to increase the Health Factor.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="rebalancemodule"><a class="header" href="#rebalancemodule">RebalanceModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/modules/RebalanceModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/modules/RebalanceModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/RebalanceModule.sol//src/interfaces/IRebalanceModule.sol/interface.IRebalanceModule.html">IRebalanceModule</a></p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>This contract contains the functions for AavePM to rebalance the Aave position by repaying debt to increase the health factor.</p>
 <h2 id="state-variables-2"><a class="header" href="#state-variables-2">State Variables</a></h2>
-<h3 id="version-2"><a class="header" href="#version-2">VERSION</a></h3>
+<h3 id="version-7"><a class="header" href="#version-7">VERSION</a></h3>
 <p>The version of the contract.</p>
 <p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
-<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
+<pre><code class="language-solidity">string public constant VERSION = &quot;0.0.1&quot;;
 </code></pre>
-<h3 id="aavepmproxyaddress-2"><a class="header" href="#aavepmproxyaddress-2">aavePMProxyAddress</a></h3>
+<h3 id="aavepmproxyaddress-7"><a class="header" href="#aavepmproxyaddress-7">aavePMProxyAddress</a></h3>
+<p>The address of the AavePM proxy contract.</p>
+<p><em>The AavePM proxy address is set on deployment and is immutable.</em></p>
 <pre><code class="language-solidity">address public immutable aavePMProxyAddress;
 </code></pre>
-<h2 id="functions-10"><a class="header" href="#functions-10">Functions</a></h2>
-<h3 id="getversion-8"><a class="header" href="#getversion-8">getVersion</a></h3>
-<p>Getter function to get the contract version.</p>
-<p><em>Public function to allow anyone to view the contract version.</em></p>
-<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
+<h3 id="rebalance_hft_buffer"><a class="header" href="#rebalance_hft_buffer">REBALANCE_HFT_BUFFER</a></h3>
+<p>The buffer for the Health Factor Target rebalance calculation</p>
+<pre><code class="language-solidity">uint16 public constant REBALANCE_HFT_BUFFER = 10;
 </code></pre>
-<p><strong>Returns</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
-</tbody></table>
-</div>
+<h2 id="functions-10"><a class="header" href="#functions-10">Functions</a></h2>
 <h3 id="constructor-2"><a class="header" href="#constructor-2">constructor</a></h3>
+<p>Contract constructor to set the AavePM proxy address.</p>
+<p><em>The AavePM proxy address is set on deployment and is immutable.</em></p>
 <pre><code class="language-solidity">constructor(address _aavePMProxyAddress);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_aavePMProxyAddress</code></td><td><code>address</code></td><td>The address of the AavePM proxy contract.</td></tr>
+</tbody></table>
+</div>
 <h3 id="onlyaavepm-2"><a class="header" href="#onlyaavepm-2">onlyAavePM</a></h3>
+<p>Modifier to check that only the AavePM contract is the caller.</p>
+<p><em>Uses <code>address(this)</code> since this contract is called by the AavePM contract using delegatecall.</em></p>
 <pre><code class="language-solidity">modifier onlyAavePM();
 </code></pre>
 <h3 id="rebalance-2"><a class="header" href="#rebalance-2">rebalance</a></h3>
@@ -1201,7 +1271,7 @@ If the health factor is below the target, it repays debt to increase the health 
 <tr><td><code>repaymentAmountUSDC</code></td><td><code>uint256</code></td><td>The amount of USDC repaid.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="reinvestmodule"><a class="header" href="#reinvestmodule">ReinvestModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/modules/ReinvestModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/modules/ReinvestModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/ReinvestModule.sol//src/interfaces/IReinvestModule.sol/interface.IReinvestModule.html">IReinvestModule</a></p>
 <p><strong>Author:</strong>
@@ -1209,29 +1279,34 @@ EridianAlpha</p>
 <p>This contract contains the functions for AavePM to borrow USDC,
 swap to wstETH, and supply to Aave maintaining the target health factor.</p>
 <h2 id="state-variables-3"><a class="header" href="#state-variables-3">State Variables</a></h2>
-<h3 id="version-3"><a class="header" href="#version-3">VERSION</a></h3>
+<h3 id="version-8"><a class="header" href="#version-8">VERSION</a></h3>
 <p>The version of the contract.</p>
 <p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
-<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
+<pre><code class="language-solidity">string public constant VERSION = &quot;0.0.1&quot;;
 </code></pre>
-<h3 id="aavepmproxyaddress-3"><a class="header" href="#aavepmproxyaddress-3">aavePMProxyAddress</a></h3>
+<h3 id="aavepmproxyaddress-8"><a class="header" href="#aavepmproxyaddress-8">aavePMProxyAddress</a></h3>
+<p>The address of the AavePM proxy contract.</p>
+<p><em>The AavePM proxy address is set on deployment and is immutable.</em></p>
 <pre><code class="language-solidity">address public immutable aavePMProxyAddress;
 </code></pre>
-<h2 id="functions-11"><a class="header" href="#functions-11">Functions</a></h2>
-<h3 id="getversion-9"><a class="header" href="#getversion-9">getVersion</a></h3>
-<p>Getter function to get the contract version.</p>
-<p><em>Public function to allow anyone to view the contract version.</em></p>
-<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
+<h3 id="reinvest_hft_buffer"><a class="header" href="#reinvest_hft_buffer">REINVEST_HFT_BUFFER</a></h3>
+<p>The buffer for the Health Factor Target reinvest calculation</p>
+<pre><code class="language-solidity">uint16 public constant REINVEST_HFT_BUFFER = 10;
 </code></pre>
-<p><strong>Returns</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
-</tbody></table>
-</div>
+<h2 id="functions-11"><a class="header" href="#functions-11">Functions</a></h2>
 <h3 id="constructor-3"><a class="header" href="#constructor-3">constructor</a></h3>
+<p>Contract constructor to set the AavePM proxy address.</p>
+<p><em>The AavePM proxy address is set on deployment and is immutable.</em></p>
 <pre><code class="language-solidity">constructor(address _aavePMProxyAddress);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_aavePMProxyAddress</code></td><td><code>address</code></td><td>The address of the AavePM proxy contract.</td></tr>
+</tbody></table>
+</div>
 <h3 id="onlyaavepm-3"><a class="header" href="#onlyaavepm-3">onlyAavePM</a></h3>
+<p>Modifier to check that only the AavePM contract is the caller.</p>
+<p><em>Uses <code>address(this)</code> since this contract is called by the AavePM contract using delegatecall.</em></p>
 <pre><code class="language-solidity">modifier onlyAavePM();
 </code></pre>
 <h3 id="reinvest-2"><a class="header" href="#reinvest-2">reinvest</a></h3>
@@ -1275,36 +1350,37 @@ swap to wstETH, and supply to Aave maintaining the target health factor.</p>
 <tr><td><code>borrowAmountUSDC</code></td><td><code>uint256</code></td><td>The amount of USDC borrowed.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="tokenswapsmodule"><a class="header" href="#tokenswapsmodule">TokenSwapsModule</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/modules/TokenSwapsModule.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/modules/TokenSwapsModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/modules/TokenSwapsModule.sol//src/interfaces/ITokenSwapsModule.sol/interface.ITokenSwapsModule.html">ITokenSwapsModule</a></p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>This contract contains the functions for AavePM to swap tokens using UniswapV3.</p>
 <h2 id="state-variables-4"><a class="header" href="#state-variables-4">State Variables</a></h2>
-<h3 id="version-4"><a class="header" href="#version-4">VERSION</a></h3>
+<h3 id="version-9"><a class="header" href="#version-9">VERSION</a></h3>
 <p>The version of the contract.</p>
 <p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
-<pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
+<pre><code class="language-solidity">string public constant VERSION = &quot;0.0.1&quot;;
 </code></pre>
-<h3 id="aavepmproxyaddress-4"><a class="header" href="#aavepmproxyaddress-4">aavePMProxyAddress</a></h3>
+<h3 id="aavepmproxyaddress-9"><a class="header" href="#aavepmproxyaddress-9">aavePMProxyAddress</a></h3>
+<p>The address of the AavePM proxy contract.</p>
+<p><em>The AavePM proxy address is set on deployment and is immutable.</em></p>
 <pre><code class="language-solidity">address public immutable aavePMProxyAddress;
 </code></pre>
 <h2 id="functions-12"><a class="header" href="#functions-12">Functions</a></h2>
-<h3 id="getversion-10"><a class="header" href="#getversion-10">getVersion</a></h3>
-<p>Getter function to get the contract version.</p>
-<p><em>Public function to allow anyone to view the contract version.</em></p>
-<pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
-</code></pre>
-<p><strong>Returns</strong></p>
-<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>version</code></td><td><code>string</code></td><td>The contract version.</td></tr>
-</tbody></table>
-</div>
 <h3 id="constructor-4"><a class="header" href="#constructor-4">constructor</a></h3>
+<p>Contract constructor to set the AavePM proxy address.</p>
+<p><em>The AavePM proxy address is set on deployment and is immutable.</em></p>
 <pre><code class="language-solidity">constructor(address _aavePMProxyAddress);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>_aavePMProxyAddress</code></td><td><code>address</code></td><td>The address of the AavePM proxy contract.</td></tr>
+</tbody></table>
+</div>
 <h3 id="onlyaavepm-4"><a class="header" href="#onlyaavepm-4">onlyAavePM</a></h3>
+<p>Modifier to check that only the AavePM contract is the caller.</p>
+<p><em>Uses <code>address(this)</code> since this contract is called by the AavePM contract using delegatecall.</em></p>
 <pre><code class="language-solidity">modifier onlyAavePM();
 </code></pre>
 <h3 id="swaptokens-1"><a class="header" href="#swaptokens-1">swapTokens</a></h3>
@@ -1396,7 +1472,7 @@ meet the <code>amountOutMinimum</code> criteria due to price movements.</em></p>
 <tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>isETH True if the identifier is for ETH.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="aavepm"><a class="header" href="#aavepm">AavePM</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/AavePM.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/AavePM.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="src/AavePM.sol//src/interfaces/IAavePM.sol/interface.IAavePM.html">IAavePM</a>, <a href="src/AavePM.sol//src/FunctionChecks.sol/contract.FunctionChecks.html">FunctionChecks</a>, <a href="src/AavePM.sol//src/FlashLoan.sol/contract.FlashLoan.html">FlashLoan</a>, Initializable, AccessControlEnumerableUpgradeable, UUPSUpgradeable</p>
 <p><strong>Author:</strong>
@@ -1439,7 +1515,7 @@ EridianAlpha</p>
 <h3 id="s_managerinvocationtimestamps"><a class="header" href="#s_managerinvocationtimestamps">s_managerInvocationTimestamps</a></h3>
 <pre><code class="language-solidity">uint64[] internal s_managerInvocationTimestamps;
 </code></pre>
-<h3 id="version-5"><a class="header" href="#version-5">VERSION</a></h3>
+<h3 id="version-10"><a class="header" href="#version-10">VERSION</a></h3>
 <p>The version of the contract.</p>
 <p><em>Contract is upgradeable so the version is a constant set on each implementation contract.</em></p>
 <pre><code class="language-solidity">string internal constant VERSION = &quot;0.0.1&quot;;
@@ -1812,7 +1888,7 @@ Emits a <code>AaveClosedPosition</code> event.</em></p>
 <tr><td><code>&lt;none&gt;</code></td><td><code>uint64[]</code></td><td>eventBlockNumbers The array of event block numbers.</td></tr>
 </tbody></table>
 </div>
-<h3 id="getversion-11"><a class="header" href="#getversion-11">getVersion</a></h3>
+<h3 id="getversion-1"><a class="header" href="#getversion-1">getVersion</a></h3>
 <p>Getter function to get the contract version.</p>
 <p><em>Public function to allow anyone to view the contract version.</em></p>
 <pre><code class="language-solidity">function getVersion() public pure returns (string memory version);
@@ -2191,7 +2267,7 @@ The function is called by the Aave pool contract and is not intended to be calle
 <tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>bool True if the operation was successful.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="flashloan"><a class="header" href="#flashloan">FlashLoan</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/FlashLoan.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/FlashLoan.sol">Git Source</a></p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>This contract contains the functions for AavePM to execute a flash loan to repay debt and withdraw collateral.</p>
@@ -2219,7 +2295,7 @@ The function is called by the Aave pool contract and is not intended to be calle
 <tr><td><code>&lt;none&gt;</code></td><td><code>bool</code></td><td>bool True if the operation was successful.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="functionchecks"><a class="header" href="#functionchecks">FunctionChecks</a></h1>
-<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/e4b5f6d4219f7d647bbfbfb818fbf7904aa83c05/src/FunctionChecks.sol">Git Source</a></p>
+<p><a href="https://github.com/EridianAlpha/aave-position-manager/blob/b25c71f127bab36cc6c243181bb053a5fd6cd01d/src/FunctionChecks.sol">Git Source</a></p>
 <p><strong>Author:</strong>
 EridianAlpha</p>
 <p>This contract contains the functions used inside AavePM modifiers.</p>

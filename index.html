@@ -180,7 +180,7 @@
                         <h1 id="aavepm---aave-position-manager"><a class="header" href="#aavepm---aave-position-manager">AavePM - Aave Position Manager</a></h1>
 <blockquote>
 <hr />
-<p>🏗️ UNDER DEVELOPMENT 🏗️</p>
+<p>🧪 ALPHA TESTING PHASE 🧪</p>
 <hr />
 </blockquote>
 <ul>
@@ -205,8 +205,8 @@
 </li>
 <li><a href="#4-testing">4. Testing</a>
 <ul>
-<li><a href="#41-tests">4.1. Tests</a></li>
-<li><a href="#42-coverage">4.2. Coverage</a></li>
+<li><a href="#41-tests-mainnet-fork">4.1. Tests (Mainnet Fork)</a></li>
+<li><a href="#42-coverage-mainnet-fork">4.2. Coverage (Mainnet Fork)</a></li>
 </ul>
 </li>
 <li><a href="#5-deployment">5. Deployment</a></li>
@@ -222,9 +222,10 @@
 <li><a href="#77-repay">7.7. Repay</a></li>
 <li><a href="#78-close-position">7.8. Close Position</a></li>
 <li><a href="#79-withdraw-wsteth">7.9. Withdraw wstETH</a></li>
-<li><a href="#710-borrow-usdc">7.10. Borrow USDC</a></li>
-<li><a href="#711-get-contract-balance">7.11. Get Contract Balance</a></li>
-<li><a href="#712-get-aave-account-data">7.12. Get Aave Account Data</a></li>
+<li><a href="#710-withdraw-token">7.10. Withdraw Token</a></li>
+<li><a href="#711-borrow-usdc">7.11. Borrow USDC</a></li>
+<li><a href="#712-get-contract-balance">7.12. Get Contract Balance</a></li>
+<li><a href="#713-get-aave-account-data">7.13. Get Aave Account Data</a></li>
 </ul>
 </li>
 <li><a href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></li>
@@ -237,8 +238,9 @@
 <p>A smart contract manager for Aave positions.</p>
 <ol>
 <li>Set a desired Health Factor.</li>
-<li>Deposit assets (ETH, WETH, wstETH or USDC) into the position.</li>
+<li>Deposit assets (ETH, WETH, wstETH, or USDC) into the position.</li>
 <li>Reinvest and rebalance the position to maintain the desired Health Factor, either manually or with a bot.</li>
+<li>Borrow and withdraw USDC from the position while maintaining the desired Health Factor.</li>
 </ol>
 <h3 id="11-key-functions"><a class="header" href="#11-key-functions">1.1. Key Functions</a></h3>
 <h4 id="111-owner-functions"><a class="header" href="#111-owner-functions">1.1.1. Owner Functions</a></h4>
@@ -247,6 +249,7 @@
 <tr><td>updateContractAddress</td><td><code>OWNER_ROLE</code></td><td>Update the specified contract address.</td></tr>
 <tr><td>updateTokenAddress</td><td><code>OWNER_ROLE</code></td><td>Update the specified token address.</td></tr>
 <tr><td>updateUniswapV3Pool</td><td><code>OWNER_ROLE</code></td><td>Update the specified Uniswap V3 pool.</td></tr>
+<tr><td>updateManagerDailyInvocationLimit</td><td><code>OWNER_ROLE</code></td><td>Update the daily invocation limit for the manager role.</td></tr>
 </tbody></table>
 </div>
 <h4 id="112-manager-functions"><a class="header" href="#112-manager-functions">1.1.2. Manager Functions</a></h4>
@@ -259,14 +262,15 @@
 <tr><td>withdrawTokensFromContractBalance</td><td><code>MANAGER_ROLE</code></td><td>Withdraw all the specified tokens from the contract to the specified owner.</td></tr>
 <tr><td>aaveBorrowAndWithdrawUSDC</td><td><code>MANAGER_ROLE</code></td><td>Borrow USDC from Aave and withdraw to the specified owner.</td></tr>
 <tr><td>aaveWithdrawWstETH</td><td><code>MANAGER_ROLE</code></td><td>Withdraw wstETH collateral from the Aave position to the specified owner.</td></tr>
-<tr><td>aaveClosePosition</td><td><code>MANAGER_ROLE</code></td><td>Close the Aave position by repaying all debt and withdrawing all collateral.</td></tr>
+<tr><td>aaveClosePosition</td><td><code>MANAGER_ROLE</code></td><td>Close the Aave position by repaying all debt and withdrawing all collateral to the specified owner.</td></tr>
 <tr><td>updateHealthFactorTarget</td><td><code>MANAGER_ROLE</code></td><td>Set the desired Health Factor target.</td></tr>
 <tr><td>updateSlippageTolerance</td><td><code>MANAGER_ROLE</code></td><td>Set the slippage tolerance for Uniswap V3 swaps.</td></tr>
 <tr><td>rescueEth</td><td><code>MANAGER_ROLE</code></td><td>Rescue ETH from the contract to the specified owner.</td></tr>
+<tr><td>delegateCallHelper</td><td><code>MANAGER_ROLE</code></td><td>Execute a delegate call to the specified module.</td></tr>
 </tbody></table>
 </div>
 <h2 id="2-webapp"><a class="header" href="#2-webapp">2. WebApp</a></h2>
-<p>A WebApp is being developed to allow easy interaction with the smart contract and will be linked here when ready.</p>
+<p>A WebApp is being developed to allow easy interaction with the smart contract and will be linked here when available.</p>
 <h2 id="3-installation"><a class="header" href="#3-installation">3. Installation</a></h2>
 <h3 id="31-clone-repository"><a class="header" href="#31-clone-repository">3.1. Clone repository</a></h3>
 <pre><code class="language-bash">git clone https://github.com/EridianAlpha/aave-position-manager.git
@@ -280,104 +284,140 @@ make install
 <h3 id="33-create-the-env-file"><a class="header" href="#33-create-the-env-file">3.3. Create the <code>.env</code> file</a></h3>
 <p>Use the <code>.env.example</code> file as a template to create a <code>.env</code> file.</p>
 <h3 id="34-configure-ethernal-optional"><a class="header" href="#34-configure-ethernal-optional">3.4. Configure Ethernal (optional)</a></h3>
-<p>Configure an Ethernal account to interact with the smart contract through a UI (like Etherscan but for a local network).</p>
+<p>Configure an Ethernal account to interact with the smart contract through a UI. Ethernal is like Etherscan but for a custom network.</p>
 <p><a href="https://docs.eridianalpha.com/ethereum-dev/useful-tools/ethernal">https://docs.eridianalpha.com/ethereum-dev/useful-tools/ethernal</a></p>
 <pre><code class="language-bash">make ethernal
 </code></pre>
 <h2 id="4-testing"><a class="header" href="#4-testing">4. Testing</a></h2>
-<h3 id="41-tests"><a class="header" href="#41-tests">4.1. Tests</a></h3>
+<h3 id="41-tests-mainnet-fork"><a class="header" href="#41-tests-mainnet-fork">4.1. Tests (Mainnet Fork)</a></h3>
 <pre><code class="language-bash">make test-fork-mainnet
 make test-fork-mainnet-v
 make test-fork-mainnet-summary
 </code></pre>
-<h3 id="42-coverage"><a class="header" href="#42-coverage">4.2. Coverage</a></h3>
+<h3 id="42-coverage-mainnet-fork"><a class="header" href="#42-coverage-mainnet-fork">4.2. Coverage (Mainnet Fork)</a></h3>
 <pre><code class="language-bash">make coverage
 make coverage-report
 </code></pre>
 <h2 id="5-deployment"><a class="header" href="#5-deployment">5. Deployment</a></h2>
+<p>Deploys AavePM and all modules to the Anvil chain specified in the <code>.env</code> file.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make deploy-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make deploy anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make deploy base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="6-upgrades"><a class="header" href="#6-upgrades">6. Upgrades</a></h2>
-<p>Upgrade the contract to a new logic implementation while maintaining the same proxy address.</p>
+<p>Upgrade the contract to a new logic implementation while maintaining the same proxy address.
+This also redeploys all modules and updates their contract addresses on AavePM.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make upgrade-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make upgrade anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make upgrade base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="7-interactions"><a class="header" href="#7-interactions">7. Interactions</a></h2>
 <p>Interactions are defined in <code>./script/Interactions.s.sol</code></p>
+<p>If <code>DEPLOYED_CONTRACT_ADDRESS</code> is set in the <code>.env</code> file, that contract address will be used for interactions.
+If that variable is not set, the latest deployment on the specified chain will be used.</p>
 <h3 id="71-fund-contract-with-eth"><a class="header" href="#71-fund-contract-with-eth">7.1. Fund contract with ETH</a></h3>
 <p>Input value in ETH e.g. <code>0.15</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make send-ETH-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make send-ETH anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make send-ETH base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="72-update-health-factor-target"><a class="header" href="#72-update-health-factor-target">7.2. Update Health Factor Target</a></h3>
 <p>Input value to 2 decimal places e.g. <code>225</code> for a Health Factor target of <code>2.25</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make update-hft-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make update-hft anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make update-hft base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="73-update-slippage-tolerance"><a class="header" href="#73-update-slippage-tolerance">7.3. Update Slippage Tolerance</a></h3>
 <p>Input value to 2 decimal places e.g. <code>200</code> for a Slippage Tolerance of <code>0.5%</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make update-st-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make update-st anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make update-st base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="74-rebalance"><a class="header" href="#74-rebalance">7.4. Rebalance</a></h3>
 <p>Rebalances the Aave position to maintain the desired Health Factor target.
-TODO: Add threshold details.</p>
+<code>REBALANCE_HFT_BUFFER</code> is a constant in the module that determines if a rebalance is required.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make rebalance-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make rebalance anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make rebalance base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="75-reinvest"><a class="header" href="#75-reinvest">7.5. Reinvest</a></h3>
-<p>Reinvests any collateral above the Health Factor target.</p>
+<p>Reinvests any collateral above the Health Factor target.
+<code>REINVEST_HFT_BUFFER</code> is a constant in the module that determines if a reinvest is required.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make reinvest-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make reinvest anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make reinvest base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="76-supply"><a class="header" href="#76-supply">7.6. Supply</a></h3>
-<p>Supplies any ETH, WETH, wstETH or USDC in the contract to Aave.</p>
+<p>Supplies any ETH, WETH, wstETH, or USDC in the contract to Aave.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make supply-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make supply anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make supply base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="77-repay"><a class="header" href="#77-repay">7.7. Repay</a></h3>
 <p>Repay any USDC debt in the contract to repay Aave position debt.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make repay-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make repay anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make repay base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="78-close-position"><a class="header" href="#78-close-position">7.8. Close Position</a></h3>
-<p>Close the Aave position by repaying all debt and withdrawing all collateral.</p>
+<p>Close the Aave position by repaying all debt and withdrawing all collateral.
+Input value as an owner address. e.g. <code>0x123...</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make closePosition-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make closePosition anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make closePosition base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="79-withdraw-wsteth"><a class="header" href="#79-withdraw-wsteth">7.9. Withdraw wstETH</a></h3>
-<p>Withdraw wstETH collateral from the Aave position to the specified owner.</p>
+<p>Withdraw wstETH collateral from the Aave position to the specified owner.
+Input value 1 in ETH e.g. <code>0.15</code>.
+Input value 2 as an owner address e.g. <code>0x123...</code>.
+Combined input value e.g. <code>0.15,0x123...</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make withdrawWstETH-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make withdrawWstETH anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make withdrawWstETH base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="710-borrow-usdc"><a class="header" href="#710-borrow-usdc">7.10. Borrow USDC</a></h3>
-<p>Borrow USDC from Aave and withdraw to the specified owner.</p>
+<h3 id="710-withdraw-token"><a class="header" href="#710-withdraw-token">7.10. Withdraw Token</a></h3>
+<p>Withdraw the specified token from the contract to the specified owner.
+Input value 1 in token identifier e.g. <code>USDC</code>.
+Input value 2 as an owner address e.g. <code>0x123...</code>.
+Combined input value e.g. <code>USDC,0x123...</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make borrowUSDC-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make withdrawToken anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make withdrawToken base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="711-get-contract-balance"><a class="header" href="#711-get-contract-balance">7.11. Get Contract Balance</a></h3>
+<h3 id="711-borrow-usdc"><a class="header" href="#711-borrow-usdc">7.11. Borrow USDC</a></h3>
+<p>Borrow USDC from Aave and withdraw to the specified owner.
+Input value 1 in USDC e.g. <code>200</code> for $200 USDC.
+Input value 2 as an owner address e.g. <code>0x123...</code>.
+Combined input value e.g. <code>200,0x123...</code>.</p>
+<div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
+<tr><td>Anvil</td><td><code>make borrowUSDC anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make borrowUSDC base-mainnet</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="712-get-contract-balance"><a class="header" href="#712-get-contract-balance">7.12. Get Contract Balance</a></h3>
 <p>Input value as token identifier e.g. <code>USDC</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make getContractBalance-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make getContractBalance anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make getContractBalance base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="712-get-aave-account-data"><a class="header" href="#712-get-aave-account-data">7.12. Get Aave Account Data</a></h3>
+<h3 id="713-get-aave-account-data"><a class="header" href="#713-get-aave-account-data">7.13. Get Aave Account Data</a></h3>
 <p>Returns the Aave account data for the contract.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
-<tr><td>Anvil</td><td><code>make getAaveAccountData-anvil</code></td></tr>
+<tr><td>Anvil</td><td><code>make getAaveAccountData anvil</code></td></tr>
+<tr><td>Base Mainnet</td><td><code>make getAaveAccountData base-mainnet</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="8-build-and-deploy-documentation"><a class="header" href="#8-build-and-deploy-documentation">8. Build and Deploy Documentation</a></h2>

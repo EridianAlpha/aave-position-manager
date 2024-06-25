@@ -25,7 +25,18 @@ contract Interactions is Script {
     AavePM public aavePM;
 
     function interactionsSetup() public {
-        address _aavePMAddressProxy = DevOpsTools.get_most_recent_deployment("ERC1967Proxy", block.chainid);
+        address _aavePMAddressProxy;
+
+        try vm.envAddress("DEPLOYED_CONTRACT_ADDRESS") returns (address addr) {
+            if (addr != address(0)) {
+                _aavePMAddressProxy = addr;
+            } else {
+                _aavePMAddressProxy = DevOpsTools.get_most_recent_deployment("ERC1967Proxy", block.chainid);
+            }
+        } catch {
+            _aavePMAddressProxy = DevOpsTools.get_most_recent_deployment("ERC1967Proxy", block.chainid);
+        }
+
         require(_aavePMAddressProxy != address(0), "ERC1967Proxy address is invalid");
         aavePM = AavePM(payable(_aavePMAddressProxy));
     }
@@ -116,40 +127,38 @@ contract Interactions is Script {
         vm.stopBroadcast();
     }
 
-    function aaveClosePositionAavePM() public {
+    function aaveClosePositionAavePM(address _owner) public {
         interactionsSetup();
         vm.startBroadcast();
-        aavePM.aaveClosePosition(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+        aavePM.aaveClosePosition(_owner);
         vm.stopBroadcast();
     }
 
-    function rescueETHAavePM() public {
+    function rescueETHAavePM(address _owner) public {
         interactionsSetup();
         vm.startBroadcast();
-        aavePM.rescueEth(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+        aavePM.rescueEth(_owner);
         vm.stopBroadcast();
     }
 
-    function withdrawTokenAavePM(string memory _identifier) public {
+    function withdrawTokenAavePM(string memory _identifier, address _owner) public {
         interactionsSetup();
         vm.startBroadcast();
-        aavePM.withdrawTokensFromContractBalance(_identifier, 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+        aavePM.withdrawTokensFromContractBalance(_identifier, _owner);
         vm.stopBroadcast();
     }
 
-    function withdrawWstETHAavePM(uint256 value) public {
+    function withdrawWstETHAavePM(uint256 value, address _owner) public {
         interactionsSetup();
         vm.startBroadcast();
-        // TODO: Change this hardcoded Anvil address to an input parameter.
-        aavePM.aaveWithdrawWstETH(value, 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+        aavePM.aaveWithdrawWstETH(value, _owner);
         vm.stopBroadcast();
     }
 
-    function borrowAndWithdrawUSDCAavePM(uint256 value) public {
+    function borrowAndWithdrawUSDCAavePM(uint256 value, address _owner) public {
         interactionsSetup();
         vm.startBroadcast();
-        // TODO: Change this hardcoded Anvil address to an input parameter.
-        aavePM.aaveBorrowAndWithdrawUSDC(value, 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+        aavePM.aaveBorrowAndWithdrawUSDC(value, _owner);
         vm.stopBroadcast();
     }
 

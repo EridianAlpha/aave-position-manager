@@ -13,13 +13,21 @@ clean 		:; forge clean
 update 		:; forge update
 build 		:; forge build
 
-# Configure Network Variables
+# ================================================================
+# │                      NETWORK CONFIGURATION                   │
+# ================================================================
+get-network-args: $(word 2, $(MAKECMDGOALS))-network
+anvil: # Added to stop error output when running commands e.g. make deploy anvil
+	@echo
 anvil-network:
 	$(eval \
 		NETWORK_ARGS := --broadcast \
 						--rpc-url ${ANVIL_RPC_URL} \
 						--private-key ${ANVIL_PRIVATE_KEY} \
 	)
+
+base-mainnet: # Added to stop error output when running commands e.g. make deploy base-mainnet
+	@echo
 
 # holesky-network: 
 # 	$(eval \
@@ -71,18 +79,39 @@ ask-for-value:
 
 convert-value-to-wei:
 	@value=$$(cat MAKE_CLI_INPUT_VALUE.tmp); \
-	wei_value=$$(echo "$$value * 10^18 / 1" | bc); \
-	echo $$wei_value > MAKE_CLI_INPUT_VALUE.tmp;
+	first_value=$$(echo $$value | cut -d',' -f1); \
+	remaining_inputs=$$(echo $$value | cut -d',' -f2-); \
+	if [ "$$first_value" = "$$value" ]; then \
+		remaining_inputs=""; \
+	fi; \
+ 	wei_value=$$(echo "$$first_value * 10^18 / 1" | bc); \
+	if [ -n "$$remaining_inputs" ]; then \
+		final_value=$$wei_value,$$remaining_inputs; \
+	else \
+		final_value=$$wei_value; \
+	fi; \
+ 	echo $$final_value > MAKE_CLI_INPUT_VALUE.tmp;
 
 convert-value-to-USDC:
 	@value=$$(cat MAKE_CLI_INPUT_VALUE.tmp); \
-	usdc_value=$$(echo "$$value * 10^6 / 1" | bc); \
-	echo $$usdc_value > MAKE_CLI_INPUT_VALUE.tmp;
+	first_value=$$(echo $$value | cut -d',' -f1); \
+	remaining_inputs=$$(echo $$value | cut -d',' -f2-); \
+	if [ "$$first_value" = "$$value" ]; then \
+		remaining_inputs=""; \
+	fi; \
+ 	usdc_value=$$(echo "$$first_value * 10^6 / 1" | bc); \
+	if [ -n "$$remaining_inputs" ]; then \
+		final_value=$$usdc_value,$$remaining_inputs; \
+	else \
+		final_value=$$usdc_value; \
+	fi; \
+ 	echo $$final_value > MAKE_CLI_INPUT_VALUE.tmp;
 
 store-value:
 	$(eval \
 		MAKE_CLI_INPUT_VALUE := $(shell cat MAKE_CLI_INPUT_VALUE.tmp) \
 	)
+
 remove-value:
 	@rm -f MAKE_CLI_INPUT_VALUE.tmp
 
@@ -97,90 +126,124 @@ install:
 	forge install uniswap/v3-core --no-commit && \
 	forge install uniswap/v3-periphery --no-commit && \
 	forge install aave/aave-v3-core@v1.19.3 --no-commit
-	
-
-# ================================================================
-# │                           SCRIPTS                            │
-# ================================================================
-deploy-script:
-	@forge script script/DeployAavePM.s.sol:DeployAavePM ${NETWORK_ARGS} -vvvv
-
-upgrade-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "upgradeAavePM()"
-
-send-ETH-script: 
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "fundAavePM(uint256)" ${MAKE_CLI_INPUT_VALUE}
-
-update-hft-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "updateHFTAavePM(uint16)" ${MAKE_CLI_INPUT_VALUE}
-
-update-st-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "updateSTAavePM(uint16)" ${MAKE_CLI_INPUT_VALUE}
-
-rebalance-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "rebalanceAavePM()"
-
-reinvest-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "reinvestAavePM()"
-
-supply-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "aaveSupplyAavePM()"
-
-repay-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "aaveRepayAavePM()"
-
-deleverage-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "aaveDeleverageAavePM()"
-
-closePosition-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "aaveClosePositionAavePM()"
-
-withdrawWstETH-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "withdrawWstETHAavePM(uint256)" ${MAKE_CLI_INPUT_VALUE}
-
-borrowUSDC-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "borrowAndWithdrawUSDCAavePM(uint256)" ${MAKE_CLI_INPUT_VALUE}
-
-rescueETH-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "rescueETHAavePM()"
-
-withdrawToken-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "withdrawTokenAavePM(string)" ${MAKE_CLI_INPUT_VALUE}
-
-getContractBalance-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "getContractBalanceAavePM(string)" ${MAKE_CLI_INPUT_VALUE}
-
-getAaveAccountData-script:
-	@forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv --sig "getAaveAccountDataAavePM(string)"
-
-# ================================================================
-# │                       COMBINED COMMANDS                      │
-# ================================================================
-send-ETH: ask-for-value convert-value-to-wei store-value send-ETH-script remove-value
-withdrawWstETH: ask-for-value convert-value-to-wei store-value withdrawWstETH-script remove-value
-withdrawToken: ask-for-value store-value withdrawToken-script remove-value
-borrowUSDC: ask-for-value convert-value-to-USDC store-value borrowUSDC-script remove-value
-update-hft: ask-for-value store-value update-hft-script remove-value
-update-st: ask-for-value store-value update-st-script remove-value
-getContractBalance: ask-for-value store-value getContractBalance-script remove-value
 
 # ================================================================
 # │                         RUN COMMANDS                         │
 # ================================================================
-deploy-anvil: anvil-network deploy-script
-upgrade-anvil: anvil-network upgrade-script
-send-ETH-anvil: anvil-network send-ETH
-update-hft-anvil: anvil-network update-hft
-update-st-anvil: anvil-network update-st
-rebalance-anvil: anvil-network rebalance-script
-reinvest-anvil: anvil-network reinvest-script
-deleverage-anvil: anvil-network deleverage-script
-closePosition-anvil: anvil-network closePosition-script
-supply-anvil: anvil-network supply-script
-repay-anvil: anvil-network repay-script
-withdrawWstETH-anvil: anvil-network withdrawWstETH
-borrowUSDC-anvil: anvil-network borrowUSDC
-rescueETH-anvil: anvil-network rescueETH-script
-withdrawToken-anvil: anvil-network withdrawToken
-getContractBalance-anvil: anvil-network getContractBalance
-getAaveAccountData-anvil: anvil-network getAaveAccountData-script
+# Interactions script
+interactions-script = @forge script script/Interactions.s.sol:Interactions ${NETWORK_ARGS} -vvvv
+
+# Deploy script
+deploy-script:; @forge script script/DeployAavePM.s.sol:DeployAavePM ${NETWORK_ARGS} -vvvv
+deploy: get-network-args \
+	deploy-script
+
+# Upgrade script
+upgrade-script:; $(interactions-script) --sig "upgradeAavePM()"
+upgrade: get-network-args \
+	upgrade-script
+
+# Send ETH script
+send-ETH-script:; $(interactions-script) --sig "fundAavePM(uint256)" ${MAKE_CLI_INPUT_VALUE}
+send-ETH: get-network-args \
+	ask-for-value \
+	convert-value-to-wei \
+	store-value \
+	send-ETH-script \
+	remove-value
+
+# Update HFT script
+update-hft-script:;	$(interactions-script) --sig "updateHFTAavePM(uint16)" ${MAKE_CLI_INPUT_VALUE}
+update-hft: get-network-args \
+	ask-for-value \
+	store-value \
+	update-hft-script \
+	remove-value
+
+# Update ST script
+update-st-script:; $(interactions-script) --sig "updateSTAavePM(uint16)" ${MAKE_CLI_INPUT_VALUE}
+update-st: get-network-args \
+	ask-for-value \
+	store-value \
+	update-st-script \
+	remove-value
+
+# Rebalance script
+rebalance-script:; $(interactions-script) --sig "rebalanceAavePM()"
+rebalance: get-network-args \
+	rebalance-script
+
+# Reinvest script
+reinvest-script:; $(interactions-script) --sig "reinvestAavePM()"
+reinvest: get-network-args \
+	reinvest-script
+
+# Deleverage script
+deleverage-script:; $(interactions-script) --sig "aaveDeleverageAavePM()"
+deleverage: get-network-args \
+	deleverage-script
+
+# Close position script
+closePosition-script:; $(interactions-script) --sig "aaveClosePositionAavePM(address)" ${MAKE_CLI_INPUT_VALUE}
+closePosition: get-network-args \
+	ask-for-value \
+	store-value \
+	closePosition-script \
+	remove-value
+
+# Supply script
+supply-script:; $(interactions-script) --sig "aaveSupplyAavePM()"
+supply: get-network-args \
+	supply-script
+
+# Repay script
+repay-script:; $(interactions-script) --sig "aaveRepayAavePM()"
+repay: get-network-args \
+	repay-script
+
+# Withdraw WstETH script
+withdrawWstETH-script:; $(interactions-script) --sig "withdrawWstETHAavePM(uint256, address)" $(shell echo $(MAKE_CLI_INPUT_VALUE) | tr ',' ' ')
+withdrawWstETH: get-network-args \
+	ask-for-value \
+	convert-value-to-wei \
+	store-value \
+	withdrawWstETH-script \
+	remove-value
+
+# Borrow USDC script
+borrowUSDC-script:; $(interactions-script) --sig "borrowAndWithdrawUSDCAavePM(uint256, address)" $(shell echo $(MAKE_CLI_INPUT_VALUE) | tr ',' ' ')
+borrowUSDC: get-network-args \
+	ask-for-value \
+	convert-value-to-USDC \
+	store-value \
+	borrowUSDC-script \
+	remove-value
+
+# Rescue ETH script
+rescueETH-script:; $(interactions-script) --sig "rescueETHAavePM(address)" ${MAKE_CLI_INPUT_VALUE}
+rescueETH: get-network-args \
+	ask-for-value \
+	store-value \
+	rescueETH-script \
+	remove-value
+
+# Withdraw Token script
+withdrawToken-script:; $(interactions-script) --sig "withdrawTokenAavePM(string, address)" $(shell echo $(MAKE_CLI_INPUT_VALUE) | tr ',' ' ')
+withdrawToken: get-network-args \
+	ask-for-value \
+	store-value \
+	withdrawToken-script \
+	remove-value
+
+# Get Contract Balance script
+getContractBalance-script:; $(interactions-script) --sig "getContractBalanceAavePM(string)" ${MAKE_CLI_INPUT_VALUE}
+getContractBalance: get-network-args \
+	ask-for-value \
+	store-value \
+	getContractBalance-script \
+	remove-value
+
+# Get Aave Account Data script
+getAaveAccountData-script:; $(interactions-script) --sig "getAaveAccountDataAavePM()"
+getAaveAccountData: get-network-args \
+	getAaveAccountData-script

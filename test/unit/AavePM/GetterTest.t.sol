@@ -151,9 +151,20 @@ contract AavePMGetterTests is AavePMTestSetup {
         assertEq(aavePM.getSuppliedCollateralTotal(), suppliedCollateral);
     }
 
-    // TODO: Implement this test
-    // function test_GetMaxBorrowAndWithdrawUSDCAmount() public {
-    // }
+    function test_GetMaxBorrowAndWithdrawUSDCAmount() public {
+        // Check initial maxBorrowAndWithdrawUSDCAmount is 0
+        assertEq(aavePM.getMaxBorrowAndWithdrawUSDCAmount(), 0);
+
+        // Send ETH from manager1 to the contract
+        vm.startPrank(manager1);
+        sendEth(address(aavePM), SEND_VALUE);
+
+        // Supply ETH to Aave
+        aavePM.aaveSupplyFromContractBalance();
+
+        // Check that the maxBorrowAndWithdrawUSDCAmount is greater than 0
+        assert(aavePM.getMaxBorrowAndWithdrawUSDCAmount() > 0);
+    }
 
     function test_GetReinvestableAmount() public {
         // Check initial reinvestable amount is 0.

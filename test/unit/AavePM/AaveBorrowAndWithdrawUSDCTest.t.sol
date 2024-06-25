@@ -157,10 +157,8 @@ contract AavePMBorrowAndWithdrawUSDCTests is AavePMTestSetup {
         vm.stopPrank();
     }
 
-    // This test isn't something that can happen on in production since the internal function can't be
+    // This test is not something that can happen on in production since the internal function cannot be
     // accessed externally, but it is used to check the branch coverage of the flash loan.
-    // TODO: This was testFail, but when I added delegateCallHelper it started passing.
-    // So I need to check if it still covers the correct branch.
     function test_Exposed_BorrowAndWithdrawUSDCWithReinvestedFlashLoanChecks() public {
         vm.startPrank(manager1);
         sendEth(address(this), SEND_VALUE);

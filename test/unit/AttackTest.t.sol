@@ -6,6 +6,7 @@ import {console} from "forge-std/Test.sol";
 
 import {IAavePM} from "src/interfaces/IAavePM.sol";
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {ITokenSwapsModule} from "src/interfaces/ITokenSwapsModule.sol";
 
 // ================================================================
 // │                          ATTACK TESTS                        │
@@ -137,6 +138,20 @@ contract AavePMAttackTests is AavePMTestSetup {
         vm.startPrank(attacker1);
         vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Manager);
         aavePM.aaveRepayUSDCFromContractBalance();
+        vm.stopPrank();
+    }
+
+    // ================================================================
+    // │              FUNCTIONS - DELEGATE CALL FUNCTIONS             │
+    // ================================================================
+    function test_AttackDelegateCall() public {
+        test_AttackSetup();
+        vm.expectRevert(encodedRevert_AccessControlUnauthorizedAccount_Manager);
+        vm.startPrank(attacker1);
+        aavePM.delegateCallHelper(
+            "tokenSwapsModule",
+            abi.encodeWithSelector(ITokenSwapsModule.swapTokens.selector, "wstETH/ETH", "ETH", "wstETH")
+        );
         vm.stopPrank();
     }
 

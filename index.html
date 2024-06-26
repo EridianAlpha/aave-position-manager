@@ -205,8 +205,8 @@
 </li>
 <li><a href="#4-testing">4. Testing</a>
 <ul>
-<li><a href="#41-tests-mainnet-fork">4.1. Tests (Mainnet Fork)</a></li>
-<li><a href="#42-coverage-mainnet-fork">4.2. Coverage (Mainnet Fork)</a></li>
+<li><a href="#41-tests-fork">4.1. Tests (Fork)</a></li>
+<li><a href="#42-coverage-fork">4.2. Coverage (Fork)</a></li>
 </ul>
 </li>
 <li><a href="#5-deployment">5. Deployment</a></li>
@@ -216,14 +216,14 @@
 <li><a href="#71-fund-contract-with-eth">7.1. Fund contract with ETH</a></li>
 <li><a href="#72-update-health-factor-target">7.2. Update Health Factor Target</a></li>
 <li><a href="#73-update-slippage-tolerance">7.3. Update Slippage Tolerance</a></li>
-<li><a href="#74-rebalance">7.4. Rebalance</a></li>
-<li><a href="#75-reinvest">7.5. Reinvest</a></li>
-<li><a href="#76-supply">7.6. Supply</a></li>
-<li><a href="#77-repay">7.7. Repay</a></li>
+<li><a href="#74-rebalance-aave-position">7.4. Rebalance Aave Position</a></li>
+<li><a href="#75-reinvest-collateral">7.5. Reinvest collateral</a></li>
+<li><a href="#76-supply-from-contract-balance-to-aave">7.6. Supply from contract balance to Aave</a></li>
+<li><a href="#77-repay-usdc-from-contract-balance">7.7. Repay USDC from contract balance</a></li>
 <li><a href="#78-close-position">7.8. Close Position</a></li>
-<li><a href="#79-withdraw-wsteth">7.9. Withdraw wstETH</a></li>
-<li><a href="#710-withdraw-token">7.10. Withdraw Token</a></li>
-<li><a href="#711-borrow-usdc">7.11. Borrow USDC</a></li>
+<li><a href="#79-withdraw-wsteth-to-owner">7.9. Withdraw wstETH to owner</a></li>
+<li><a href="#710-withdraw-token-to-owner">7.10. Withdraw Token to owner</a></li>
+<li><a href="#711-borrow-usdc-and-send-to-owner">7.11. Borrow USDC and send to owner</a></li>
 <li><a href="#712-get-contract-balance">7.12. Get Contract Balance</a></li>
 <li><a href="#713-get-aave-account-data">7.13. Get Aave Account Data</a></li>
 </ul>
@@ -238,7 +238,7 @@
 <p>A smart contract manager for Aave positions.</p>
 <ol>
 <li>Set a desired Health Factor.</li>
-<li>Deposit assets (ETH, WETH, wstETH, or USDC) into the position.</li>
+<li>Send assets (ETH, WETH, wstETH, or USDC) to the contract.</li>
 <li>Reinvest and rebalance the position to maintain the desired Health Factor, either manually or with a bot.</li>
 <li>Borrow and withdraw USDC from the position while maintaining the desired Health Factor.</li>
 </ol>
@@ -289,12 +289,12 @@ make install
 <pre><code class="language-bash">make ethernal
 </code></pre>
 <h2 id="4-testing"><a class="header" href="#4-testing">4. Testing</a></h2>
-<h3 id="41-tests-mainnet-fork"><a class="header" href="#41-tests-mainnet-fork">4.1. Tests (Mainnet Fork)</a></h3>
-<pre><code class="language-bash">make test-fork-mainnet
-make test-fork-mainnet-v
-make test-fork-mainnet-summary
+<h3 id="41-tests-fork"><a class="header" href="#41-tests-fork">4.1. Tests (Fork)</a></h3>
+<pre><code class="language-bash">make test-fork
+make test-fork-v
+make test-fork-summary
 </code></pre>
-<h3 id="42-coverage-mainnet-fork"><a class="header" href="#42-coverage-mainnet-fork">4.2. Coverage (Mainnet Fork)</a></h3>
+<h3 id="42-coverage-fork"><a class="header" href="#42-coverage-fork">4.2. Coverage (Fork)</a></h3>
 <pre><code class="language-bash">make coverage
 make coverage-report
 </code></pre>
@@ -338,7 +338,7 @@ If that variable is not set, the latest deployment on the specified chain will b
 <tr><td>Base Mainnet</td><td><code>make update-st base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="74-rebalance"><a class="header" href="#74-rebalance">7.4. Rebalance</a></h3>
+<h3 id="74-rebalance-aave-position"><a class="header" href="#74-rebalance-aave-position">7.4. Rebalance Aave Position</a></h3>
 <p>Rebalances the Aave position to maintain the desired Health Factor target.
 <code>REBALANCE_HFT_BUFFER</code> is a constant in the module that determines if a rebalance is required.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
@@ -346,7 +346,7 @@ If that variable is not set, the latest deployment on the specified chain will b
 <tr><td>Base Mainnet</td><td><code>make rebalance base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="75-reinvest"><a class="header" href="#75-reinvest">7.5. Reinvest</a></h3>
+<h3 id="75-reinvest-collateral"><a class="header" href="#75-reinvest-collateral">7.5. Reinvest collateral</a></h3>
 <p>Reinvests any collateral above the Health Factor target.
 <code>REINVEST_HFT_BUFFER</code> is a constant in the module that determines if a reinvest is required.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
@@ -354,14 +354,14 @@ If that variable is not set, the latest deployment on the specified chain will b
 <tr><td>Base Mainnet</td><td><code>make reinvest base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="76-supply"><a class="header" href="#76-supply">7.6. Supply</a></h3>
+<h3 id="76-supply-from-contract-balance-to-aave"><a class="header" href="#76-supply-from-contract-balance-to-aave">7.6. Supply from contract balance to Aave</a></h3>
 <p>Supplies any ETH, WETH, wstETH, or USDC in the contract to Aave.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make supply anvil</code></td></tr>
 <tr><td>Base Mainnet</td><td><code>make supply base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="77-repay"><a class="header" href="#77-repay">7.7. Repay</a></h3>
+<h3 id="77-repay-usdc-from-contract-balance"><a class="header" href="#77-repay-usdc-from-contract-balance">7.7. Repay USDC from contract balance</a></h3>
 <p>Repay any USDC debt in the contract to repay Aave position debt.</p>
 <div class="table-wrapper"><table><thead><tr><th>Chain</th><th>Command</th></tr></thead><tbody>
 <tr><td>Anvil</td><td><code>make repay anvil</code></td></tr>
@@ -376,7 +376,7 @@ Input value as an owner address. e.g. <code>0x123...</code>.</p>
 <tr><td>Base Mainnet</td><td><code>make closePosition base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="79-withdraw-wsteth"><a class="header" href="#79-withdraw-wsteth">7.9. Withdraw wstETH</a></h3>
+<h3 id="79-withdraw-wsteth-to-owner"><a class="header" href="#79-withdraw-wsteth-to-owner">7.9. Withdraw wstETH to owner</a></h3>
 <p>Withdraw wstETH collateral from the Aave position to the specified owner.
 Input value 1 in ETH e.g. <code>0.15</code>.
 Input value 2 as an owner address e.g. <code>0x123...</code>.
@@ -386,7 +386,7 @@ Combined input value e.g. <code>0.15,0x123...</code>.</p>
 <tr><td>Base Mainnet</td><td><code>make withdrawWstETH base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="710-withdraw-token"><a class="header" href="#710-withdraw-token">7.10. Withdraw Token</a></h3>
+<h3 id="710-withdraw-token-to-owner"><a class="header" href="#710-withdraw-token-to-owner">7.10. Withdraw Token to owner</a></h3>
 <p>Withdraw the specified token from the contract to the specified owner.
 Input value 1 in token identifier e.g. <code>USDC</code>.
 Input value 2 as an owner address e.g. <code>0x123...</code>.
@@ -396,7 +396,7 @@ Combined input value e.g. <code>USDC,0x123...</code>.</p>
 <tr><td>Base Mainnet</td><td><code>make withdrawToken base-mainnet</code></td></tr>
 </tbody></table>
 </div>
-<h3 id="711-borrow-usdc"><a class="header" href="#711-borrow-usdc">7.11. Borrow USDC</a></h3>
+<h3 id="711-borrow-usdc-and-send-to-owner"><a class="header" href="#711-borrow-usdc-and-send-to-owner">7.11. Borrow USDC and send to owner</a></h3>
 <p>Borrow USDC from Aave and withdraw to the specified owner.
 Input value 1 in USDC e.g. <code>200</code> for $200 USDC.
 Input value 2 as an owner address e.g. <code>0x123...</code>.

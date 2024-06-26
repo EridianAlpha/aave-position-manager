@@ -17,22 +17,22 @@
   * [3.3. Create the `.env` file](#33-create-the-env-file)
   * [3.4. Configure Ethernal (optional)](#34-configure-ethernal-optional)
 * [4. Testing](#4-testing)
-  * [4.1. Tests (Mainnet Fork)](#41-tests-mainnet-fork)
-  * [4.2. Coverage (Mainnet Fork)](#42-coverage-mainnet-fork)
+  * [4.1. Tests (Fork)](#41-tests-fork)
+  * [4.2. Coverage (Fork)](#42-coverage-fork)
 * [5. Deployment](#5-deployment)
 * [6. Upgrades](#6-upgrades)
 * [7. Interactions](#7-interactions)
   * [7.1. Fund contract with ETH](#71-fund-contract-with-eth)
   * [7.2. Update Health Factor Target](#72-update-health-factor-target)
   * [7.3. Update Slippage Tolerance](#73-update-slippage-tolerance)
-  * [7.4. Rebalance](#74-rebalance)
-  * [7.5. Reinvest](#75-reinvest)
-  * [7.6. Supply](#76-supply)
-  * [7.7. Repay](#77-repay)
+  * [7.4. Rebalance Aave Position](#74-rebalance-aave-position)
+  * [7.5. Reinvest collateral](#75-reinvest-collateral)
+  * [7.6. Supply from contract balance to Aave](#76-supply-from-contract-balance-to-aave)
+  * [7.7. Repay USDC from contract balance](#77-repay-usdc-from-contract-balance)
   * [7.8. Close Position](#78-close-position)
-  * [7.9. Withdraw wstETH](#79-withdraw-wsteth)
-  * [7.10. Withdraw Token](#710-withdraw-token)
-  * [7.11. Borrow USDC](#711-borrow-usdc)
+  * [7.9. Withdraw wstETH to owner](#79-withdraw-wsteth-to-owner)
+  * [7.10. Withdraw Token to owner](#710-withdraw-token-to-owner)
+  * [7.11. Borrow USDC and send to owner](#711-borrow-usdc-and-send-to-owner)
   * [7.12. Get Contract Balance](#712-get-contract-balance)
   * [7.13. Get Aave Account Data](#713-get-aave-account-data)
 * [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
@@ -45,7 +45,7 @@
 A smart contract manager for Aave positions.
 
 1. Set a desired Health Factor.
-2. Deposit assets (ETH, WETH, wstETH, or USDC) into the position.
+2. Send assets (ETH, WETH, wstETH, or USDC) to the contract.
 3. Reinvest and rebalance the position to maintain the desired Health Factor, either manually or with a bot.
 4. Borrow and withdraw USDC from the position while maintaining the desired Health Factor.
 
@@ -117,15 +117,15 @@ make ethernal
 
 ## 4. Testing
 
-### 4.1. Tests (Mainnet Fork)
+### 4.1. Tests (Fork)
 
 ```bash
-make test-fork-mainnet
-make test-fork-mainnet-v
-make test-fork-mainnet-summary
+make test-fork
+make test-fork-v
+make test-fork-summary
 ```
 
-### 4.2. Coverage (Mainnet Fork)
+### 4.2. Coverage (Fork)
 
 ```bash
 make coverage
@@ -185,7 +185,7 @@ Input value to 2 decimal places e.g. `200` for a Slippage Tolerance of `0.5%`.
 | Anvil        | `make update-st anvil`        |
 | Base Mainnet | `make update-st base-mainnet` |
 
-### 7.4. Rebalance
+### 7.4. Rebalance Aave Position
 
 Rebalances the Aave position to maintain the desired Health Factor target.
 `REBALANCE_HFT_BUFFER` is a constant in the module that determines if a rebalance is required.
@@ -195,7 +195,7 @@ Rebalances the Aave position to maintain the desired Health Factor target.
 | Anvil        | `make rebalance anvil`        |
 | Base Mainnet | `make rebalance base-mainnet` |
 
-### 7.5. Reinvest
+### 7.5. Reinvest collateral
 
 Reinvests any collateral above the Health Factor target.
 `REINVEST_HFT_BUFFER` is a constant in the module that determines if a reinvest is required.
@@ -205,7 +205,7 @@ Reinvests any collateral above the Health Factor target.
 | Anvil        | `make reinvest anvil`        |
 | Base Mainnet | `make reinvest base-mainnet` |
 
-### 7.6. Supply
+### 7.6. Supply from contract balance to Aave
 
 Supplies any ETH, WETH, wstETH, or USDC in the contract to Aave.
 
@@ -214,7 +214,7 @@ Supplies any ETH, WETH, wstETH, or USDC in the contract to Aave.
 | Anvil        | `make supply anvil`        |
 | Base Mainnet | `make supply base-mainnet` |
 
-### 7.7. Repay
+### 7.7. Repay USDC from contract balance
 
 Repay any USDC debt in the contract to repay Aave position debt.
 
@@ -233,7 +233,7 @@ Input value as an owner address. e.g. `0x123...`.
 | Anvil        | `make closePosition anvil`        |
 | Base Mainnet | `make closePosition base-mainnet` |
 
-### 7.9. Withdraw wstETH
+### 7.9. Withdraw wstETH to owner
 
 Withdraw wstETH collateral from the Aave position to the specified owner.
 Input value 1 in ETH e.g. `0.15`.
@@ -245,7 +245,7 @@ Combined input value e.g. `0.15,0x123...`.
 | Anvil        | `make withdrawWstETH anvil`        |
 | Base Mainnet | `make withdrawWstETH base-mainnet` |
 
-### 7.10. Withdraw Token
+### 7.10. Withdraw Token to owner
 
 Withdraw the specified token from the contract to the specified owner.
 Input value 1 in token identifier e.g. `USDC`.
@@ -257,7 +257,7 @@ Combined input value e.g. `USDC,0x123...`.
 | Anvil        | `make withdrawToken anvil`        |
 | Base Mainnet | `make withdrawToken base-mainnet` |
 
-### 7.11. Borrow USDC
+### 7.11. Borrow USDC and send to owner
 
 Borrow USDC from Aave and withdraw to the specified owner.
 Input value 1 in USDC e.g. `200` for $200 USDC.

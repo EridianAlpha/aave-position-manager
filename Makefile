@@ -57,16 +57,16 @@ ethernal:
 # ================================================================
 # │                   FORK TESTING AND COVERAGE                  │
 # ================================================================
-test-fork-mainnet:; forge test --fork-url ${MAINNET_RPC_URL}
-test-fork-mainnet-v:; forge test --fork-url ${MAINNET_RPC_URL} -vvvv
-test-fork-mainnet-summary:; forge test --fork-url ${MAINNET_RPC_URL} --summary
+test-fork:; forge test --fork-url ${FORK_RPC_URL}
+test-fork-v:; forge test --fork-url ${FORK_RPC_URL} -vvvv
+test-fork-summary:; forge test --fork-url ${FORK_RPC_URL} --summary
 
 coverage:
-	@forge coverage --fork-url ${MAINNET_RPC_URL} --report summary --report lcov 
+	@forge coverage --fork-url ${FORK_RPC_URL} --report summary --report lcov 
 	@echo
 
 coverage-report:
-	@forge coverage --fork-url ${MAINNET_RPC_URL} --report debug > coverage-report.txt
+	@forge coverage --fork-url ${FORK_RPC_URL} --report debug > coverage-report.txt
 	@echo Output saved to coverage-report.txt
 
 # ================================================================
@@ -125,6 +125,7 @@ install:
 	forge install openzeppelin/openzeppelin-contracts-upgradeable@v5.0.1 --no-commit && \
 	forge install uniswap/v3-core --no-commit && \
 	forge install uniswap/v3-periphery --no-commit && \
+	forge install uniswap/swap-router-contracts --no-commit && \
 	forge install aave/aave-v3-core@v1.19.3 --no-commit
 
 # ================================================================

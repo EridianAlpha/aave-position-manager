@@ -517,6 +517,8 @@ contract AavePM is
     /// @notice Delegate call helper function for the manager to call any function.
     /// @dev The public function is used to delegate calls to other contracts.
     ///      Caller must have `MANAGER_ROLE`.
+    ///      As the manager can only use identifiers already set in the contract,
+    ///      it cannot call a contract that is not set (e.g. a malicious contract).
     /// @param _targetIdentifier The identifier of the target contract.
     /// @param _data The data to send to the target contract.
     /// @return result The result of the delegate call.

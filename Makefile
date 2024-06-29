@@ -37,16 +37,16 @@ base-sepolia-network:
 			--etherscan-api-key ${BASESCAN_API_KEY} \
 	)
 
-# base-mainnet: # Added to stop error output when running commands e.g. make deploy base-mainnet
-# 	@echo
-# base-mainnet-network: 
-# 	$(eval \
-# 		NETWORK_ARGS := --broadcast \
-# 			--rpc-url ${BASE_MAINNET_RPC_URL} \
-# 			--private-key ${BASE_MAINNET_PRIVATE_KEY} \
-# 			--verify \
-# 			--etherscan-api-key ${BASESCAN_API_KEY} \
-# 	)
+base-mainnet: # Added to stop error output when running commands e.g. make deploy base-mainnet
+	@echo
+base-mainnet-network: 
+	$(eval \
+		NETWORK_ARGS := --broadcast \
+			--rpc-url ${BASE_MAINNET_RPC_URL} \
+			--private-key ${BASE_MAINNET_PRIVATE_KEY} \
+			--verify \
+			--etherscan-api-key ${BASESCAN_API_KEY} \
+	)
 
 # ================================================================
 # │            ETHERNAL BLOCK EXPLORER CONFIGURATION             │

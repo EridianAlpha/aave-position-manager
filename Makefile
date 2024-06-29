@@ -9,9 +9,9 @@ help:
 	@echo "Usage:"
 	@echo "  make deploy-anvil\n
 
-clean 		:; forge clean
-update 		:; forge update
-build 		:; forge build
+clean 	:; forge clean
+update 	:; forge update
+build 	:; forge build
 
 # ================================================================
 # │                      NETWORK CONFIGURATION                   │
@@ -26,25 +26,26 @@ anvil-network:
 						--private-key ${ANVIL_PRIVATE_KEY} \
 	)
 
-base-mainnet: # Added to stop error output when running commands e.g. make deploy base-mainnet
+base-sepolia: # Added to stop error output when running commands e.g. make deploy base-sepolia
 	@echo
+base-sepolia-network: 
+	$(eval \
+		NETWORK_ARGS := --broadcast \
+			--rpc-url ${BASE_SEPOLIA_RPC_URL} \
+			--private-key ${BASE_SEPOLIA_PRIVATE_KEY} \
+			--verify \
+			--etherscan-api-key ${BASESCAN_API_KEY} \
+	)
 
-# holesky-network: 
+# base-mainnet: # Added to stop error output when running commands e.g. make deploy base-mainnet
+# 	@echo
+# base-mainnet-network: 
 # 	$(eval \
 # 		NETWORK_ARGS := --broadcast \
-# 			--rpc-url ${HOLESKY_RPC_URL} \
-# 			--private-key ${HOLESKY_PRIVATE_KEY} \
+# 			--rpc-url ${BASE_MAINNET_RPC_URL} \
+# 			--private-key ${BASE_MAINNET_PRIVATE_KEY} \
 # 			--verify \
-# 			--etherscan-api-key ${ETHERSCAN_API_KEY} \
-# 	)
-
-# mainnet-network: 
-# 	$(eval \
-# 		NETWORK_ARGS := --broadcast \
-# 			--rpc-url ${MAINNET_RPC_URL} \
-# 			--private-key ${MAINNET_PRIVATE_KEY} \
-# 			--verify \
-# 			--etherscan-api-key ${ETHERSCAN_API_KEY} \
+# 			--etherscan-api-key ${BASESCAN_API_KEY} \
 # 	)
 
 # ================================================================

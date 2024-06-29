@@ -22,19 +22,21 @@
 * [5. Deployment](#5-deployment)
 * [6. Upgrades](#6-upgrades)
 * [7. Interactions](#7-interactions)
-  * [7.1. Fund contract with ETH](#71-fund-contract-with-eth)
-  * [7.2. Update Health Factor Target](#72-update-health-factor-target)
-  * [7.3. Update Slippage Tolerance](#73-update-slippage-tolerance)
-  * [7.4. Rebalance Aave Position](#74-rebalance-aave-position)
-  * [7.5. Reinvest collateral](#75-reinvest-collateral)
-  * [7.6. Supply from contract balance to Aave](#76-supply-from-contract-balance-to-aave)
-  * [7.7. Repay USDC from contract balance](#77-repay-usdc-from-contract-balance)
-  * [7.8. Close Position](#78-close-position)
-  * [7.9. Withdraw wstETH to owner](#79-withdraw-wsteth-to-owner)
-  * [7.10. Withdraw Token to owner](#710-withdraw-token-to-owner)
-  * [7.11. Borrow USDC and send to owner](#711-borrow-usdc-and-send-to-owner)
-  * [7.12. Get Contract Balance](#712-get-contract-balance)
-  * [7.13. Get Aave Account Data](#713-get-aave-account-data)
+  * [7.1. Grant Role](#71-grant-role)
+  * [7.2. Revoke Role](#72-revoke-role)
+  * [7.3. Fund contract with ETH](#73-fund-contract-with-eth)
+  * [7.4. Update Health Factor Target](#74-update-health-factor-target)
+  * [7.5. Update Slippage Tolerance](#75-update-slippage-tolerance)
+  * [7.6. Rebalance Aave Position](#76-rebalance-aave-position)
+  * [7.7. Reinvest collateral](#77-reinvest-collateral)
+  * [7.8. Supply from contract balance to Aave](#78-supply-from-contract-balance-to-aave)
+  * [7.9. Repay USDC from contract balance](#79-repay-usdc-from-contract-balance)
+  * [7.10. Close Position](#710-close-position)
+  * [7.11. Withdraw wstETH to owner](#711-withdraw-wsteth-to-owner)
+  * [7.12. Withdraw Token to owner](#712-withdraw-token-to-owner)
+  * [7.13. Borrow USDC and send it to an owner](#713-borrow-usdc-and-send-it-to-an-owner)
+  * [7.14. Get Contract Balance](#714-get-contract-balance)
+  * [7.15. Get Aave Account Data](#715-get-aave-account-data)
 * [8. Build and Deploy Documentation](#8-build-and-deploy-documentation)
 * [9. License](#9-license)
 
@@ -139,6 +141,7 @@ Deploys AavePM and all modules to the Anvil chain specified in the `.env` file.
 | Chain        | Command                    |
 | ------------ | -------------------------- |
 | Anvil        | `make deploy anvil`        |
+| Base Sepolia | `make deploy base-sepolia` |
 | Base Mainnet | `make deploy base-mainnet` |
 
 ## 6. Upgrades
@@ -149,6 +152,7 @@ This also redeploys all modules and updates their contract addresses on AavePM.
 | Chain        | Command                     |
 | ------------ | --------------------------- |
 | Anvil        | `make upgrade anvil`        |
+| Base Sepolia | `make upgrade base-sepolia` |
 | Base Mainnet | `make upgrade base-mainnet` |
 
 ## 7. Interactions
@@ -158,7 +162,33 @@ Interactions are defined in `./script/Interactions.s.sol`
 If `DEPLOYED_CONTRACT_ADDRESS` is set in the `.env` file, that contract address will be used for interactions.
 If that variable is not set, the latest deployment on the specified chain will be used.
 
-### 7.1. Fund contract with ETH
+### 7.1. Grant Role
+
+Grant a role to an address. Requires the caller to be an admin of the role being granted.
+Input value 1 as a role e.g. `MANAGER_ROLE`.
+Input value 2 as an address e.g. `0x123...`.
+Combined input value e.g. `MANAGER_ROLE,0x123...`.
+
+| Chain        | Command                       |
+| ------------ | ----------------------------- |
+| Anvil        | `make grantRole anvil`        |
+| Base Sepolia | `make grantRole base-sepolia` |
+| Base Mainnet | `make grantRole base-mainnet` |
+
+### 7.2. Revoke Role
+
+Revoke a role from an address. Requires the caller to be an admin of the role being revoked.
+Input value 1 as a role e.g. `MANAGER_ROLE`.
+Input value 2 as an address e.g. `0x123...`.
+Combined input value e.g. `MANAGER_ROLE,0x123...`.
+
+| Chain        | Command                        |
+| ------------ | ------------------------------ |
+| Anvil        | `make revokeRole anvil`        |
+| Base Sepolia | `make revokeRole base-sepolia` |
+| Base Mainnet | `make revokeRole base-mainnet` |
+
+### 7.3. Fund contract with ETH
 
 Input value in ETH e.g. `0.15`.
 
@@ -167,7 +197,7 @@ Input value in ETH e.g. `0.15`.
 | Anvil        | `make send-ETH anvil`        |
 | Base Mainnet | `make send-ETH base-mainnet` |
 
-### 7.2. Update Health Factor Target
+### 7.4. Update Health Factor Target
 
 Input value to 2 decimal places e.g. `225` for a Health Factor target of `2.25`.
 
@@ -176,7 +206,7 @@ Input value to 2 decimal places e.g. `225` for a Health Factor target of `2.25`.
 | Anvil        | `make update-hft anvil`        |
 | Base Mainnet | `make update-hft base-mainnet` |
 
-### 7.3. Update Slippage Tolerance
+### 7.5. Update Slippage Tolerance
 
 Input value to 2 decimal places e.g. `200` for a Slippage Tolerance of `0.5%`.
 
@@ -185,7 +215,7 @@ Input value to 2 decimal places e.g. `200` for a Slippage Tolerance of `0.5%`.
 | Anvil        | `make update-st anvil`        |
 | Base Mainnet | `make update-st base-mainnet` |
 
-### 7.4. Rebalance Aave Position
+### 7.6. Rebalance Aave Position
 
 Rebalances the Aave position to maintain the desired Health Factor target.
 `REBALANCE_HFT_BUFFER` is a constant in the module that determines if a rebalance is required.
@@ -195,7 +225,7 @@ Rebalances the Aave position to maintain the desired Health Factor target.
 | Anvil        | `make rebalance anvil`        |
 | Base Mainnet | `make rebalance base-mainnet` |
 
-### 7.5. Reinvest collateral
+### 7.7. Reinvest collateral
 
 Reinvests any collateral above the Health Factor target.
 `REINVEST_HFT_BUFFER` is a constant in the module that determines if a reinvest is required.
@@ -205,7 +235,7 @@ Reinvests any collateral above the Health Factor target.
 | Anvil        | `make reinvest anvil`        |
 | Base Mainnet | `make reinvest base-mainnet` |
 
-### 7.6. Supply from contract balance to Aave
+### 7.8. Supply from contract balance to Aave
 
 Supplies any ETH, WETH, wstETH, or USDC in the contract to Aave.
 
@@ -214,7 +244,7 @@ Supplies any ETH, WETH, wstETH, or USDC in the contract to Aave.
 | Anvil        | `make supply anvil`        |
 | Base Mainnet | `make supply base-mainnet` |
 
-### 7.7. Repay USDC from contract balance
+### 7.9. Repay USDC from contract balance
 
 Repay any USDC debt in the contract to repay Aave position debt.
 
@@ -223,7 +253,7 @@ Repay any USDC debt in the contract to repay Aave position debt.
 | Anvil        | `make repay anvil`        |
 | Base Mainnet | `make repay base-mainnet` |
 
-### 7.8. Close Position
+### 7.10. Close Position
 
 Close the Aave position by repaying all debt and withdrawing all collateral.
 Input value as an owner address. e.g. `0x123...`.
@@ -233,7 +263,7 @@ Input value as an owner address. e.g. `0x123...`.
 | Anvil        | `make closePosition anvil`        |
 | Base Mainnet | `make closePosition base-mainnet` |
 
-### 7.9. Withdraw wstETH to owner
+### 7.11. Withdraw wstETH to owner
 
 Withdraw wstETH collateral from the Aave position to the specified owner.
 Input value 1 in ETH e.g. `0.15`.
@@ -245,7 +275,7 @@ Combined input value e.g. `0.15,0x123...`.
 | Anvil        | `make withdrawWstETH anvil`        |
 | Base Mainnet | `make withdrawWstETH base-mainnet` |
 
-### 7.10. Withdraw Token to owner
+### 7.12. Withdraw Token to owner
 
 Withdraw the specified token from the contract to the specified owner.
 Input value 1 in token identifier e.g. `USDC`.
@@ -257,7 +287,7 @@ Combined input value e.g. `USDC,0x123...`.
 | Anvil        | `make withdrawToken anvil`        |
 | Base Mainnet | `make withdrawToken base-mainnet` |
 
-### 7.11. Borrow USDC and send to owner
+### 7.13. Borrow USDC and send it to an owner
 
 Borrow USDC from Aave and withdraw to the specified owner.
 Input value 1 in USDC e.g. `200` for $200 USDC.
@@ -269,7 +299,7 @@ Combined input value e.g. `200,0x123...`.
 | Anvil        | `make borrowUSDC anvil`        |
 | Base Mainnet | `make borrowUSDC base-mainnet` |
 
-### 7.12. Get Contract Balance
+### 7.14. Get Contract Balance
 
 Input value as token identifier e.g. `USDC`.
 
@@ -278,7 +308,7 @@ Input value as token identifier e.g. `USDC`.
 | Anvil        | `make getContractBalance anvil`        |
 | Base Mainnet | `make getContractBalance base-mainnet` |
 
-### 7.13. Get Aave Account Data
+### 7.15. Get Aave Account Data
 
 Returns the Aave account data for the contract.
 

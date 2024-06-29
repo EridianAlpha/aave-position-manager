@@ -73,6 +73,25 @@ contract Interactions is Script {
     }
 
     // ================================================================
+    // │                  FUNCTIONS - ROLE MANAGEMENT                 │
+    // ================================================================
+    function grantRoleAavePM(string memory roleString, address account) public {
+        bytes32 roleBytes = keccak256(abi.encodePacked(roleString));
+        interactionsSetup();
+        vm.startBroadcast();
+        aavePM.grantRole(roleBytes, account);
+        vm.stopBroadcast();
+    }
+
+    function revokeRoleAavePM(string memory roleString, address account) public {
+        bytes32 roleBytes = keccak256(abi.encodePacked(roleString));
+        interactionsSetup();
+        vm.startBroadcast();
+        aavePM.revokeRole(roleBytes, account);
+        vm.stopBroadcast();
+    }
+
+    // ================================================================
     // │                     FUNCTIONS - UPDATES                      │
     // ================================================================
     function updateHFTAavePM(uint16 value) public {

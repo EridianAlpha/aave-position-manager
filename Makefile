@@ -145,6 +145,22 @@ upgrade-script:; $(interactions-script) --sig "upgradeAavePM()"
 upgrade: get-network-args \
 	upgrade-script
 
+# Grant role script
+grantRole-script:; $(interactions-script) --sig "grantRoleAavePM(string, address)" $(shell echo $(MAKE_CLI_INPUT_VALUE) | tr ',' ' ')
+grantRole: get-network-args \
+	ask-for-value \
+	store-value \
+	grantRole-script \
+	remove-value
+
+# Revoke role script
+revokeRole-script:; $(interactions-script) --sig "revokeRoleAavePM(string, address)" $(shell echo $(MAKE_CLI_INPUT_VALUE) | tr ',' ' ')
+revokeRole: get-network-args \
+	ask-for-value \
+	store-value \
+	revokeRole-script \
+	remove-value
+
 # Send ETH script
 send-ETH-script:; $(interactions-script) --sig "fundAavePM(uint256)" ${MAKE_CLI_INPUT_VALUE}
 send-ETH: get-network-args \

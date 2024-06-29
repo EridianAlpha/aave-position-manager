@@ -65,6 +65,8 @@ contract AavePM is
     uint16 internal s_managerDailyInvocationLimit;
     uint64[] internal s_managerInvocationTimestamps;
 
+    // ⭐️ Add new state variables here ⭐️
+
     // ================================================================
     // │                           CONSTANTS                          │
     // ================================================================

@@ -7,7 +7,7 @@
 
 help:
 	@echo "Usage:"
-	@echo "  make deploy-anvil\n
+	@echo "  make deploy anvil\n
 
 clean 	:; forge clean
 update 	:; forge update
@@ -78,6 +78,7 @@ ask-for-value:
 	@read value; \
 	echo $$value > MAKE_CLI_INPUT_VALUE.tmp;
 
+# If multiple values are passed (comma separated), convert the first value to wei
 convert-value-to-wei:
 	@value=$$(cat MAKE_CLI_INPUT_VALUE.tmp); \
 	first_value=$$(echo $$value | cut -d',' -f1); \
@@ -93,6 +94,7 @@ convert-value-to-wei:
 	fi; \
  	echo $$final_value > MAKE_CLI_INPUT_VALUE.tmp;
 
+# If multiple values are passed (comma separated), convert the first value to USDC
 convert-value-to-USDC:
 	@value=$$(cat MAKE_CLI_INPUT_VALUE.tmp); \
 	first_value=$$(echo $$value | cut -d',' -f1); \
